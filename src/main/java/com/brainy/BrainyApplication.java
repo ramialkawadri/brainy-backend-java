@@ -9,5 +9,4 @@ public class BrainyApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BrainyApplication.class, args);
 	}
-
 }
