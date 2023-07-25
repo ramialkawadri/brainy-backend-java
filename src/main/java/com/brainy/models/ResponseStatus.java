@@ -1,4 +1,4 @@
-package com.brainy.model;
+package com.brainy.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
