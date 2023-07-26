@@ -1,7 +1,7 @@
 package com.brainy.wrappers;
 
-import com.brainy.models.Response;
-import com.brainy.models.ResponseStatus;
+import com.brainy.model.Response;
+import com.brainy.model.ResponseStatus;
 
 public class ResponseString extends Response<String> {
 

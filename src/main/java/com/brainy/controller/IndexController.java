@@ -1,10 +1,10 @@
-package com.brainy.controllers;
+package com.brainy.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.brainy.models.Response;
-import com.brainy.models.ResponseStatus;
+import com.brainy.model.Response;
+import com.brainy.model.ResponseStatus;
 
 @RestController
 public class IndexController {

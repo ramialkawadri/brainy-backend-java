@@ -1,4 +1,4 @@
-package com.brainy.models;
+package com.brainy.model;
 
 public class Response<T> {
     private ResponseStatus status;
