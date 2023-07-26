@@ -1,18 +1,20 @@
 package com.brainy.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.brainy.entity.User;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
 
 @RestController
 @RequestMapping("api")
-public class UserInformationController {
+public class UserController {
     
     @GetMapping("user")
-    public Response<String> getUserInformation() {
-        return new Response<String>("rami", ResponseStatus.SUCCESS);
+    public Response<User> getUserInformation(@RequestAttribute User user) {
+        return new Response<User>(user, ResponseStatus.SUCCESS);
     }
 }

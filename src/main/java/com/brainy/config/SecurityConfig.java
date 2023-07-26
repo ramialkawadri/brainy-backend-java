@@ -22,7 +22,11 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
+import com.brainy.config.filters.JwtFilter;
+import com.brainy.config.filters.UserFilter;
+import com.brainy.service.UserService;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 @Configuration
@@ -32,6 +36,12 @@ public class SecurityConfig {
 
     @Value("${jwt.key}")
     private String jwtKey;
+
+    private UserService userService;
+
+    public SecurityConfig(UserService userService) {
+        this.userService = userService;
+    }
 
     @Bean
     UserDetailsManager databaseUserDetailsManager(DataSource dataSource) {
@@ -69,6 +79,9 @@ public class SecurityConfig {
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(
                 Customizer.withDefaults()
         ));
+
+        http.addFilterAfter(new UserFilter(userService), AuthorizationFilter.class);
+        http.addFilterAfter(new JwtFilter(), UserFilter.class);
 
         http.sessionManagement(session ->
         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
