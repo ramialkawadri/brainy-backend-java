@@ -13,6 +13,10 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * This class add a User object of the authenticated user to the request so
+ * controllers can access the object without having to do any work
+ */
 public class UserFilter implements Filter {
 
     private UserService userService;

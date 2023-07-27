@@ -4,7 +4,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.brainy.model.Response;
+import com.brainy.model.ResponseStatus;
 import com.brainy.service.TokenService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class AuthController {
@@ -15,7 +20,18 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public String token(Authentication authentication) {
-        return tokenService.generateToken(authentication);
+    public Response<String> getToken(
+            Authentication authentication, HttpServletResponse response) {
+
+        String jwt = tokenService.generateToken(authentication);
+        addJwtCookieToResponse(response, jwt);
+        return new Response<String>(jwt, ResponseStatus.SUCCESS);
+    }
+
+    private void addJwtCookieToResponse(
+            HttpServletResponse response, String token) {
+
+        Cookie jwtCookie = new Cookie("token", token);
+        response.addCookie(jwtCookie);
     }
 }

@@ -2,29 +2,120 @@ package com.brainy.config.filters;
 
 import java.io.IOException;
 
-import com.brainy.entity.User;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.Filter;
+import com.brainy.service.TokenService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-public class JwtFilter implements Filter {
+/**
+ * This class authenticate using a JWT, the token can either be in header or
+ * cookies
+ */
+public class JwtFilter extends OncePerRequestFilter {
+
+    private TokenService tokenService;
+    private UserDetailsManager userDetailsManager;
+
+    public JwtFilter(TokenService tokenService, UserDetailsManager userDetailsManager) {
+        this.tokenService = tokenService;
+        this.userDetailsManager = userDetailsManager;
+    }
 
     @Override
-    public void doFilter(
-        ServletRequest servletRequest, 
-        ServletResponse servletResponse, 
-        FilterChain chain) throws IOException, ServletException {
-        
-        User user = (User) servletRequest.getAttribute("user");
+    protected void doFilterInternal(
+        HttpServletRequest servletRequest, 
+        HttpServletResponse servletResponse, 
+        FilterChain chain) throws ServletException, IOException {
 
-        if (user != null) {
-            // TODO: check if the token issued date is after last log out time and after last password change time
-        }
+        Jwt token = getJwtFromRequest(servletRequest);
+
+        useTokenForAuthenticationIfValid(token);
 
         chain.doFilter(servletRequest, servletResponse);
     }
-    
+
+    private Jwt getJwtFromRequest(HttpServletRequest request) {
+        String encodedToken;
+
+        if (isJwtInCookies(request))
+            encodedToken = getJwtFromCookies(request);
+        else
+            encodedToken = getJwtFromAuthorizationHeader(request);
+
+        return (encodedToken == null || encodedToken.isEmpty())
+                ? null
+                : tokenService.decodeToken(encodedToken);
+    }
+
+    private void useTokenForAuthenticationIfValid(Jwt jwt) {
+        if (jwt == null || tokenService.isTokenExpired(jwt))
+            return;
+
+        // TODO: check if user token is issued after password change and log out
+
+        setAuthenticationFromToken(jwt);
+    }
+
+    private void setAuthenticationFromToken(Jwt jwt) {
+        String username = jwt.getSubject();
+        
+        UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
+
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+                );
+
+        SecurityContextHolder
+                .getContext()
+                .setAuthentication(usernamePasswordAuthenticationToken);
+    }
+
+    private boolean isJwtInCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null)
+            return false;
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token"))
+                return true;
+        }
+
+        return false;
+    }
+
+    private String getJwtFromAuthorizationHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            String accessToken = bearerToken.substring(7);
+            return accessToken;
+        }
+
+        return null;
+    }
+
+    private String getJwtFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token"))
+                return cookie.getValue();
+        }
+
+        return null;
+    }
+
 }
