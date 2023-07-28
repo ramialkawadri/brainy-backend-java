@@ -1,8 +1,6 @@
-package com.brainy.config;
+package com.brainy.config.security;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-
-import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,44 +9,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.brainy.config.filters.JwtFilter;
-import com.brainy.config.filters.UserFilter;
-import com.brainy.service.TokenService;
-import com.brainy.service.UserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private UserService userService;
-    private TokenService tokenService;
-    private UserDetailsManager userDetailsManager;
+    private BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter;
 
-    public SecurityConfig(UserService userService, TokenService tokenService) {
-        this.userService = userService;
-        this.tokenService = tokenService;
-    }
-
-    @Bean
-    UserDetailsManager databaseUserDetailsManager(DataSource dataSource) {
-        JdbcUserDetailsManager jdbcUserDetailsManager = 
-                new JdbcUserDetailsManager(dataSource);
-
-        this.userDetailsManager = jdbcUserDetailsManager;
-
-        jdbcUserDetailsManager.setUsersByUsernameQuery(
-                "select username, password, true from users where username=?");
-
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
-                "select ?, 'user'");
-
-        return jdbcUserDetailsManager;
+    public SecurityConfig(
+            BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter) {
+        this.bearerTokenAuthenticationFilter = bearerTokenAuthenticationFilter;
     }
 
     @Bean
@@ -62,7 +34,9 @@ public class SecurityConfig {
 
         authorizeHttpRequests(http);
 
-        addFilters(http);
+        http.addFilterBefore(
+                bearerTokenAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class);
 
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -79,13 +53,4 @@ public class SecurityConfig {
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/register").permitAll());
     }
-
-    private void addFilters(HttpSecurity http) {
-        http.addFilterBefore(
-                new JwtFilter(tokenService, userDetailsManager),
-                UsernamePasswordAuthenticationFilter.class);
-
-        http.addFilterAfter(
-                new UserFilter(userService), AuthorizationFilter.class);
-    } 
 }

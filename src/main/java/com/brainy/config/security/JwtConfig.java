@@ -1,4 +1,4 @@
-package com.brainy.config;
+package com.brainy.config.security;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -28,8 +28,7 @@ public class JwtConfig {
     JwtDecoder jwtDecoder() {
         byte[] bytes = jwtKey.getBytes();
 
-        SecretKeySpec originalKey = 
-                new SecretKeySpec(bytes, 0, bytes.length, "RSA");
+        SecretKeySpec originalKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
 
         return NimbusJwtDecoder
                 .withSecretKey(originalKey)

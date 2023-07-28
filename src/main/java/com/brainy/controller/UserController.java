@@ -12,7 +12,7 @@ import com.brainy.model.ResponseStatus;
 @RestController
 @RequestMapping("api")
 public class UserController {
-    
+
     @GetMapping("user")
     public Response<User> getUserInformation(@RequestAttribute User user) {
         return new Response<User>(user, ResponseStatus.SUCCESS);

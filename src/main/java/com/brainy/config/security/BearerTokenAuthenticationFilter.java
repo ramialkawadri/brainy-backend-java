@@ -1,4 +1,4 @@
-package com.brainy.config.filters;
+package com.brainy.config.security;
 
 import java.io.IOException;
 
@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,25 +19,25 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * This class authenticate using a JWT, the token can either be in header or
- * cookies
- */
-public class JwtFilter extends OncePerRequestFilter {
+@Component
+public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private TokenService tokenService;
     private UserDetailsManager userDetailsManager;
 
-    public JwtFilter(TokenService tokenService, UserDetailsManager userDetailsManager) {
+    public BearerTokenAuthenticationFilter(
+            TokenService tokenService,
+            UserDetailsManager userDetailsManager) {
+
         this.tokenService = tokenService;
         this.userDetailsManager = userDetailsManager;
     }
 
     @Override
     protected void doFilterInternal(
-        HttpServletRequest servletRequest, 
-        HttpServletResponse servletResponse, 
-        FilterChain chain) throws ServletException, IOException {
+            HttpServletRequest servletRequest,
+            HttpServletResponse servletResponse,
+            FilterChain chain) throws ServletException, IOException {
 
         Jwt token = getJwtFromRequest(servletRequest);
 
@@ -69,17 +70,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void setAuthenticationFromToken(Jwt jwt) {
         String username = jwt.getSubject();
-        
+
         UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
 
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-                );
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder
                 .getContext()
-                .setAuthentication(usernamePasswordAuthenticationToken);
+                .setAuthentication(authentication);
     }
 
     private boolean isJwtInCookies(HttpServletRequest request) {
