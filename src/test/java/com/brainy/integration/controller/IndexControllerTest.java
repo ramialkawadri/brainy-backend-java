@@ -1,4 +1,4 @@
-package com.brainy.controllers;
+package com.brainy.integration.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,8 +9,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.brainy.wrappers.ResponseString;
-
+import com.brainy.integration.model.ResponseString;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class IndexControllerTest {
