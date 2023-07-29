@@ -9,23 +9,28 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.brainy.integration.model.ResponseString;
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class IndexControllerTest {
+public class AuthControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Test
-    public void shouldStartServer() {
-        ResponseEntity<ResponseString> response = 
-                restTemplate.getForEntity("/", ResponseString.class);
+    public void shouldNotAuthorize() {
+        ResponseEntity<Void> response =
+                restTemplate.postForEntity("/token", null, Void.class);
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        ResponseString body = response.getBody();
-        Assertions.assertNotNull(body);
-        Assertions.assertEquals("Server is up and running!", body.getData());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
+
+    @Test
+    public void shouldAuthorizeUsingHeaders() {
+        // TODO
+    }
+
+    @Test
+    public void shouldAuthorizeUsingCookiesAndJwt() {}
+
+    @Test
+    public void shouldAddTokenCookie() {}
 }

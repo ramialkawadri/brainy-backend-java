@@ -10,7 +10,7 @@ import com.brainy.model.ResponseStatus;
 public class IndexController {
 
     @GetMapping("/")
-    public Response<String> index() {
+    public Response<String> getServerStatus() {
         return new Response<String>("Server is up and running!",
                 ResponseStatus.SUCCESS);
     }
