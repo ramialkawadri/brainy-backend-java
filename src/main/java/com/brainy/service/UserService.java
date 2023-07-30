@@ -1,7 +1,13 @@
 package com.brainy.service;
 
-import com.brainy.entity.User;
+import java.util.Map;
+
+import com.brainy.exception.BadRequestException;
+import com.brainy.model.entity.User;
 
 public interface UserService {
-    User getUserByUsername(String name);
+    User findUserByUsername(String name);
+
+    void registerUserFromRequest(Map<String, String> request) 
+            throws BadRequestException;
 }

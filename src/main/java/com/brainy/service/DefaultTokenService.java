@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import com.brainy.entity.User;
+import com.brainy.model.entity.User;
 
 @Service
 public class DefaultTokenService implements TokenService {

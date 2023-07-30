@@ -1,4 +1,4 @@
-package com.brainy.entity;
+package com.brainy.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,7 +19,7 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Column(name = "email", nullable = false, length = 50)
+    @Column(name = "email", nullable = false, length = 50, unique = true)
     private String email;
 
     @Column(name = "first_name", nullable = false, length = 50)

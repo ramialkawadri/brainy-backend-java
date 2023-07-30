@@ -5,7 +5,7 @@ import java.security.Principal;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.brainy.entity.User;
+import com.brainy.model.entity.User;
 import com.brainy.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class adds a User object of the authenticated user to the request so
- * controllers can access the object without having to do any work
+ * controllers can access the object without having to do any work.
  */
 @Component
 public class UserInterceptor implements HandlerInterceptor {
@@ -33,7 +33,7 @@ public class UserInterceptor implements HandlerInterceptor {
         Principal principal = request.getUserPrincipal();
 
         if (principal != null) {
-            User user = userService.getUserByUsername(principal.getName());
+            User user = userService.findUserByUsername(principal.getName());
             request.setAttribute("user", user);
         }
 

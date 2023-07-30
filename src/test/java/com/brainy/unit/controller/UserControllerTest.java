@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.brainy.controller.UserController;
-import com.brainy.entity.User;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
+import com.brainy.model.entity.User;
 
 public class UserControllerTest {
     

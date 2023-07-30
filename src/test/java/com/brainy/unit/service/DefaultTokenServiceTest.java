@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 
-import com.brainy.entity.User;
+import com.brainy.model.entity.User;
 import com.brainy.service.DefaultTokenService;
 
 public class DefaultTokenServiceTest {
