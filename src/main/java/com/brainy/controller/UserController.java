@@ -10,10 +10,10 @@ import com.brainy.model.ResponseStatus;
 import com.brainy.model.entity.User;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/user")
 public class UserController {
 
-    @GetMapping("user")
+    @GetMapping
     public Response<User> getUserInformation(@RequestAttribute User user) {
         return new Response<User>(user, ResponseStatus.SUCCESS);
     }

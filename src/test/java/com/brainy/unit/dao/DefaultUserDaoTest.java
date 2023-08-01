@@ -38,5 +38,12 @@ public class DefaultUserDaoTest {
 
         Mockito.verify(entityManager).persist(testUser);
     }
+
+    @Test
+    public void shouldSaveUserChanges() {
+        User user = new User();
+        userDAO.saveUserChanges(user);
+        Mockito.verify(entityManager).merge(user);
+    }
     
 }

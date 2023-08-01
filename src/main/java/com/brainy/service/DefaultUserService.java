@@ -1,5 +1,7 @@
 package com.brainy.service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,15 +43,15 @@ public class DefaultUserService implements UserService {
         
         checkIfUserRegistrationRequestIsValid(request);
 
-        String encodedPassword = passwordEncoder.encode(request.get("password"));
-
         User user = new User(
             request.get("username"),
-            encodedPassword,
+            request.get("password"),
             request.get("email"),
             request.get("firstName"),
             request.get("lastName")
         );
+
+        encodeAndUpdateUserPassword(user, user.getPassword());
 
         try {
             userDao.registerUser(user);
@@ -79,14 +81,56 @@ public class DefaultUserService implements UserService {
        if (!isRequestEmailValid)
             throw new BadRequestException("please provide a valid email");
 
+        checkIfUserPasswordIsStrongEnough(request.get("password"));
+    }
+
+    private void checkIfUserPasswordIsStrongEnough(String password)
+            throws BadRequestException {
+
         boolean isPasswordStrongEnough = validator.isPasswordStrongEnough(
-                request.get("password")
-        );
+                password);
 
         if (!isPasswordStrongEnough)
             throw new BadRequestException(
-                    "your password must contain a lowercase and an uppercase" +
-                    " letter, and it must be at least 8 characters in length"
+                    "your password must contain a lowercase and an uppercase letter, and it must be at least 8 characters in length"
             );
+    }
+
+    @Override
+    public boolean isTokenStillValidForUser(Instant issuedAt, String username) {
+        User user = findUserByUsername(username);
+
+        Instant passwordChangeDate = user.getPasswordChangeDate().toInstant();
+        Instant logoutDate = user.getLogoutDate().toInstant();
+
+        return passwordChangeDate.isBefore(issuedAt) &&
+                logoutDate.isBefore(issuedAt);
+    }
+
+    @Override
+    public void logoutUser(User user) {
+        Timestamp now = Timestamp.from(Instant.now());
+        user.setLogoutDate(now);
+
+        userDao.saveUserChanges(user);
+    }
+
+    @Override
+    public void updateUserPassword(User user, String newPassword)
+            throws BadRequestException {
+
+        checkIfUserPasswordIsStrongEnough(newPassword);
+
+        encodeAndUpdateUserPassword(user, newPassword);
+
+        Timestamp now = Timestamp.from(Instant.now());
+        user.setPasswordChangeDate(now);
+
+        userDao.saveUserChanges(user);
+    }
+
+    private void encodeAndUpdateUserPassword(User user, String password) {
+        String encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
     }
 }

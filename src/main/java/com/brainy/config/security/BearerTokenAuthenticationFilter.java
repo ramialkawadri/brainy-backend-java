@@ -2,6 +2,7 @@ package com.brainy.config.security;
 
 import java.io.IOException;
 
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.brainy.service.TokenService;
+import com.brainy.service.UserService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,13 +25,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private TokenService tokenService;
+    private UserService userService;
     private UserDetailsManager userDetailsManager;
 
     public BearerTokenAuthenticationFilter(
             TokenService tokenService,
+            UserService userService,
             UserDetailsManager userDetailsManager) {
 
         this.tokenService = tokenService;
+        this.userService = userService;
         this.userDetailsManager = userDetailsManager;
     }
 
@@ -46,6 +51,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         chain.doFilter(servletRequest, servletResponse);
     }
 
+    @Nullable
     private Jwt getJwtFromRequest(HttpServletRequest request) {
         String encodedToken;
 
@@ -59,11 +65,12 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
                 : tokenService.decodeToken(encodedToken);
     }
 
-    private void useTokenForAuthenticationIfValid(Jwt jwt) {
-        if (jwt == null || tokenService.isTokenExpired(jwt))
+    private void useTokenForAuthenticationIfValid(@Nullable Jwt jwt) {
+        if (jwt == null ||
+                tokenService.isTokenExpired(jwt) ||
+                !userService.isTokenStillValidForUser(
+                        jwt.getIssuedAt(), jwt.getSubject()))
             return;
-
-        // TODO: check if user token is issued after password change and log out
 
         setAuthenticationFromToken(jwt);
     }
@@ -95,6 +102,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         return false;
     }
 
+    @Nullable
     private String getJwtFromAuthorizationHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 
@@ -106,6 +114,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
+    @Nullable
     private String getJwtFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 

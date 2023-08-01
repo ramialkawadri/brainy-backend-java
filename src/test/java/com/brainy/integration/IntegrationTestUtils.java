@@ -2,6 +2,7 @@ package com.brainy.integration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -13,6 +14,17 @@ import com.brainy.integration.model.ResponseString;
 import com.brainy.model.entity.User;
 
 public class IntegrationTestUtils {
+
+    public static User getRandomUser() {
+        String username = UUID.randomUUID().toString();
+
+        return new User(
+                username,
+                "testPassword",
+                username + "@test.com",
+                "firstName_" + username,
+                "lastName_" + username);
+    }
 
     public static void registerUser(TestRestTemplate restTemplate, User user) {
         Map<String, String> requestBody = new HashMap<>();
@@ -42,5 +54,11 @@ public class IntegrationTestUtils {
         Assertions.assertNotNull(responseBody.getData());
 
         return responseBody.getData();
+    }
+
+    public static TestRestTemplate getAuthenticatedTemplate(
+        TestRestTemplate restTemplate, User user) {
+        
+        return restTemplate.withBasicAuth(user.getUsername(), user.getPassword());
     }
 }

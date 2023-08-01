@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class AuthController {
+
     private final TokenService tokenService;
     private final UserService userService;
 
@@ -36,6 +37,28 @@ public class AuthController {
             throw new BadRequestException("missing body");
 
         userService.registerUserFromRequest(requestBody);
+    }
+
+    @PostMapping("/logout")
+    public void logout(@RequestAttribute User user) {
+        userService.logoutUser(user);
+    }
+
+    @PostMapping("/password")
+    public void changeUserPassword(
+            @RequestAttribute User user,
+            @RequestBody(required = false) Map<String, String> requestBody)
+            throws BadRequestException {
+
+        String newPasswordPropertyName = "newPassword";
+
+        if (requestBody == null || 
+                requestBody.get(newPasswordPropertyName) == null)
+            throw new BadRequestException(
+                    "please provide a body with the new password!");
+
+        userService.updateUserPassword(user,
+                requestBody.get(newPasswordPropertyName));
     }
 
     @PostMapping("/token")

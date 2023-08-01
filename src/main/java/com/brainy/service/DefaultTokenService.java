@@ -31,15 +31,14 @@ public class DefaultTokenService implements TokenService {
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
-                .expiresAt(now.plus(10, ChronoUnit.DAYS))
+                .expiresAt(now.plus(14, ChronoUnit.DAYS))
                 .subject(user.getUsername())
                 .build();
 
         JwtEncoderParameters encoderParameters = JwtEncoderParameters.from(
                 JwsHeader.with(MacAlgorithm.HS512).build(), claims);
 
-        return jwtEncoder.encode(encoderParameters)
-                .getTokenValue();
+        return jwtEncoder.encode(encoderParameters).getTokenValue();
     }
 
     @Override

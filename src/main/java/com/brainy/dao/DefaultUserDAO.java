@@ -27,4 +27,10 @@ public class DefaultUserDAO implements UserDao {
     public void registerUser(User user) {
         entityManager.persist(user);
     }
+
+    @Override
+    @Transactional
+    public void saveUserChanges(User user) {
+        entityManager.merge(user);
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 
 @Configuration
 public class InterceptorsConfig extends WebMvcConfigurationSupport {
+
     private UserInterceptor userInterceptor;
 
     public InterceptorsConfig(UserInterceptor userInterceptor) {

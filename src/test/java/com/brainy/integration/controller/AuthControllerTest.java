@@ -1,5 +1,8 @@
 package com.brainy.integration.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -31,6 +34,50 @@ public class AuthControllerTest extends IntegrationTest {
     public void shouldNotAuthorize() {
         ResponseEntity<Void> response =
                 restTemplate.postForEntity("/token", null, Void.class);
+
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void shouldNotAuthorizeTokenAfterLogout() {
+        String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+
+        ResponseEntity<Void> logoutResponse = restTemplate
+                .exchange("/logout", HttpMethod.POST, new HttpEntity<>(headers),
+                        Void.class);
+
+        Assertions.assertEquals(HttpStatus.OK, logoutResponse.getStatusCode());
+
+        ResponseEntity<Void> response = restTemplate
+                .exchange("/token", HttpMethod.POST, new HttpEntity<>(headers),
+                        Void.class);
+
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void shouldNotAuthorizeTokenAfterPasswordChange() {
+        String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+
+        Map<String, String> body = new HashMap<>();
+        body.put("newPassword", "newPassword");
+
+        ResponseEntity<Void> logoutResponse = restTemplate
+                .exchange("/password", HttpMethod.POST, 
+                        new HttpEntity<>(body, headers),
+                        Void.class);
+
+        Assertions.assertEquals(HttpStatus.OK, logoutResponse.getStatusCode());
+
+        ResponseEntity<Void> response = restTemplate
+                .exchange("/token", HttpMethod.POST, new HttpEntity<>(headers),
+                        Void.class);
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }

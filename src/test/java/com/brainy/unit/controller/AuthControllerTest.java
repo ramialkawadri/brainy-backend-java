@@ -8,8 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.brainy.controller.AuthController;
+import com.brainy.exception.BadRequestException;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
+import com.brainy.model.entity.User;
 import com.brainy.service.TokenService;
 import com.brainy.service.UserService;
 
@@ -63,6 +65,36 @@ public class AuthControllerTest {
         authController.registerUser(requestBody);
 
         Mockito.verify(userService).registerUserFromRequest(requestBody);
+    }
 
+    @Test
+    public void shouldLogout() {
+        User user = new User();
+        authController.logout(user);
+        Mockito.verify(userService).logoutUser(user);
+    }
+
+    @Test
+    public void shouldChangePassword() throws BadRequestException {
+        User user = new User();
+        Map<String, String> requestBody = Mockito.mock();
+
+        Mockito.when(requestBody.get("newPassword")).thenReturn("new password");
+
+        authController.changeUserPassword(user, requestBody);
+
+        Mockito.verify(userService).updateUserPassword(user, "new password");
+    }
+
+    @Test
+    public void shouldNotChangePassword() {
+        User user = new User();
+        Map<String, String> requestBody = Mockito.mock();
+
+        Mockito.when(requestBody.get("newPassword")).thenReturn(null);
+
+        Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+            authController.changeUserPassword(user, requestBody);
+        });
     }
 }
