@@ -1,5 +1,9 @@
-{"properties": [{
-  "name": "jwt.key",
-  "type": "java.lang.String",
-  "description": "The key used for JWT encryption"
-}]}
+{
+  "properties": [
+    {
+      "name": "jwt.key",
+      "type": "java.lang.String",
+      "description": "The key used for JWT encryption"
+    }
+  ]
+}

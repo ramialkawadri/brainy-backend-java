@@ -1,17 +1,16 @@
 package com.brainy.unit.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.brainy.controller.AuthController;
-import com.brainy.exception.BadRequestException;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
+import com.brainy.model.dto.UpdatePasswordDto;
+import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
+import com.brainy.model.exception.BadRequestException;
 import com.brainy.service.TokenService;
 import com.brainy.service.UserService;
 
@@ -55,16 +54,17 @@ public class AuthControllerTest {
 
     @Test
     public void shouldRegisterUser() throws Exception {
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("username", "test");
-        requestBody.put("password", "test");
-        requestBody.put("email", "test@test.com");
-        requestBody.put("firstName", "test");
-        requestBody.put("lastName", "test");
+        UserRegistrationDto dto = new UserRegistrationDto(
+            "test",
+            "StrongPass1",
+            "test@test.com",
+            "firstName",
+            "lastName"
+        );
 
-        authController.registerUser(requestBody);
+        authController.registerUser(dto);
 
-        Mockito.verify(userService).registerUserFromRequest(requestBody);
+        Mockito.verify(userService).registerUserFromRequest(dto);
     }
 
     @Test
@@ -77,24 +77,10 @@ public class AuthControllerTest {
     @Test
     public void shouldChangePassword() throws BadRequestException {
         User user = new User();
-        Map<String, String> requestBody = Mockito.mock();
+        UpdatePasswordDto passwordDto = new UpdatePasswordDto("StrongPass1");
 
-        Mockito.when(requestBody.get("newPassword")).thenReturn("new password");
+        authController.changeUserPassword(user, passwordDto);
 
-        authController.changeUserPassword(user, requestBody);
-
-        Mockito.verify(userService).updateUserPassword(user, "new password");
-    }
-
-    @Test
-    public void shouldNotChangePassword() {
-        User user = new User();
-        Map<String, String> requestBody = Mockito.mock();
-
-        Mockito.when(requestBody.get("newPassword")).thenReturn(null);
-
-        Assertions.assertThrowsExactly(BadRequestException.class, () -> {
-            authController.changeUserPassword(user, requestBody);
-        });
+        Mockito.verify(userService).updateUserPassword(user, "StrongPass1");
     }
 }

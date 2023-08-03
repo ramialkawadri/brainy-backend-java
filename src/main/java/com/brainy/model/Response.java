@@ -1,6 +1,7 @@
 package com.brainy.model;
 
 public class Response<T> {
+
     private ResponseStatus status;
     private T data;
 

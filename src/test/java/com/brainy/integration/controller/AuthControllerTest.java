@@ -1,8 +1,5 @@
 package com.brainy.integration.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -14,13 +11,14 @@ import org.springframework.http.ResponseEntity;
 import com.brainy.integration.IntegrationTest;
 import com.brainy.integration.IntegrationTestUtils;
 import com.brainy.integration.model.ResponseString;
+import com.brainy.model.dto.UpdatePasswordDto;
 import com.brainy.model.entity.User;
 
 public class AuthControllerTest extends IntegrationTest {
 
     @Test
     public void shouldRegisterUser() {
-        User tmpUser = new User("tmp", "tmpPassword1", "tmp@tmp.com", "tmp", "tmp");
+        User tmpUser = IntegrationTestUtils.generateRandomUser();
         IntegrationTestUtils.registerUser(restTemplate, tmpUser);
 
         ResponseEntity<ResponseString> response = restTemplate
@@ -65,8 +63,7 @@ public class AuthControllerTest extends IntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
 
-        Map<String, String> body = new HashMap<>();
-        body.put("newPassword", "newPassword");
+        UpdatePasswordDto body = new UpdatePasswordDto("StrongPass1");
 
         ResponseEntity<Void> logoutResponse = restTemplate
                 .exchange("/password", HttpMethod.POST, 

@@ -1,7 +1,5 @@
 package com.brainy.integration;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -11,30 +9,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.brainy.integration.model.ResponseString;
+import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
 
 public class IntegrationTestUtils {
 
-    public static User getRandomUser() {
+    public static User generateRandomUser() {
         String username = UUID.randomUUID().toString();
 
         return new User(
                 username,
-                "testPassword",
+                "testPassword123",
                 username + "@test.com",
                 "firstName_" + username,
                 "lastName_" + username);
     }
 
     public static void registerUser(TestRestTemplate restTemplate, User user) {
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("username", user.getUsername());
-        requestBody.put("password", user.getPassword());
-        requestBody.put("email", user.getEmail());
-        requestBody.put("firstName", user.getFirstName());
-        requestBody.put("lastName", user.getLastName());
+        UserRegistrationDto dto = UserRegistrationDto.fromUser(user);
 
-        HttpEntity<Map<String,String>> request = new HttpEntity<>(requestBody);
+        HttpEntity<UserRegistrationDto> request = new HttpEntity<>(dto);
 
         ResponseEntity<Void> response = 
                 restTemplate.postForEntity("/register", request, Void.class);

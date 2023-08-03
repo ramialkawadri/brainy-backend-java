@@ -1,4 +1,4 @@
-package com.brainy.exception;
+package com.brainy.model.exception;
 
 import com.brainy.model.ResponseStatus;
 

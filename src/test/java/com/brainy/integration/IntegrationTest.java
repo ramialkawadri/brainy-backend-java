@@ -22,7 +22,7 @@ public class IntegrationTest {
     protected TestRestTemplate restTemplate;
 
     public IntegrationTest() {
-        testUser = IntegrationTestUtils.getRandomUser();
+        testUser = IntegrationTestUtils.generateRandomUser();
     }
 
     @BeforeEach

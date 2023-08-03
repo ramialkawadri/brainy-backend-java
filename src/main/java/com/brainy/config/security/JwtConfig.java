@@ -28,7 +28,8 @@ public class JwtConfig {
     JwtDecoder jwtDecoder() {
         byte[] bytes = jwtKey.getBytes();
 
-        SecretKeySpec originalKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
+        SecretKeySpec originalKey =
+                new SecretKeySpec(bytes, 0, bytes.length, "RSA");
 
         return NimbusJwtDecoder
                 .withSecretKey(originalKey)

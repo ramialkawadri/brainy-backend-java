@@ -25,7 +25,6 @@ public class HttpSecurityConfig {
     @Bean
     SecurityFilterChain securityConfiguration(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
-
         http.logout(logout -> logout.disable());
         http.passwordManagement(password -> password.disable());
 
@@ -50,6 +49,6 @@ public class HttpSecurityConfig {
                 .requestMatchers("/password").authenticated()
                 .requestMatchers("/logout").authenticated()
                 .requestMatchers("/").permitAll()
-                .requestMatchers("/register/**").permitAll());
+                .requestMatchers("/register").permitAll());
     }
 }

@@ -1,21 +1,22 @@
 package com.brainy.controller;
 
-import java.util.Map;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.brainy.exception.BadRequestException;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
+import com.brainy.model.dto.UpdatePasswordDto;
+import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
+import com.brainy.model.exception.BadRequestException;
 import com.brainy.service.TokenService;
 import com.brainy.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 public class AuthController {
@@ -29,14 +30,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public void registerUser(
-            @RequestBody(required = false) Map<String, String> requestBody)
+    public void registerUser(@RequestBody @Valid UserRegistrationDto dto)
             throws BadRequestException {
 
-        if (requestBody == null)
-            throw new BadRequestException("missing body");
-
-        userService.registerUserFromRequest(requestBody);
+        userService.registerUserFromRequest(dto);
     }
 
     @PostMapping("/logout")
@@ -47,18 +44,9 @@ public class AuthController {
     @PostMapping("/password")
     public void changeUserPassword(
             @RequestAttribute User user,
-            @RequestBody(required = false) Map<String, String> requestBody)
-            throws BadRequestException {
+            @RequestBody @Valid UpdatePasswordDto dto) {
 
-        String newPasswordPropertyName = "newPassword";
-
-        if (requestBody == null || 
-                requestBody.get(newPasswordPropertyName) == null)
-            throw new BadRequestException(
-                    "please provide a body with the new password!");
-
-        userService.updateUserPassword(user,
-                requestBody.get(newPasswordPropertyName));
+        userService.updateUserPassword(user, dto.newPassword());
     }
 
     @PostMapping("/token")

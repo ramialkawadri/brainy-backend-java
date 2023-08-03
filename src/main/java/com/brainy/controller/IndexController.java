@@ -11,7 +11,7 @@ public class IndexController {
 
     @GetMapping("/")
     public Response<String> getServerStatus() {
-        return new Response<String>("Server is up and running!",
+        return new Response<String>("server is up and running!",
                 ResponseStatus.SUCCESS);
     }
 }

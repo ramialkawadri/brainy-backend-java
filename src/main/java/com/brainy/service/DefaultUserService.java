@@ -2,16 +2,15 @@ package com.brainy.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.brainy.dao.UserDao;
-import com.brainy.exception.BadRequestException;
+import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
-import com.brainy.util.Validator;
+import com.brainy.model.exception.BadRequestException;
 
 import jakarta.persistence.EntityExistsException;
 
@@ -20,16 +19,13 @@ public class DefaultUserService implements UserService {
 
     private UserDao userDao;
     private PasswordEncoder passwordEncoder;
-    private Validator validator;
 
     public DefaultUserService(
             UserDao userDao,
-            PasswordEncoder passwordEncoder,
-            Validator validator) {
+            PasswordEncoder passwordEncoder) {
 
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
-        this.validator = validator;
     }
 
     @Override
@@ -38,18 +34,10 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void registerUserFromRequest(Map<String, String> request)
+    public void registerUserFromRequest(UserRegistrationDto userRegistrationDto)
             throws BadRequestException {
         
-        checkIfUserRegistrationRequestIsValid(request);
-
-        User user = new User(
-            request.get("username"),
-            request.get("password"),
-            request.get("email"),
-            request.get("firstName"),
-            request.get("lastName")
-        );
+        User user = userRegistrationDto.toUser();
 
         encodeAndUpdateUserPassword(user, user.getPassword());
 
@@ -62,43 +50,12 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    private void checkIfUserRegistrationRequestIsValid(Map<String, String> request)
-            throws BadRequestException {
-
-        boolean isAllKeysInBody = validator.isAllKeysInMap(
-            request, 
-            "username",
-            "password",
-            "email",
-            "firstName",
-            "lastName");
-        
-        if (!isAllKeysInBody)
-            throw new BadRequestException("please fill all required properties");
-
-       boolean isRequestEmailValid = validator.isEmail(request.get("email"));
-
-       if (!isRequestEmailValid)
-            throw new BadRequestException("please provide a valid email");
-
-        checkIfUserPasswordIsStrongEnough(request.get("password"));
-    }
-
-    private void checkIfUserPasswordIsStrongEnough(String password)
-            throws BadRequestException {
-
-        boolean isPasswordStrongEnough = validator.isPasswordStrongEnough(
-                password);
-
-        if (!isPasswordStrongEnough)
-            throw new BadRequestException(
-                    "your password must contain a lowercase and an uppercase letter, and it must be at least 8 characters in length"
-            );
-    }
-
     @Override
     public boolean isTokenStillValidForUser(Instant issuedAt, String username) {
         User user = findUserByUsername(username);
+
+        if (user == null)
+            return false;
 
         Instant passwordChangeDate = user.getPasswordChangeDate().toInstant();
         Instant logoutDate = user.getLogoutDate().toInstant();
@@ -116,10 +73,7 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void updateUserPassword(User user, String newPassword)
-            throws BadRequestException {
-
-        checkIfUserPasswordIsStrongEnough(newPassword);
+    public void updateUserPassword(User user, String newPassword) {
 
         encodeAndUpdateUserPassword(user, newPassword);
 

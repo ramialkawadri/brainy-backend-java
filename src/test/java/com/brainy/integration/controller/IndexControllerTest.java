@@ -24,6 +24,6 @@ public class IndexControllerTest extends IntegrationTest {
 
         ResponseString body = response.getBody();
         Assertions.assertNotNull(body);
-        Assertions.assertEquals("Server is up and running!", body.getData());
+        Assertions.assertEquals("server is up and running!", body.getData());
     }
 }

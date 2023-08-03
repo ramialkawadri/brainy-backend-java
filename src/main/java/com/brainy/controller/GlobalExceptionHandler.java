@@ -2,28 +2,57 @@ package com.brainy.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.brainy.exception.RequestException;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
+import com.brainy.model.exception.RequestException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    
 
-@ExceptionHandler(RequestException.class)
+    @ExceptionHandler
     public ResponseEntity<Response<String>>
-                    requestExceptionHandler(RequestException e) {
+            requestExceptionHandler(RequestException e) {
 
-        String responseString = e.getRequestExceptionTitle() + ": " + e.getMessage();
+        String responseString = e.getRequestExceptionTitle() + ": "
+                + e.getMessage();
 
-        Response<String> responseBody = new Response<String>
-        (responseString, e.getResponseStatus());
+        Response<String> responseBody = 
+                new Response<String>(responseString, e.getResponseStatus());
 
-        return new ResponseEntity<Response<String>>
-                (responseBody, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<Response<String>>(
+                responseBody, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Response<String>>
+            handleMissingBody(HttpMessageNotReadableException e) {
+
+        Response<String> response =
+                new Response<>("missing body", ResponseStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Response<String>> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException e) {
+
+        FieldError fieldError = e.getFieldError();
+
+        if (fieldError == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+        String error = fieldError.getField() + ": " + fieldError.getDefaultMessage();
+
+        Response<String> response = new Response<>(error, ResponseStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     // Must be the last exception handler!
@@ -31,10 +60,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response<String>> exceptionHandler(Exception e) {
         e.printStackTrace();
 
-        Response<String> responseBody = new Response<String>
-        ("error: an error has occurred", ResponseStatus.ERROR);
+        Response<String> responseBody = new Response<String>(
+                "error: an error has occurred", ResponseStatus.ERROR);
 
-        return new ResponseEntity<Response<String>>
-                (responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<Response<String>>(
+                responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

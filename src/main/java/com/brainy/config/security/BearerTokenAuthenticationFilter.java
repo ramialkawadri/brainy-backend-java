@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
@@ -44,11 +45,14 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse servletResponse,
             FilterChain chain) throws ServletException, IOException {
 
-        Jwt token = getJwtFromRequest(servletRequest);
-
-        useTokenForAuthenticationIfValid(token);
-
-        chain.doFilter(servletRequest, servletResponse);
+        try {
+            Jwt token = getJwtFromRequest(servletRequest);
+            useTokenForAuthenticationIfValid(token);
+            
+        } catch (BadJwtException e) {
+        } finally {
+            chain.doFilter(servletRequest, servletResponse);
+        }
     }
 
     @Nullable
@@ -66,8 +70,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void useTokenForAuthenticationIfValid(@Nullable Jwt jwt) {
-        if (jwt == null ||
-                tokenService.isTokenExpired(jwt) ||
+        if (jwt == null || tokenService.isTokenExpired(jwt) ||
                 !userService.isTokenStillValidForUser(
                         jwt.getIssuedAt(), jwt.getSubject()))
             return;
@@ -80,7 +83,8 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
         UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder

@@ -20,6 +20,6 @@ public class IndexControllerTest {
         Response<String> response = indexController.getServerStatus();
 
         Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
-        Assertions.assertEquals("Server is up and running!", response.getData());
+        Assertions.assertEquals("server is up and running!", response.getData());
     }    
 }
