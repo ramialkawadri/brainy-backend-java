@@ -48,7 +48,6 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         try {
             Jwt token = getJwtFromRequest(servletRequest);
             useTokenForAuthenticationIfValid(token);
-            
         } catch (BadJwtException e) {
         } finally {
             chain.doFilter(servletRequest, servletResponse);

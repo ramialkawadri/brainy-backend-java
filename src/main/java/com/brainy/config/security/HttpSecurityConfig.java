@@ -41,7 +41,10 @@ public class HttpSecurityConfig {
 
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        
+                
+        http.exceptionHandling(customizer -> customizer
+                .authenticationEntryPoint(new CustomUnauthorizedResponse()));
+
         http.httpBasic(withDefaults());
 
         return http.build();

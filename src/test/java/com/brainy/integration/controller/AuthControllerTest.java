@@ -93,6 +93,19 @@ public class AuthControllerTest extends IntegrationTest {
     }
 
     @Test
+    public void shouldNotAuthorizeBecauseOfBadToken() {
+        String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", "token=" + token + "RANDOM_STRING");
+
+        ResponseEntity<Void> response = restTemplate.exchange(
+                "/token", HttpMethod.POST, new HttpEntity<>(headers), Void.class);
+
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
     public void shouldAuthorizeUsingJwtCookies() {
         String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
 
