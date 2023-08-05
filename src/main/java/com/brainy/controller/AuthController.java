@@ -63,6 +63,10 @@ public class AuthController {
             HttpServletResponse response, String token) {
 
         Cookie jwtCookie = new Cookie("token", token);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setAttribute("SameSite", "Strict");
+        jwtCookie.setSecure(true);
         response.addCookie(jwtCookie);
     }
 }

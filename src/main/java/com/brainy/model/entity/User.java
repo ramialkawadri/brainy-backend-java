@@ -37,9 +37,11 @@ public class User {
     private String lastName;
 
     @Column(name = "password_change_date", nullable = false)
+    @JsonIgnore
     private Timestamp passwordChangeDate;
 
     @Column(name = "logout_date", nullable = false)
+    @JsonIgnore
     private Timestamp logoutDate;
 
     public User() {
