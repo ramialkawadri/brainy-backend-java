@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
@@ -53,6 +54,19 @@ public class GlobalExceptionHandler {
         Response<String> response = new Response<>(error, ResponseStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    // 404 response
+    @ExceptionHandler
+    public ResponseEntity<Response<String>> handleNoHandlerFound(
+            NoHandlerFoundException e) {
+
+        String errorMessage = e.getRequestURL() + " is an invalid endpoint!";
+        
+        Response<String> response =
+                new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
+        
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     // Must be the last exception handler!

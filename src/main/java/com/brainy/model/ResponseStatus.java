@@ -6,7 +6,8 @@ public enum ResponseStatus {
     SUCCESS("success"),
     ERROR("error"),
     BAD_REQUEST("bad request"),
-    UNAUTHORIZED("unauthorized");
+    UNAUTHORIZED("unauthorized"),
+    NOT_FOUND("not found");
 
     private String statusString;
 
