@@ -1,34 +1,34 @@
-package com.brainy.unit.model.dto;
+package com.brainy.unit.model.request;
 
 import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.brainy.model.dto.UserRegistrationDto;
+import com.brainy.model.request.UserRegistrationRequest;
 import com.brainy.unit.UnitTestUtils;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
-public class UserRegistrationDtoTest {
+public class UserRegistrationRequestUnitTest {
 
     private Validator validator;
 
-    public UserRegistrationDtoTest() {
-        this.validator = UnitTestUtils.getValidator();
+    public UserRegistrationRequestUnitTest() {
+        validator = UnitTestUtils.getValidator();
     }
 
     @Test
     public void shouldAcceptValidValues() {
-        UserRegistrationDto user = new UserRegistrationDto(
+        UserRegistrationRequest user = new UserRegistrationRequest(
                 "username",
                 "StrongPassword1",
                 "test@test.com",
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationDto>> violations =
+        Set<ConstraintViolation<UserRegistrationRequest>> violations =
                 validator.validate(user);
 
         Assertions.assertEquals(0, violations.size());
@@ -36,9 +36,9 @@ public class UserRegistrationDtoTest {
     
     @Test
     public void shouldNotAcceptBlanks() {
-        UserRegistrationDto user = new UserRegistrationDto("", "", "", "", "");
+        UserRegistrationRequest user = new UserRegistrationRequest("", "", "", "", "");
 
-        Set<ConstraintViolation<UserRegistrationDto>> violations =
+        Set<ConstraintViolation<UserRegistrationRequest>> violations =
                 validator.validate(user);
 
         Assertions.assertFalse(violations.isEmpty());
@@ -46,14 +46,14 @@ public class UserRegistrationDtoTest {
 
     @Test
     public void shouldNotAcceptInvalidEmail() {
-        UserRegistrationDto user = new UserRegistrationDto(
+        UserRegistrationRequest user = new UserRegistrationRequest(
                 "username",
                 "StrongPassword1",
                 "test@.com",
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationDto>> violations =
+        Set<ConstraintViolation<UserRegistrationRequest>> violations =
                 validator.validate(user);
 
         Assertions.assertEquals(1, violations.size());
@@ -61,14 +61,14 @@ public class UserRegistrationDtoTest {
 
     @Test
     public void shouldNotAcceptShortPassword() {
-        UserRegistrationDto user = new UserRegistrationDto(
+        UserRegistrationRequest user = new UserRegistrationRequest(
                 "username",
                 "Pass1",
                 "test@test.com",
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationDto>> violations =
+        Set<ConstraintViolation<UserRegistrationRequest>> violations =
                 validator.validate(user);
 
         // 2 Because of the regular expression also counts
@@ -77,14 +77,14 @@ public class UserRegistrationDtoTest {
 
     @Test
     public void shouldNotAcceptWeekPassword() {
-        UserRegistrationDto user = new UserRegistrationDto(
+        UserRegistrationRequest user = new UserRegistrationRequest(
                 "username",
                 "password",
                 "test@test.com",
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationDto>> violations =
+        Set<ConstraintViolation<UserRegistrationRequest>> violations =
                 validator.validate(user);
 
         Assertions.assertEquals(1, violations.size());

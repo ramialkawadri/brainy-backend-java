@@ -1,4 +1,4 @@
-package com.brainy.model.dto;
+package com.brainy.model.request;
 
 import com.brainy.model.entity.User;
 
@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 /**
  * Used to represent the object for registering the user!
  */
-public record UserRegistrationDto(
+public record UserRegistrationRequest(
     @NotBlank(message = "missing") String username,
     
     @NotBlank(message = "missing")
@@ -34,8 +34,8 @@ public record UserRegistrationDto(
         );
     }
 
-    public static UserRegistrationDto fromUser(User user) {
-        return new UserRegistrationDto(
+    public static UserRegistrationRequest fromUser(User user) {
+        return new UserRegistrationRequest(
             user.getUsername(),
             user.getPassword(),
             user.getEmail(),

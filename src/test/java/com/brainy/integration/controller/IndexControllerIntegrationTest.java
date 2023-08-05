@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.brainy.integration.IntegrationTest;
-import com.brainy.integration.model.ResponseString;
+import com.brainy.integration.model.wrapper.ResponseString;
 
-public class IndexControllerTest extends IntegrationTest {
+public class IndexControllerIntegrationTest extends IntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;

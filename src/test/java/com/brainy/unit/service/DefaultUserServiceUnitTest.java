@@ -10,18 +10,18 @@ import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.brainy.dao.UserDao;
-import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.request.UserRegistrationRequest;
 import com.brainy.service.DefaultUserService;
 
-public class DefaultUserServiceTest {
+public class DefaultUserServiceUnitTest {
     
     private UserDao userDao;
     private DefaultUserService userService;
     private PasswordEncoder passwordEncoder;
 
-    public DefaultUserServiceTest() {
+    public DefaultUserServiceUnitTest() {
         userDao = Mockito.mock();
         passwordEncoder = Mockito.mock();
         userService = new DefaultUserService(userDao, passwordEncoder);
@@ -42,7 +42,7 @@ public class DefaultUserServiceTest {
 
     @Test
     public void shouldRegisterUser() throws BadRequestException {
-        UserRegistrationDto request = createMockRequest();
+        UserRegistrationRequest request = createMockUserRegistrationRequest();
 
         Mockito.doAnswer(invocation -> {
             User user = (User) invocation.getArguments()[0];
@@ -56,15 +56,15 @@ public class DefaultUserServiceTest {
         userService.registerUserFromRequest(request);
     }
 
-    private UserRegistrationDto createMockRequest() {
-        UserRegistrationDto userRegistrationDto = new UserRegistrationDto(
+    private UserRegistrationRequest createMockUserRegistrationRequest() {
+        UserRegistrationRequest request = new UserRegistrationRequest(
             "test",
             "testPass1",
             "test@test.com",
             "test",
             "test");
 
-        return userRegistrationDto;
+        return request;
     }
 
     @Test

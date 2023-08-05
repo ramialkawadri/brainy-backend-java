@@ -9,12 +9,12 @@ import com.brainy.model.entity.User;
 
 import jakarta.persistence.EntityManager;
 
-public class DefaultUserDaoTest {
+public class DefaultUserDaoUnitTest {
 
     private EntityManager entityManager;
     private DefaultUserDAO userDAO;
 
-    public DefaultUserDaoTest() {
+    public DefaultUserDaoUnitTest() {
         entityManager = Mockito.mock();
         userDAO = new DefaultUserDAO(entityManager);
     }

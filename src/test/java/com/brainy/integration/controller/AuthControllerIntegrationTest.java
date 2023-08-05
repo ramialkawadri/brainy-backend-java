@@ -10,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 
 import com.brainy.integration.IntegrationTest;
 import com.brainy.integration.IntegrationTestUtils;
-import com.brainy.integration.model.ResponseString;
-import com.brainy.model.dto.UpdatePasswordDto;
+import com.brainy.integration.model.wrapper.ResponseString;
 import com.brainy.model.entity.User;
+import com.brainy.model.request.UpdatePasswordRequest;
 
-public class AuthControllerTest extends IntegrationTest {
+public class AuthControllerIntegrationTest extends IntegrationTest {
 
     @Test
     public void shouldRegisterUser() {
@@ -63,7 +63,7 @@ public class AuthControllerTest extends IntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
 
-        UpdatePasswordDto body = new UpdatePasswordDto("StrongPass1");
+        UpdatePasswordRequest body = new UpdatePasswordRequest("StrongPass1");
 
         ResponseEntity<Void> logoutResponse = restTemplate
                 .exchange("/password", HttpMethod.POST, 

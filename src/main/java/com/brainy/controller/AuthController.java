@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
-import com.brainy.model.dto.UpdatePasswordDto;
-import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.request.UpdatePasswordRequest;
+import com.brainy.model.request.UserRegistrationRequest;
 import com.brainy.service.TokenService;
 import com.brainy.service.UserService;
 
@@ -30,10 +30,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public void registerUser(@RequestBody @Valid UserRegistrationDto dto)
+    public void registerUser(@RequestBody @Valid UserRegistrationRequest request)
             throws BadRequestException {
 
-        userService.registerUserFromRequest(dto);
+        userService.registerUserFromRequest(request);
     }
 
     @PostMapping("/logout")
@@ -44,9 +44,9 @@ public class AuthController {
     @PostMapping("/password")
     public void changeUserPassword(
             @RequestAttribute User user,
-            @RequestBody @Valid UpdatePasswordDto dto) {
+            @RequestBody @Valid UpdatePasswordRequest request) {
 
-        userService.updateUserPassword(user, dto.newPassword());
+        userService.updateUserPassword(user, request.password());
     }
 
     @PostMapping("/token")

@@ -52,10 +52,12 @@ public class HttpSecurityConfig {
 
     private void authorizeHttpRequests(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/**").authenticated()
-                .requestMatchers("/token").authenticated()
-                .requestMatchers("/password").authenticated()
-                .requestMatchers("/logout").authenticated()
+                .requestMatchers(
+                        "/api/**",
+                        "/token",
+                        "/password",
+                        "/logout")
+                .authenticated()
                 .anyRequest().permitAll());
     }
 

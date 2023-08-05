@@ -13,13 +13,13 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import com.brainy.model.entity.User;
 import com.brainy.service.DefaultTokenService;
 
-public class DefaultTokenServiceTest {
+public class DefaultTokenServiceUnitTest {
 
     private JwtEncoder jwtEncoder;
     private JwtDecoder jwtDecoder;
     private DefaultTokenService tokenService;
 
-    public DefaultTokenServiceTest() {
+    public DefaultTokenServiceUnitTest() {
         jwtEncoder = Mockito.mock();
         jwtDecoder = Mockito.mock();
         tokenService = new DefaultTokenService(jwtEncoder, jwtDecoder);

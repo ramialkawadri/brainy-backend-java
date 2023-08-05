@@ -7,23 +7,23 @@ import org.mockito.Mockito;
 import com.brainy.controller.AuthController;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
-import com.brainy.model.dto.UpdatePasswordDto;
-import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.request.UpdatePasswordRequest;
+import com.brainy.model.request.UserRegistrationRequest;
 import com.brainy.service.TokenService;
 import com.brainy.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class AuthControllerTest {
+public class AuthControllerUnitTest {
 
     private TokenService tokenService;
     private UserService userService;
     private AuthController authController;
 
-    public AuthControllerTest() {
+    public AuthControllerUnitTest() {
         tokenService = Mockito.mock();
         userService = Mockito.mock();
         authController = new AuthController(tokenService, userService);
@@ -54,7 +54,7 @@ public class AuthControllerTest {
 
     @Test
     public void shouldRegisterUser() throws Exception {
-        UserRegistrationDto dto = new UserRegistrationDto(
+        UserRegistrationRequest request = new UserRegistrationRequest(
             "test",
             "StrongPass1",
             "test@test.com",
@@ -62,9 +62,9 @@ public class AuthControllerTest {
             "lastName"
         );
 
-        authController.registerUser(dto);
+        authController.registerUser(request);
 
-        Mockito.verify(userService).registerUserFromRequest(dto);
+        Mockito.verify(userService).registerUserFromRequest(request);
     }
 
     @Test
@@ -77,9 +77,9 @@ public class AuthControllerTest {
     @Test
     public void shouldChangePassword() throws BadRequestException {
         User user = new User();
-        UpdatePasswordDto passwordDto = new UpdatePasswordDto("StrongPass1");
+        UpdatePasswordRequest request = new UpdatePasswordRequest("StrongPass1");
 
-        authController.changeUserPassword(user, passwordDto);
+        authController.changeUserPassword(user, request);
 
         Mockito.verify(userService).updateUserPassword(user, "StrongPass1");
     }

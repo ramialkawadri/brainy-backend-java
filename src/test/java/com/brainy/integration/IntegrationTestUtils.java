@@ -8,9 +8,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.brainy.integration.model.ResponseString;
-import com.brainy.model.dto.UserRegistrationDto;
+import com.brainy.integration.model.wrapper.ResponseString;
 import com.brainy.model.entity.User;
+import com.brainy.model.request.UserRegistrationRequest;
 
 public class IntegrationTestUtils {
 
@@ -26,9 +26,11 @@ public class IntegrationTestUtils {
     }
 
     public static void registerUser(TestRestTemplate restTemplate, User user) {
-        UserRegistrationDto dto = UserRegistrationDto.fromUser(user);
+        UserRegistrationRequest userRegistrationRequest =
+                UserRegistrationRequest.fromUser(user);
 
-        HttpEntity<UserRegistrationDto> request = new HttpEntity<>(dto);
+        HttpEntity<UserRegistrationRequest> request =
+                new HttpEntity<>(userRegistrationRequest);
 
         ResponseEntity<Void> response = 
                 restTemplate.postForEntity("/register", request, Void.class);

@@ -29,4 +29,9 @@ public class IntegrationTest {
     public void setUpTestUser() {
         IntegrationTestUtils.registerUser(restTemplate, testUser);
     }
+
+    protected TestRestTemplate authenticatedRequest() {
+        return restTemplate.withBasicAuth(
+                testUser.getUsername(), testUser.getPassword());
+    }
 }

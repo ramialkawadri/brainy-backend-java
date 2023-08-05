@@ -7,11 +7,11 @@ import com.brainy.controller.IndexController;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
 
-public class IndexControllerTest {
+public class IndexControllerUnitTest {
     
     private IndexController indexController;
 
-    public IndexControllerTest() {
+    public IndexControllerUnitTest() {
         indexController = new IndexController();
     }
 

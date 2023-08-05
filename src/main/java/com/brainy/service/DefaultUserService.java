@@ -8,9 +8,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.brainy.dao.UserDao;
-import com.brainy.model.dto.UserRegistrationDto;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.request.UserRegistrationRequest;
 
 import jakarta.persistence.EntityExistsException;
 
@@ -34,10 +34,10 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void registerUserFromRequest(UserRegistrationDto userRegistrationDto)
+    public void registerUserFromRequest(UserRegistrationRequest request)
             throws BadRequestException {
         
-        User user = userRegistrationDto.toUser();
+        User user = request.toUser();
 
         encodeAndUpdateUserPassword(user, user.getPassword());
 
@@ -86,5 +86,16 @@ public class DefaultUserService implements UserService {
     private void encodeAndUpdateUserPassword(User user, String password) {
         String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
+    }
+
+    @Override
+    public void saveUserChanges(User user) throws BadRequestException {
+        try {
+            userDao.saveUserChanges(user);
+        } catch (EntityExistsException | DataIntegrityViolationException e) {
+            throw new BadRequestException(
+                    "a user with the same username or email already exists"
+            );
+        }
     }
 }
