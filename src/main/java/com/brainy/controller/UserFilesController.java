@@ -15,7 +15,6 @@ import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.service.UserFilesService;
 
-// TODO: test
 @RestController
 @RequestMapping("api/files")
 public class UserFilesController {
@@ -27,7 +26,7 @@ public class UserFilesController {
     }
 
     @GetMapping
-    public Object getUserFiles(
+    public Response<Object> getFileContentOrUserFiles(
             @RequestAttribute User user,
             @RequestParam(required = false) String filename) {
         
@@ -67,10 +66,9 @@ public class UserFilesController {
         return new ResponseWithoutData();
     }
 
-    // The response is in bytes
     @GetMapping("size")
-    public Response<Long> getUserFileSize(@RequestAttribute User user) {
-        long size = userFilesService.getUserFilesSize(user.getUsername());
+    public Response<Long> getUserUsedStorage(@RequestAttribute User user) {
+        long size = userFilesService.getUserUsedStorage(user.getUsername());
         return new Response<>(size);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.brainy.TestUtils;
 import com.brainy.integration.IntegrationTest;
 import com.brainy.integration.IntegrationTestUtils;
 import com.brainy.integration.model.wrapper.ResponseString;
@@ -18,7 +19,7 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
 
     @Test
     public void shouldRegisterUser() {
-        User tmpUser = IntegrationTestUtils.generateRandomUser();
+        User tmpUser = TestUtils.generateRandomUser();
         IntegrationTestUtils.registerUser(restTemplate, tmpUser);
 
         ResponseEntity<ResponseString> response = restTemplate

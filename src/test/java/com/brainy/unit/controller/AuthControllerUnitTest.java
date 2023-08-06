@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.brainy.TestUtils;
 import com.brainy.controller.AuthController;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
@@ -69,14 +70,14 @@ public class AuthControllerUnitTest {
 
     @Test
     public void shouldLogout() {
-        User user = new User();
+        User user = TestUtils.generateRandomUser();
         authController.logout(user);
         Mockito.verify(userService).logoutUser(user);
     }
 
     @Test
     public void shouldChangePassword() throws BadRequestException {
-        User user = new User();
+        User user = TestUtils.generateRandomUser();
         UpdatePasswordRequest request = new UpdatePasswordRequest("StrongPass1");
 
         authController.changeUserPassword(user, request);

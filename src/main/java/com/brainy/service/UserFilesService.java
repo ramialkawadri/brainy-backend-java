@@ -26,5 +26,5 @@ public interface UserFilesService {
      * @param filesToIgnore is a set of file names that are not considered
      * when calculating the size!
      */
-    long getUserFilesSize(String username, String ...filesToIgnore);
+    long getUserUsedStorage(String username, String ...filesToIgnore);
 }

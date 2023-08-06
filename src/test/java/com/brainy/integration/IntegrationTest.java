@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
+import com.brainy.TestUtils;
 import com.brainy.model.entity.User;
 
 /**
@@ -22,7 +23,7 @@ public class IntegrationTest {
     protected TestRestTemplate restTemplate;
 
     public IntegrationTest() {
-        testUser = IntegrationTestUtils.generateRandomUser();
+        testUser = TestUtils.generateRandomUser();
     }
 
     @BeforeEach

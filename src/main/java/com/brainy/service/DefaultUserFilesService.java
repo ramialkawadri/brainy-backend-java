@@ -15,7 +15,6 @@ import com.azure.storage.blob.models.BlobItem;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.util.JsonUtil;
 
-// TODO: test
 /**
  * Contains all operations that has to do with user files, it uses Microsoft
  * Azure.
@@ -26,7 +25,10 @@ public class DefaultUserFilesService implements UserFilesService {
     private BlobServiceClient blobServiceClient;
 
     @Value("${max-size-per-user}")
-    private Long maxSizePerUser;
+    private Long maxStoragePerUser;
+
+    @Value("${max-file-size}")
+    private long maxFileSize;
 
     public DefaultUserFilesService(BlobServiceClient blobServiceClient) {
         this.blobServiceClient = blobServiceClient;
@@ -57,8 +59,8 @@ public class DefaultUserFilesService implements UserFilesService {
     }
     
     @Override
-    public void createOrUpdateJsonFile(String username, String filename, String content) 
-            throws BadRequestException {
+    public void createOrUpdateJsonFile(String username, String filename, 
+            String content) throws BadRequestException {
 
         String compressedJson = getCompressedJson(content);
 
@@ -95,14 +97,17 @@ public class DefaultUserFilesService implements UserFilesService {
     public boolean canUserCreateFileWithSize(
             String username, String filename, long fileSize) {
 
-        long userFilesSize = getUserFilesSize(username, filename);
+        if (fileSize > maxFileSize)
+            return false;
+
+        long userFilesSize = getUserUsedStorage(username, filename);
         long filesSizeWithNewFile = userFilesSize + fileSize;
 
-        return filesSizeWithNewFile <= maxSizePerUser;
+        return filesSizeWithNewFile <= maxStoragePerUser;
     }
 
     @Override
-    public long getUserFilesSize(String username, String ...filesToIgnore) {
+    public long getUserUsedStorage(String username, String ...filesToIgnore) {
         BlobContainerClient containerClient = getUserBlobContainerClient(username);
 
         long totalSize = 0;

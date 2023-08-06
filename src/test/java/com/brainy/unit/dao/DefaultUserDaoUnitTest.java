@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.brainy.TestUtils;
 import com.brainy.dao.DefaultUserDAO;
 import com.brainy.model.entity.User;
 
@@ -21,7 +22,7 @@ public class DefaultUserDaoUnitTest {
 
     @Test
     public void shouldFindUserByUsername() {
-        User testUser = new User();
+        User testUser = TestUtils.generateRandomUser();
 
         Mockito.when(entityManager.find(User.class, "user")).thenReturn(testUser);
 
@@ -32,7 +33,7 @@ public class DefaultUserDaoUnitTest {
 
     @Test
     public void shouldRegisterUser() {
-        User testUser = new User();
+        User testUser = TestUtils.generateRandomUser();
 
         userDAO.registerUser(testUser);
 
@@ -41,7 +42,7 @@ public class DefaultUserDaoUnitTest {
 
     @Test
     public void shouldSaveUserChanges() {
-        User user = new User();
+        User user = TestUtils.generateRandomUser();
         userDAO.saveUserChanges(user);
         Mockito.verify(entityManager).merge(user);
     }

@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 
+import com.brainy.TestUtils;
 import com.brainy.model.entity.User;
 import com.brainy.service.DefaultTokenService;
 
@@ -27,7 +28,7 @@ public class DefaultTokenServiceUnitTest {
     
     @Test
     public void shouldGenerateToken() {
-        User user = new User("test", "test", "test@test.com", "test", "test");
+        User user = TestUtils.generateRandomUser();
 
         Jwt jwt = Mockito.mock();
 

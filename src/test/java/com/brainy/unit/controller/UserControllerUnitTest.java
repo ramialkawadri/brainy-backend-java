@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.brainy.TestUtils;
 import com.brainy.controller.UserController;
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
@@ -25,7 +26,7 @@ public class UserControllerUnitTest {
 
     @Test
     public void shouldReturnUserInformation() {
-        User user = new User("test", "test", "test@test.com", "test", "test");
+        User user = TestUtils.generateRandomUser();
 
         Response<User> response = userController.getUserInformation(user);
 
@@ -35,7 +36,7 @@ public class UserControllerUnitTest {
 
     @Test
     public void shouldUpdateUser() throws BadRequestException {
-        User user = new User();
+        User user = TestUtils.generateRandomUser();
         UpdateUserRequest request = Mockito.mock();
 
         ResponseWithoutData response = userController.updateUser(user, request);

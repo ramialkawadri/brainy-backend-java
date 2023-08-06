@@ -1,7 +1,5 @@
 package com.brainy.integration;
 
-import java.util.UUID;
-
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -13,17 +11,6 @@ import com.brainy.model.entity.User;
 import com.brainy.model.request.UserRegistrationRequest;
 
 public class IntegrationTestUtils {
-
-    public static User generateRandomUser() {
-        String username = UUID.randomUUID().toString();
-
-        return new User(
-                username,
-                "testPassword123",
-                username + "@test.com",
-                "firstName_" + username,
-                "lastName_" + username);
-    }
 
     public static void registerUser(TestRestTemplate restTemplate, User user) {
         UserRegistrationRequest userRegistrationRequest =

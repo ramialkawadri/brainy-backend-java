@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.brainy.TestUtils;
 import com.brainy.dao.UserDao;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
@@ -29,7 +30,7 @@ public class DefaultUserServiceUnitTest {
 
     @Test
     public void shouldGetUserByUsername() {
-        User mockUser = new User();
+        User mockUser = TestUtils.generateRandomUser();
 
         Mockito.when(userDao.findUserByUserName("user")).thenReturn(mockUser);
 
@@ -69,7 +70,7 @@ public class DefaultUserServiceUnitTest {
 
     @Test
     public void shouldReturnTrueOnValidToken() {
-        User user = new User();
+        User user = TestUtils.generateRandomUser();
         Instant tokenIssueDate = Instant.now();
 
         Timestamp changeTimestamp = 
@@ -87,7 +88,7 @@ public class DefaultUserServiceUnitTest {
 
     @Test
     public void shouldReturnFalseOnValidToken() {
-        User user = new User();
+        User user = TestUtils.generateRandomUser();
         Instant tokenIssueDate = Instant.now();
         
         Timestamp changeTimestamp = 
