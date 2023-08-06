@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -67,6 +68,18 @@ public class GlobalExceptionHandler {
                 new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
         
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Response<String>> handleMissingParameter(
+                    MissingServletRequestParameterException e) {
+
+        String errorMessage = e.getParameterName() + " query string is missing!";
+
+        Response<String> response =
+                new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
+        
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     // Must be the last exception handler!
