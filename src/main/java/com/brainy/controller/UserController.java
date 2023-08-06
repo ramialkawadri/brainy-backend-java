@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brainy.model.Response;
-import com.brainy.model.ResponseStatus;
 import com.brainy.model.ResponseWithoutData;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
@@ -29,7 +28,7 @@ public class UserController {
 
     @GetMapping
     public Response<User> getUserInformation(@RequestAttribute User user) {
-        return new Response<User>(user, ResponseStatus.SUCCESS);
+        return new Response<User>(user);
     }
 
     @PostMapping
@@ -40,6 +39,6 @@ public class UserController {
 
         request.applyUpdatesOnUser(user);
         userService.saveUserChanges(user);
-        return new ResponseWithoutData(ResponseStatus.SUCCESS);
+        return new ResponseWithoutData();
     }
 }

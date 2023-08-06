@@ -5,9 +5,16 @@ public class Response<T> {
     private ResponseStatus status;
     private T data;
 
-    public Response(T body, ResponseStatus status) {
-        this.data = body;
+    public Response(T data, ResponseStatus status) {
+        this.data = data;
         this.status = status;
+    }
+
+    /**
+     * If no ResponseStatus is provided, SUCCESS is used.
+     */
+    public Response(T data) {
+        this(data, ResponseStatus.SUCCESS);
     }
 
     public ResponseStatus getStatus() {

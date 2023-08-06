@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brainy.model.Response;
-import com.brainy.model.ResponseStatus;
 import com.brainy.model.ResponseWithoutData;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
@@ -39,18 +38,24 @@ public class UserFilesController {
         else
             body = userFilesService.getUserFiles(user.getUsername());
 
-        return new Response<>(body, ResponseStatus.SUCCESS);
+        return new Response<>(body);
     }
 
     // Only JSON files can be uploaded through this endpoint
     @PostMapping
-    public ResponseWithoutData uploadJsonFile(
+    public Response<String> createOrUpdateJsonFile(
             @RequestAttribute User user,
             @RequestParam String filename,
             @RequestBody String body) throws BadRequestException {
 
-        userFilesService.uploadJsonFile(user.getUsername(), filename, body);
-        return new ResponseWithoutData(ResponseStatus.SUCCESS);
+        boolean canUserCreateTheFile = userFilesService.canUserCreateFileWithSize(
+                user.getUsername(), filename, body.length());
+
+        if (!canUserCreateTheFile) 
+            throw new BadRequestException("there isn't enough space");
+
+        userFilesService.createOrUpdateJsonFile(user.getUsername(), filename, body);
+        return new Response<>("the file has been created");
     }
 
     @DeleteMapping
@@ -59,6 +64,13 @@ public class UserFilesController {
         @RequestParam String filename
     ) {
         userFilesService.deleteFile(user.getUsername(), filename);
-        return new ResponseWithoutData(ResponseStatus.SUCCESS);
+        return new ResponseWithoutData();
+    }
+
+    // The response is in bytes
+    @GetMapping("size")
+    public Response<Long> getUserFileSize(@RequestAttribute User user) {
+        long size = userFilesService.getUserFilesSize(user.getUsername());
+        return new Response<>(size);
     }
 }

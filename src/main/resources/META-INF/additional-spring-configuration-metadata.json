@@ -8,5 +8,10 @@
     "name": "storage-account-name",
     "type": "java.lang.String",
     "description": "The storage account name for azure"
+  },
+  {
+    "name": "max-size-per-user",
+    "type": "java.lang.Long",
+    "description": "The maximum container size for each user"
   }
 ]}

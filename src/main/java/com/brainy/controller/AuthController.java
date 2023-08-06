@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brainy.model.Response;
-import com.brainy.model.ResponseStatus;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.model.request.UpdatePasswordRequest;
@@ -56,7 +55,7 @@ public class AuthController {
 
         String jwt = tokenService.generateToken(user);
         addJwtCookieToResponse(response, jwt);
-        return new Response<String>(jwt, ResponseStatus.SUCCESS);
+        return new Response<String>(jwt);
     }
 
     private void addJwtCookieToResponse(

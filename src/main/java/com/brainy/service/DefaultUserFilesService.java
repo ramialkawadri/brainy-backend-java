@@ -1,8 +1,10 @@
 package com.brainy.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.azure.core.util.BinaryData;
@@ -11,13 +13,20 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.brainy.model.exception.BadRequestException;
-import com.brainy.utils.Validator;
+import com.brainy.util.JsonUtil;
 
 // TODO: test
+/**
+ * Contains all operations that has to do with user files, it uses Microsoft
+ * Azure.
+ */
 @Service
 public class DefaultUserFilesService implements UserFilesService {
 
     private BlobServiceClient blobServiceClient;
+
+    @Value("${max-size-per-user}")
+    private Long maxSizePerUser;
 
     public DefaultUserFilesService(BlobServiceClient blobServiceClient) {
         this.blobServiceClient = blobServiceClient;
@@ -48,12 +57,10 @@ public class DefaultUserFilesService implements UserFilesService {
     }
     
     @Override
-    public void uploadJsonFile(String username, String filename, String content) 
+    public void createOrUpdateJsonFile(String username, String filename, String content) 
             throws BadRequestException {
 
-        validateThatContentIsJson(content);
-
-        // TODO: compress JSON
+        String compressedJson = getCompressedJson(content);
 
         BlobContainerClient containerClient = getUserBlobContainerClient(username);
 
@@ -61,14 +68,18 @@ public class DefaultUserFilesService implements UserFilesService {
 
         blobClient.deleteIfExists();
 
-        blobClient.upload(BinaryData.fromBytes(content.getBytes()));
+        blobClient.upload(BinaryData.fromBytes(compressedJson.getBytes()));
     }
 
-    private void validateThatContentIsJson(String content)
+    private String getCompressedJson(String content)
             throws BadRequestException {
 
-        if (!Validator.isValidJson(content))
+        String compressedJson = JsonUtil.compressJson(content);
+        
+        if (compressedJson == null)
             throw new BadRequestException("please provide valid JSON content!");
+        
+        return compressedJson;
     }
 
     @Override
@@ -78,6 +89,33 @@ public class DefaultUserFilesService implements UserFilesService {
         BlobClient blobClient = containerClient.getBlobClient(filename);
 
         blobClient.deleteIfExists();
+    }
+
+    @Override
+    public boolean canUserCreateFileWithSize(
+            String username, String filename, long fileSize) {
+
+        long userFilesSize = getUserFilesSize(username, filename);
+        long filesSizeWithNewFile = userFilesSize + fileSize;
+
+        return filesSizeWithNewFile <= maxSizePerUser;
+    }
+
+    @Override
+    public long getUserFilesSize(String username, String ...filesToIgnore) {
+        BlobContainerClient containerClient = getUserBlobContainerClient(username);
+
+        long totalSize = 0;
+
+        List<String> filesToIgnoreAsList = Arrays.asList(filesToIgnore);
+
+        for (BlobItem blobItem : containerClient.listBlobs()) {
+
+            if (!filesToIgnoreAsList.contains(blobItem.getName()))
+                totalSize += blobItem.getProperties().getContentLength();
+        }
+
+        return totalSize;
     }
 
     private BlobContainerClient getUserBlobContainerClient(String username) {

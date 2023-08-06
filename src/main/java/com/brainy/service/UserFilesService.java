@@ -9,8 +9,22 @@ public interface UserFilesService {
 
     String getFileContent(String username, String filename);
 
-    void uploadJsonFile(String username, String filename, String content)
+    void createOrUpdateJsonFile(String username, String filename, String content)
             throws BadRequestException;
 
     void deleteFile(String username, String filename);
+
+    /** 
+     * Returns if the user have enough size to create a file with the given size.
+     * If the file already exists its previous size is not taken into account
+     * when creating the file.
+     */
+    boolean canUserCreateFileWithSize(
+            String username, String filename, long fileSize);
+
+    /** 
+     * @param filesToIgnore is a set of file names that are not considered
+     * when calculating the size!
+     */
+    long getUserFilesSize(String username, String ...filesToIgnore);
 }

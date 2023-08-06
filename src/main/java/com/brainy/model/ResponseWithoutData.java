@@ -4,7 +4,11 @@ public class ResponseWithoutData {
     
     private ResponseStatus status;
 
+    /**
+     * If no ResponseStatus is provided, SUCCESS is used.
+     */
     public ResponseWithoutData() {
+        this(ResponseStatus.SUCCESS);
     }
 
     public ResponseWithoutData(ResponseStatus status) {
