@@ -34,3 +34,6 @@ build/
 
 ### Secrets ###
 secrets.properties
+
+### Word temporary ###
+~$*.doc*
