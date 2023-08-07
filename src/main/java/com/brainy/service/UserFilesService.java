@@ -27,4 +27,8 @@ public interface UserFilesService {
      * when calculating the size!
      */
     long getUserUsedStorage(String username, String ...filesToIgnore);
+
+    void createFolder(String username, String foldername);
+
+    void deleteFolder(String username, String foldername);
 }

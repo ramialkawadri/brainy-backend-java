@@ -9,6 +9,8 @@ import com.azure.identity.DefaultAzureCredential;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.batch.BlobBatchClient;
+import com.azure.storage.blob.batch.BlobBatchClientBuilder;
 
 @Configuration
 public class AzureConfig {
@@ -17,6 +19,7 @@ public class AzureConfig {
     private String storageAccountName;
 
     private DefaultAzureCredential defaultAzureCredential;
+    private BlobServiceClient blobServiceClient;
 
     @Bean
     DefaultAzureCredential defaultCredential() {
@@ -29,10 +32,18 @@ public class AzureConfig {
     BlobServiceClient blobServiceClient() {
         String url = String.format("https://%s.blob.core.windows.net/", 
                 storageAccountName);
-
-        return new BlobServiceClientBuilder()
+        
+        blobServiceClient = new BlobServiceClientBuilder()
                 .endpoint(url)
                 .credential(defaultAzureCredential)
                 .buildClient();
+
+        return blobServiceClient;
+    }
+
+    @Bean
+    @DependsOn("blobServiceClient")
+    BlobBatchClient blobBatchClient() {
+        return new BlobBatchClientBuilder(blobServiceClient).buildClient();
     }
 }

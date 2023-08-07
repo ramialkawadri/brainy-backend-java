@@ -8,10 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.azure.core.http.rest.PagedIterable;
+import com.azure.core.http.rest.Response;
 import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.batch.BlobBatchClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.brainy.TestUtils;
@@ -28,12 +30,14 @@ public class DefaultUserFilesServiceUnitTest {
     private BlobClient blobClient;
     private long maxStoragePerUser = 500;
     private long maxFileSize = 100;
+    private BlobBatchClient blobBatchClient;
     private UserFilesService userFilesService;
 
     @BeforeEach
     public void setup() {
         blobServiceClient = Mockito.mock();
         blobContainerClient = Mockito.mock();
+        blobBatchClient = Mockito.mock();
         blobClient = Mockito.mock();
 
         Mockito.when(blobContainerClient.getBlobClient(Mockito.any()))
@@ -46,7 +50,7 @@ public class DefaultUserFilesServiceUnitTest {
         setupIterator();
 
         userFilesService = new DefaultUserFilesService(blobServiceClient,
-                maxStoragePerUser, maxFileSize);
+                blobBatchClient, maxStoragePerUser, maxFileSize);
     }
 
     private void setupIterator() {
@@ -190,5 +194,51 @@ public class DefaultUserFilesServiceUnitTest {
         long returnValue = userFilesService.getUserUsedStorage("user", "test");
 
         Assertions.assertEquals(0L, returnValue);
+    }
+
+    @Test
+    public void shouldCreateFolder() {
+        String username = "username";
+        String foldername = "foldername";
+
+        BlobClient blobClient = Mockito.mock();
+
+        Mockito.when(blobContainerClient.getBlobClient(foldername + "/.hidden"))
+                .thenReturn(blobClient);
+
+        Mockito.when(blobClient.exists()).thenReturn(false);
+
+        userFilesService.createFolder(username, foldername);
+
+        Mockito.verify(blobClient).upload(Mockito.any(BinaryData.class));
+    }
+
+    @Test
+    public void shouldDeleteFolder() {
+        String username = "username";
+        String foldername = "foldername";
+        String blobClientUrl = "custom-url";
+
+        BlobClient blobClient = Mockito.mock();
+
+        Mockito.when(blobContainerClient.getBlobClient(Mockito.any()))
+                .thenReturn(blobClient);
+
+        Mockito.when(blobClient.getBlobUrl()).thenReturn(blobClientUrl);
+
+        Mockito.when(defaultIteratorBlobItem.getName())
+                .thenReturn(foldername + "/blob");
+
+        PagedIterable<Response<Void>> mockIterable = Mockito.mock();
+
+        Mockito.doAnswer((invocation) -> {
+            List<String> urls = invocation.getArgument(0);
+
+            Assertions.assertEquals(1, urls.size());
+
+            return mockIterable;
+        }).when(blobBatchClient).deleteBlobs(Mockito.any(), Mockito.any());
+
+        userFilesService.deleteFolder(username, foldername);
     }
 }

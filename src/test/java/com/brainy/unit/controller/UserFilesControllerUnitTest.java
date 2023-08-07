@@ -115,4 +115,24 @@ public class UserFilesControllerUnitTest {
         Mockito.verify(userFilesService).getUserUsedStorage(user.getUsername());
         Assertions.assertEquals(returnValue, usedStorage);
     }
+
+    @Test
+    public void shouldCreateFolder() throws BadRequestException {
+        User user = TestUtils.generateRandomUser();
+        String foldername = "foldername";
+
+        userFilesController.createFolder(user, foldername);
+
+        Mockito.verify(userFilesService).createFolder(user.getUsername(), foldername);
+    }
+
+    @Test
+    public void shouldDeleteFolder() {
+        User user = TestUtils.generateRandomUser();
+        String foldername = "foldername";
+
+        userFilesController.deleteFile(user, foldername);
+
+        Mockito.verify(userFilesService).deleteFile(user.getUsername(), foldername);
+    }
 }

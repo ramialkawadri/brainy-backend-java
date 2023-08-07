@@ -47,6 +47,9 @@ public class UserFilesController {
             @RequestParam String filename,
             @RequestBody String body) throws BadRequestException {
 
+        if (filename.isBlank())
+            throw new BadRequestException("the filename must be at least one character long");
+
         boolean canUserCreateTheFile = userFilesService.canUserCreateFileWithSize(
                 user.getUsername(), filename, body.length());
 
@@ -70,5 +73,29 @@ public class UserFilesController {
     public Response<Long> getUserUsedStorage(@RequestAttribute User user) {
         long size = userFilesService.getUserUsedStorage(user.getUsername());
         return new Response<>(size);
+    }
+
+    @PostMapping("folder")
+    public Response<String> createFolder(@RequestAttribute User user,
+            @RequestParam String foldername) throws BadRequestException {
+
+        if (foldername.isBlank())
+            throw new BadRequestException("the foldername must be at least one character long");
+
+        userFilesService.createFolder(user.getUsername(), foldername);
+
+        return new Response<String>("folder created");
+    }
+
+    @DeleteMapping("folder")
+    public Response<String> deleteFolder(@RequestAttribute User user,
+            @RequestParam String foldername) throws BadRequestException {
+
+        if (foldername.isBlank())
+            throw new BadRequestException("the foldername must be at least one character long");
+
+        userFilesService.deleteFolder(user.getUsername(), foldername);
+
+        return new Response<String>("folder deleted");
     }
 }

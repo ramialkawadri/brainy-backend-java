@@ -12,7 +12,9 @@ import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.batch.BlobBatchClient;
 import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.models.DeleteSnapshotsOptionType;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.util.JsonUtil;
 
@@ -23,6 +25,8 @@ import com.brainy.util.JsonUtil;
 @Service
 public class DefaultUserFilesService implements UserFilesService {
 
+    private BlobBatchClient blobBatchClient;
+    
     private BlobServiceClient blobServiceClient;
 
     @Value("${max-size-per-user}")
@@ -32,14 +36,19 @@ public class DefaultUserFilesService implements UserFilesService {
     private long maxFileSize;
 
     @Autowired
-    public DefaultUserFilesService(BlobServiceClient blobServiceClient) {
+    public DefaultUserFilesService(BlobServiceClient blobServiceClient,
+            BlobBatchClient blobBatchClient) {
+
         this.blobServiceClient = blobServiceClient;
+        this.blobBatchClient = blobBatchClient;
     }
 
     public DefaultUserFilesService(BlobServiceClient blobServiceClient,
-            long maxStoragePerUser, long maxFileSize) {
+            BlobBatchClient blobBatchClient, long maxStoragePerUser,
+            long maxFileSize) {
 
         this.blobServiceClient = blobServiceClient;
+        this.blobBatchClient = blobBatchClient;
         this.maxStoragePerUser = maxStoragePerUser;
         this.maxFileSize = maxFileSize;
     }
@@ -131,6 +140,53 @@ public class DefaultUserFilesService implements UserFilesService {
         }
 
         return totalSize;
+    }
+
+    /**
+     * Folders doesn't exist in Azure, so instead we name files using folder
+     * names as prefix. When creating a new folder, we just make a file inside
+     * the folder, the file is called ".hidden" and should not be displayed
+     * in front-end.
+     */
+    @Override
+    public void createFolder(String username, String foldername) {
+        BlobContainerClient containerClient = getUserBlobContainerClient(username);
+
+        BlobClient blobClient = containerClient
+                .getBlobClient(foldername + "/.hidden");
+
+        if (blobClient.exists())
+            return;
+
+        blobClient.upload(BinaryData.fromBytes(" ".getBytes()));
+    }
+
+    @Override
+    public void deleteFolder(String username, String foldername) {
+        List<String> deleteUrls = new ArrayList<>();
+
+        BlobContainerClient containerClient = getUserBlobContainerClient(username);
+
+        for (BlobItem blobItem : containerClient.listBlobs()) {
+            if (blobItem.getName().startsWith(foldername + "/")) {
+                deleteUrls.add(getBlobItemUrl(blobItem, containerClient));
+            }
+        }
+
+        blobBatchClient
+                .deleteBlobs(deleteUrls, DeleteSnapshotsOptionType.INCLUDE)
+                .forEach(response -> {
+                    // The forEach is necessary for the delete batch
+                });
+    }
+
+    private String getBlobItemUrl(BlobItem blobItem,
+            BlobContainerClient containerClient) {
+
+        BlobClient blobClient = containerClient.getBlobClient(blobItem.getName());
+
+        // Replacing %2F with /, because Azure SDK replaces / with %2F
+        return blobClient.getBlobUrl().replaceAll("%2F", "/");
     }
 
     private BlobContainerClient getUserBlobContainerClient(String username) {

@@ -59,6 +59,14 @@
 			<groupId>com.azure</groupId>
 			<artifactId>azure-identity</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-storage-blob-batch</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-core</artifactId>
+		</dependency>
 
 		<!--Validation-->
 		<!--https://jakarta.ee/specifications/bean-validation/3.0/apidocs/ -->	

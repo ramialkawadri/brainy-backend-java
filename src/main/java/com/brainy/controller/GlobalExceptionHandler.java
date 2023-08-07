@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response<String>> handleMissingParameter(
                     MissingServletRequestParameterException e) {
 
-        String errorMessage = e.getParameterName() + " query string is missing!";
+        String errorMessage = "the query string '" + e.getParameterName() + "' is missing!";
 
         Response<String> response =
                 new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
