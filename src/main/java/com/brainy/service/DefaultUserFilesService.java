@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +26,22 @@ public class DefaultUserFilesService implements UserFilesService {
     private BlobServiceClient blobServiceClient;
 
     @Value("${max-size-per-user}")
-    private Long maxStoragePerUser;
+    private long maxStoragePerUser;
 
     @Value("${max-file-size}")
     private long maxFileSize;
 
+    @Autowired
     public DefaultUserFilesService(BlobServiceClient blobServiceClient) {
         this.blobServiceClient = blobServiceClient;
+    }
+
+    public DefaultUserFilesService(BlobServiceClient blobServiceClient,
+            long maxStoragePerUser, long maxFileSize) {
+
+        this.blobServiceClient = blobServiceClient;
+        this.maxStoragePerUser = maxStoragePerUser;
+        this.maxFileSize = maxFileSize;
     }
 
     @Override

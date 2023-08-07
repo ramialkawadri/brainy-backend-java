@@ -13,6 +13,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.models.BlobItemProperties;
 import com.brainy.TestUtils;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
@@ -25,6 +26,8 @@ public class DefaultUserFilesServiceUnitTest {
     private BlobContainerClient blobContainerClient;
     private BlobItem defaultIteratorBlobItem;
     private BlobClient blobClient;
+    private long maxStoragePerUser = 500;
+    private long maxFileSize = 100;
     private UserFilesService userFilesService;
 
     @BeforeEach
@@ -42,7 +45,8 @@ public class DefaultUserFilesServiceUnitTest {
 
         setupIterator();
 
-        userFilesService = new DefaultUserFilesService(blobServiceClient);
+        userFilesService = new DefaultUserFilesService(blobServiceClient,
+                maxStoragePerUser, maxFileSize);
     }
 
     private void setupIterator() {
@@ -125,11 +129,66 @@ public class DefaultUserFilesServiceUnitTest {
 
     @Test
     public void shouldReturnTrueOnCanUserCreateFileWithSize() {
-        // TODO
+        BlobItemProperties itemProperties = Mockito.mock();
+
+        Mockito.when(defaultIteratorBlobItem.getProperties())
+                .thenReturn(itemProperties);
+
+        Mockito.when(itemProperties.getContentLength())
+                .thenReturn(maxFileSize);
+
+        boolean returnValue = userFilesService
+                .canUserCreateFileWithSize("user", "filename", 1);
+
+        Assertions.assertTrue(returnValue);
+    }
+
+    @Test
+    public void shouldReturnFalseOnCanUserCreateFileWithSize() {
+        BlobItemProperties itemProperties = Mockito.mock();
+
+        Mockito.when(defaultIteratorBlobItem.getProperties())
+                .thenReturn(itemProperties);
+
+        Mockito.when(itemProperties.getContentLength())
+                .thenReturn(maxFileSize + 1);
+
+        boolean returnValue = userFilesService
+                .canUserCreateFileWithSize("user", "filename", 1);
+
+        Assertions.assertTrue(returnValue);
     }
 
     @Test
     public void shouldGetUserUsedStorage() {
-        // TODO
+        BlobItemProperties itemProperties = Mockito.mock();
+
+        Mockito.when(defaultIteratorBlobItem.getProperties())
+                .thenReturn(itemProperties);
+
+        Mockito.when(itemProperties.getContentLength())
+                .thenReturn(99L);
+
+        long returnValue = userFilesService.getUserUsedStorage("user");
+
+        Assertions.assertEquals(99L, returnValue);
+    }
+
+    @Test
+    public void shouldIgnoreFileOnCalculatingStorage() {
+        BlobItemProperties itemProperties = Mockito.mock();
+
+        Mockito.when(defaultIteratorBlobItem.getProperties())
+                .thenReturn(itemProperties);
+
+        Mockito.when(itemProperties.getContentLength())
+                .thenReturn(99L);
+
+        Mockito.when(defaultIteratorBlobItem.getName())
+                .thenReturn("test");
+
+        long returnValue = userFilesService.getUserUsedStorage("user", "test");
+
+        Assertions.assertEquals(0L, returnValue);
     }
 }
