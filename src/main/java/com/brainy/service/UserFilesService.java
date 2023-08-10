@@ -2,7 +2,10 @@ package com.brainy.service;
 
 import java.util.List;
 
+import com.brainy.model.entity.SharedFile;
+import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.request.UpdateSharedFileAccessRequest;
 
 public interface UserFilesService {
     List<String> getUserFiles(String username); 
@@ -31,4 +34,18 @@ public interface UserFilesService {
     void createFolder(String username, String foldername);
 
     void deleteFolder(String username, String foldername);
+
+    List<SharedFile> getFilesSharedWithUser(User user);
+
+    List<SharedFile> getFileShares(User user, String filename);
+
+    void shareFileWith(User fileOwner, String filename, String sharedWithUsername,
+            boolean canEdit) throws BadRequestException;
+
+    void deleteShare(User fileOwner, String filename, String sharedWithUsername)
+            throws BadRequestException;
+
+    void updateSharedFileAccess(User fileOwner, String filename,
+            String sharedWithUsername, UpdateSharedFileAccessRequest request)
+            throws BadRequestException;
 }

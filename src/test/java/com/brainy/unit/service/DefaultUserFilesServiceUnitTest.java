@@ -17,6 +17,7 @@ import com.azure.storage.blob.batch.BlobBatchClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.brainy.TestUtils;
+import com.brainy.dao.FileShareDAO;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.service.DefaultUserFilesService;
@@ -31,6 +32,7 @@ public class DefaultUserFilesServiceUnitTest {
     private long maxStoragePerUser = 500;
     private long maxFileSize = 100;
     private BlobBatchClient blobBatchClient;
+    private FileShareDAO fileShareDAO;
     private UserFilesService userFilesService;
 
     @BeforeEach
@@ -39,6 +41,7 @@ public class DefaultUserFilesServiceUnitTest {
         blobContainerClient = Mockito.mock();
         blobBatchClient = Mockito.mock();
         blobClient = Mockito.mock();
+        fileShareDAO = Mockito.mock();
 
         Mockito.when(blobContainerClient.getBlobClient(Mockito.any()))
                 .thenReturn(blobClient);
@@ -50,7 +53,7 @@ public class DefaultUserFilesServiceUnitTest {
         setupIterator();
 
         userFilesService = new DefaultUserFilesService(blobServiceClient,
-                blobBatchClient, maxStoragePerUser, maxFileSize);
+                blobBatchClient, fileShareDAO, maxStoragePerUser, maxFileSize);
     }
 
     private void setupIterator() {

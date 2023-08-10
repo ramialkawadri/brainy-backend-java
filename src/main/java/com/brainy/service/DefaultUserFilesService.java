@@ -15,7 +15,11 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.batch.BlobBatchClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.DeleteSnapshotsOptionType;
+import com.brainy.dao.FileShareDAO;
+import com.brainy.model.entity.SharedFile;
+import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.util.JsonUtil;
 
 /**
@@ -29,6 +33,8 @@ public class DefaultUserFilesService implements UserFilesService {
     
     private BlobServiceClient blobServiceClient;
 
+    private FileShareDAO fileShareDAO;
+
     @Value("${max-size-per-user}")
     private long maxStoragePerUser;
 
@@ -37,18 +43,20 @@ public class DefaultUserFilesService implements UserFilesService {
 
     @Autowired
     public DefaultUserFilesService(BlobServiceClient blobServiceClient,
-            BlobBatchClient blobBatchClient) {
+            BlobBatchClient blobBatchClient, FileShareDAO fileShareDAO) {
 
         this.blobServiceClient = blobServiceClient;
         this.blobBatchClient = blobBatchClient;
+        this.fileShareDAO = fileShareDAO;
     }
 
     public DefaultUserFilesService(BlobServiceClient blobServiceClient,
-            BlobBatchClient blobBatchClient, long maxStoragePerUser,
-            long maxFileSize) {
+            BlobBatchClient blobBatchClient, FileShareDAO fileShareDAO,
+            long maxStoragePerUser, long maxFileSize) {
 
         this.blobServiceClient = blobServiceClient;
         this.blobBatchClient = blobBatchClient;
+        this.fileShareDAO = fileShareDAO;
         this.maxStoragePerUser = maxStoragePerUser;
         this.maxFileSize = maxFileSize;
     }
@@ -163,12 +171,15 @@ public class DefaultUserFilesService implements UserFilesService {
 
     @Override
     public void deleteFolder(String username, String foldername) {
+        if (!foldername.endsWith("/"))
+            foldername = foldername + "/";
+
         List<String> deleteUrls = new ArrayList<>();
 
         BlobContainerClient containerClient = getUserBlobContainerClient(username);
 
         for (BlobItem blobItem : containerClient.listBlobs()) {
-            if (blobItem.getName().startsWith(foldername + "/")) {
+            if (blobItem.getName().startsWith(foldername)) {
                 deleteUrls.add(getBlobItemUrl(blobItem, containerClient));
             }
         }
@@ -189,7 +200,74 @@ public class DefaultUserFilesService implements UserFilesService {
         return blobClient.getBlobUrl().replaceAll("%2F", "/");
     }
 
+    @Override
+    public List<SharedFile> getFilesSharedWithUser(User user) {
+        return fileShareDAO.getFilesSharedWithUser(user);
+    }
+
+    @Override
+    public List<SharedFile> getFileShares(User user, String filename) {
+        return fileShareDAO.getFileShares(user, filename);
+    }
+
+    @Override
+    public void shareFileWith(User fileOwner, String filename,
+            String sharedWithUsername, boolean canEdit)
+            throws BadRequestException {
+
+        BlobContainerClient fileOwnerBlobContainerClient =
+                getUserBlobContainerClient(fileOwner.getUsername());
+
+        BlobClient fileBlobClient = fileOwnerBlobContainerClient
+                .getBlobClient(filename);
+
+        if (!fileBlobClient.exists())
+            throw new BadRequestException("couldn't find the file " + filename);
+
+        boolean isFileAlreadyShard = fileShareDAO.isFileSharedWith(
+            fileOwner.getUsername(), filename, sharedWithUsername);
+
+        if (isFileAlreadyShard)
+            throw new BadRequestException("the file is already shared!");
+        
+        fileShareDAO.shareFile(fileOwner.getUsername(), filename,
+                sharedWithUsername, canEdit);
+    }
+
     private BlobContainerClient getUserBlobContainerClient(String username) {
         return blobServiceClient.createBlobContainerIfNotExists(username);
+    }
+
+    @Override
+    public void deleteShare(User fileOwner, String filename,
+            String sharedWithUsername) throws BadRequestException {
+
+        String fileOwnerUsername = fileOwner.getUsername();
+
+        validateThatAFileIsShared(filename, sharedWithUsername, fileOwnerUsername);
+
+        fileShareDAO.deleteFileShare(fileOwnerUsername, filename, sharedWithUsername);
+    }
+
+    @Override
+    public void updateSharedFileAccess(User fileOwner, String filename,
+            String sharedWithUsername, UpdateSharedFileAccessRequest request)
+            throws BadRequestException {
+
+        String fileOwnerUsername = fileOwner.getUsername();
+
+        validateThatAFileIsShared(filename, sharedWithUsername, fileOwnerUsername);
+        
+        fileShareDAO.updateSharedFileAccess(fileOwnerUsername, filename,
+                sharedWithUsername, request);
+    }
+
+    private void validateThatAFileIsShared(String filename, 
+            String sharedWithUsername, String fileOwnerUsername)
+            throws BadRequestException {
+
+        if (!fileShareDAO.isFileSharedWith(fileOwnerUsername, filename,
+                sharedWithUsername))
+            throw new BadRequestException("you didn't share the file with the user");
     }
 }
