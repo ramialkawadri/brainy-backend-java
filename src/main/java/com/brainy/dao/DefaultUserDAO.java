@@ -8,11 +8,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @Repository
-public class DefaultUserDAO implements UserDao {
+public class DefaultUserDao implements UserDao {
     
     private EntityManager entityManager;
 
-    public DefaultUserDAO(EntityManager entityManager) {
+    public DefaultUserDao(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

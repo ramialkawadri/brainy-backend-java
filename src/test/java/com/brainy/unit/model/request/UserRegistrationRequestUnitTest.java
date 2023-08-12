@@ -5,6 +5,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.brainy.TestUtils;
 import com.brainy.model.request.UserRegistrationRequest;
 import com.brainy.unit.UnitTestUtils;
 
@@ -22,7 +23,7 @@ public class UserRegistrationRequestUnitTest {
     @Test
     public void shouldAcceptValidValues() {
         UserRegistrationRequest user = new UserRegistrationRequest(
-                "username",
+                TestUtils.generateUniqueUsername(),
                 "StrongPassword1",
                 "test@test.com",
                 "firstName",
@@ -47,7 +48,7 @@ public class UserRegistrationRequestUnitTest {
     @Test
     public void shouldNotAcceptInvalidEmail() {
         UserRegistrationRequest user = new UserRegistrationRequest(
-                "username",
+                TestUtils.generateUniqueUsername(),
                 "StrongPassword1",
                 "test@.com",
                 "firstName",
@@ -62,7 +63,7 @@ public class UserRegistrationRequestUnitTest {
     @Test
     public void shouldNotAcceptShortPassword() {
         UserRegistrationRequest user = new UserRegistrationRequest(
-                "username",
+                TestUtils.generateUniqueUsername(),
                 "Pass1",
                 "test@test.com",
                 "firstName",
@@ -78,7 +79,7 @@ public class UserRegistrationRequestUnitTest {
     @Test
     public void shouldNotAcceptWeekPassword() {
         UserRegistrationRequest user = new UserRegistrationRequest(
-                "username",
+                TestUtils.generateUniqueUsername(),
                 "password",
                 "test@test.com",
                 "firstName",

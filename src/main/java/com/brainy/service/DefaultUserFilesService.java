@@ -15,7 +15,7 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.batch.BlobBatchClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.DeleteSnapshotsOptionType;
-import com.brainy.dao.FileShareDAO;
+import com.brainy.dao.FileShareDao;
 import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
@@ -33,7 +33,7 @@ public class DefaultUserFilesService implements UserFilesService {
     
     private BlobServiceClient blobServiceClient;
 
-    private FileShareDAO fileShareDAO;
+    private FileShareDao fileShareDAO;
 
     @Value("${max-size-per-user}")
     private long maxStoragePerUser;
@@ -43,7 +43,7 @@ public class DefaultUserFilesService implements UserFilesService {
 
     @Autowired
     public DefaultUserFilesService(BlobServiceClient blobServiceClient,
-            BlobBatchClient blobBatchClient, FileShareDAO fileShareDAO) {
+            BlobBatchClient blobBatchClient, FileShareDao fileShareDAO) {
 
         this.blobServiceClient = blobServiceClient;
         this.blobBatchClient = blobBatchClient;
@@ -51,7 +51,7 @@ public class DefaultUserFilesService implements UserFilesService {
     }
 
     public DefaultUserFilesService(BlobServiceClient blobServiceClient,
-            BlobBatchClient blobBatchClient, FileShareDAO fileShareDAO,
+            BlobBatchClient blobBatchClient, FileShareDao fileShareDAO,
             long maxStoragePerUser, long maxFileSize) {
 
         this.blobServiceClient = blobServiceClient;

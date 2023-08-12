@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.brainy.TestUtils;
-import com.brainy.dao.DefaultUserDAO;
+import com.brainy.dao.DefaultUserDao;
 import com.brainy.model.entity.User;
 
 import jakarta.persistence.EntityManager;
@@ -13,11 +13,11 @@ import jakarta.persistence.EntityManager;
 public class DefaultUserDaoUnitTest {
 
     private EntityManager entityManager;
-    private DefaultUserDAO userDAO;
+    private DefaultUserDao userDAO;
 
     public DefaultUserDaoUnitTest() {
         entityManager = Mockito.mock();
-        userDAO = new DefaultUserDAO(entityManager);
+        userDAO = new DefaultUserDao(entityManager);
     }
 
     @Test

@@ -93,6 +93,11 @@ public class SharedFile {
 }
 
 class SharedFilePK implements Serializable  {
+
+    private User fileOwner;
+    private User sharedWith;
+    private String filename;
+
     public SharedFilePK() {
     }
 
@@ -101,12 +106,6 @@ class SharedFilePK implements Serializable  {
         this.sharedWith = sharedWith;
         this.filename = filename;
     }
-
-    private User fileOwner;
-
-    private User sharedWith;
-
-    private String filename;
 
     public User getFileOwner() {
         return fileOwner;

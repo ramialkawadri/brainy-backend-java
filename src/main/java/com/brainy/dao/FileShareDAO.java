@@ -7,7 +7,7 @@ import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.model.request.UpdateSharedFileAccessRequest;
 
-public interface FileShareDAO {
+public interface FileShareDao {
     
     List<SharedFile> getFilesSharedWithUser(User user);
 

@@ -1,5 +1,6 @@
 package com.brainy.unit.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -17,9 +18,11 @@ import com.azure.storage.blob.batch.BlobBatchClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.brainy.TestUtils;
-import com.brainy.dao.FileShareDAO;
+import com.brainy.dao.FileShareDao;
+import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.service.DefaultUserFilesService;
 import com.brainy.service.UserFilesService;
 
@@ -32,7 +35,7 @@ public class DefaultUserFilesServiceUnitTest {
     private long maxStoragePerUser = 500;
     private long maxFileSize = 100;
     private BlobBatchClient blobBatchClient;
-    private FileShareDAO fileShareDAO;
+    private FileShareDao fileShareDAO;
     private UserFilesService userFilesService;
 
     @BeforeEach
@@ -82,8 +85,8 @@ public class DefaultUserFilesServiceUnitTest {
 
     @Test
     public void shouldGetFileContent() {
-        String fileContent = "RANDOM_STRING";
-        String filename = "filename";
+        String fileContent = TestUtils.generateRandomFileContent();
+        String filename = TestUtils.generateRandomFilename();
         
         User user = TestUtils.generateRandomUser();
 
@@ -101,7 +104,7 @@ public class DefaultUserFilesServiceUnitTest {
         String jsonContent = "{ \"isJson\": true }";
 
         User user = TestUtils.generateRandomUser();
-        String filename = "filename";
+        String filename = TestUtils.generateRandomFilename();
 
         userFilesService.createOrUpdateJsonFile(
                 user.getUsername(), filename, jsonContent);
@@ -116,7 +119,7 @@ public class DefaultUserFilesServiceUnitTest {
         String invalidJson = "aa { \"isJson\": true }";
 
         User user = TestUtils.generateRandomUser();
-        String filename = "filename";
+        String filename = TestUtils.generateRandomFilename();
 
         Assertions.assertThrowsExactly(BadRequestException.class, () -> {
             userFilesService.createOrUpdateJsonFile(user.getUsername(),
@@ -127,7 +130,7 @@ public class DefaultUserFilesServiceUnitTest {
     @Test
     public void shouldDeleteFile() {
         User user = TestUtils.generateRandomUser();
-        String filename = "filename";
+        String filename = TestUtils.generateRandomFilename();
 
         userFilesService.deleteFile(user.getUsername(), filename);
 
@@ -137,6 +140,7 @@ public class DefaultUserFilesServiceUnitTest {
     @Test
     public void shouldReturnTrueOnCanUserCreateFileWithSize() {
         BlobItemProperties itemProperties = Mockito.mock();
+        String filename = TestUtils.generateRandomFilename();
 
         Mockito.when(defaultIteratorBlobItem.getProperties())
                 .thenReturn(itemProperties);
@@ -145,7 +149,7 @@ public class DefaultUserFilesServiceUnitTest {
                 .thenReturn(maxFileSize);
 
         boolean returnValue = userFilesService
-                .canUserCreateFileWithSize("user", "filename", 1);
+                .canUserCreateFileWithSize("user", filename, 1);
 
         Assertions.assertTrue(returnValue);
     }
@@ -153,6 +157,7 @@ public class DefaultUserFilesServiceUnitTest {
     @Test
     public void shouldReturnFalseOnCanUserCreateFileWithSize() {
         BlobItemProperties itemProperties = Mockito.mock();
+        String filename = TestUtils.generateRandomFilename();
 
         Mockito.when(defaultIteratorBlobItem.getProperties())
                 .thenReturn(itemProperties);
@@ -161,7 +166,7 @@ public class DefaultUserFilesServiceUnitTest {
                 .thenReturn(maxFileSize + 1);
 
         boolean returnValue = userFilesService
-                .canUserCreateFileWithSize("user", "filename", 1);
+                .canUserCreateFileWithSize("user", filename, 1);
 
         Assertions.assertTrue(returnValue);
     }
@@ -201,8 +206,8 @@ public class DefaultUserFilesServiceUnitTest {
 
     @Test
     public void shouldCreateFolder() {
-        String username = "username";
-        String foldername = "foldername";
+        String username = TestUtils.generateUniqueUsername();
+        String foldername = TestUtils.generateRandomFilename();
 
         BlobClient blobClient = Mockito.mock();
 
@@ -218,8 +223,8 @@ public class DefaultUserFilesServiceUnitTest {
 
     @Test
     public void shouldDeleteFolder() {
-        String username = "username";
-        String foldername = "foldername";
+        String username = TestUtils.generateUniqueUsername();
+        String foldername = TestUtils.generateRandomFilename();
         String blobClientUrl = "custom-url";
 
         BlobClient blobClient = Mockito.mock();
@@ -243,5 +248,127 @@ public class DefaultUserFilesServiceUnitTest {
         }).when(blobBatchClient).deleteBlobs(Mockito.any(), Mockito.any());
 
         userFilesService.deleteFolder(username, foldername);
+    }
+
+    @Test
+    public void shouldGetFilesSharedWithUser() {
+        User user = TestUtils.generateRandomUser();
+        List<SharedFile> sharedFiles = new ArrayList<>();
+
+        Mockito.when(fileShareDAO.getFilesSharedWithUser(user))
+            .thenReturn(sharedFiles);
+
+        List<SharedFile> returnValue = userFilesService
+                .getFilesSharedWithUser(user);
+
+        Assertions.assertEquals(sharedFiles, returnValue);
+    }
+
+    @Test
+    public void shouldGetFileShares() {
+        User user = TestUtils.generateRandomUser();
+        String filename = TestUtils.generateRandomFilename();
+        List<SharedFile> sharedFiles = new ArrayList<>();
+
+        Mockito.when(fileShareDAO.getFileShares(user, filename))
+            .thenReturn(sharedFiles);
+
+        List<SharedFile> returnValue = userFilesService.getFileShares(user, filename);
+
+        Assertions.assertEquals(sharedFiles, returnValue);
+    }
+
+    @Test
+    public void shouldShareFileWith() throws BadRequestException {
+        User fileOwner = TestUtils.generateRandomUser();
+        String sharedWithUsername = TestUtils.generateRandomFilename();
+        String filename = TestUtils.generateRandomFilename();
+
+        Mockito.when(blobClient.exists()).thenReturn(true);
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), filename,
+                sharedWithUsername)).thenReturn(false);
+
+        userFilesService.shareFileWith(fileOwner, filename, sharedWithUsername,
+                false);
+
+        Mockito.verify(fileShareDAO).shareFile(fileOwner.getUsername(), filename,
+                sharedWithUsername, false);
+    }
+
+    @Test
+    public void shouldNotShareFileWithBecauseFileDoesNotExist() {
+        User fileOwner = TestUtils.generateRandomUser();
+        String sharedWithUsername = TestUtils.generateRandomFilename();
+        String filename = TestUtils.generateRandomFilename();
+
+        Mockito.when(blobClient.exists()).thenReturn(false);
+        
+        Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+            userFilesService.shareFileWith(fileOwner, filename, sharedWithUsername,
+                    false);
+        });
+    }
+
+    @Test
+    public void shouldNotShareFileWithBecauseFileIsAlreadyShared() {
+        User fileOwner = TestUtils.generateRandomUser();
+        String sharedWithUsername = TestUtils.generateRandomFilename();
+        String filename = TestUtils.generateRandomFilename();
+
+        Mockito.when(blobClient.exists()).thenReturn(true);
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), filename,
+                sharedWithUsername)).thenReturn(true);
+
+        Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+            userFilesService.shareFileWith(fileOwner, filename, sharedWithUsername,
+                    false);
+        });
+    }
+
+    @Test
+    public void shouldDeleteFileShare() throws BadRequestException {
+        User fileOwner = TestUtils.generateRandomUser();
+        String sharedWithUsername = TestUtils.generateRandomFilename();
+        String filename = TestUtils.generateRandomFilename();
+
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), 
+                filename, sharedWithUsername)).thenReturn(true);
+
+        userFilesService.deleteShare(fileOwner, filename, sharedWithUsername);
+
+        Mockito.verify(fileShareDAO).deleteFileShare(fileOwner.getUsername(),
+                filename, sharedWithUsername);
+    }
+
+    @Test
+    public void shouldNotDeleteShareBecauseFileIsNotShared() {
+        User fileOwner = TestUtils.generateRandomUser();
+        String sharedWithUsername = TestUtils.generateRandomFilename();
+        String filename = TestUtils.generateRandomFilename();
+
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), 
+                filename, sharedWithUsername)).thenReturn(false);
+
+        Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+            userFilesService.deleteShare(fileOwner, filename, sharedWithUsername);
+        });
+    }
+
+    @Test
+    public void shouldUpdateSharedFileAccess() throws BadRequestException {
+        User fileOwner = TestUtils.generateRandomUser();
+        String sharedWithUsername = TestUtils.generateRandomFilename();
+        String filename = TestUtils.generateRandomFilename();
+        UpdateSharedFileAccessRequest request = 
+            new UpdateSharedFileAccessRequest(false);
+
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), 
+                filename, sharedWithUsername)).thenReturn(true);
+        
+        userFilesService.updateSharedFileAccess(fileOwner, filename, 
+                sharedWithUsername, request);
+
+        Mockito.verify(fileShareDAO).updateSharedFileAccess(fileOwner.getUsername(),
+                filename, sharedWithUsername, request);
     }
 }

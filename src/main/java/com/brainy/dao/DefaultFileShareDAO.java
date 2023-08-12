@@ -13,12 +13,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @Repository
-public class DefaultFileShareDAO implements FileShareDAO {
+public class DefaultFileShareDao implements FileShareDao {
 
     private EntityManager entityManager;
     private UserDao userDao;
 
-    public DefaultFileShareDAO(EntityManager entityManager, UserDao userDao) {
+    public DefaultFileShareDao(EntityManager entityManager, UserDao userDao) {
         this.entityManager = entityManager;
         this.userDao = userDao;
     }
