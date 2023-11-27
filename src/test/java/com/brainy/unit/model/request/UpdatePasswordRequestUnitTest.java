@@ -12,18 +12,18 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 public class UpdatePasswordRequestUnitTest {
-    private Validator validator;
+	private Validator validator;
 
-    public UpdatePasswordRequestUnitTest() {
-        validator = UnitTestUtils.getValidator();
-    }
+	public UpdatePasswordRequestUnitTest() {
+		validator = UnitTestUtils.getValidator();
+	}
 
-    @Test
-    public void shouldNotUpdatePassword() {
-        UpdatePasswordRequest request = new UpdatePasswordRequest("week");
+	@Test
+	public void shouldNotUpdatePassword() {
+		UpdatePasswordRequest request = new UpdatePasswordRequest("week");
 
-        Set<ConstraintViolation<UpdatePasswordRequest>> violations = validator.validate(request);
+		Set<ConstraintViolation<UpdatePasswordRequest>> violations = validator.validate(request);
 
-        Assertions.assertEquals(2, violations.size());
-    }
+		Assertions.assertEquals(2, violations.size());
+	}
 }

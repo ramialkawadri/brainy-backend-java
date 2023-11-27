@@ -18,110 +18,102 @@ import com.brainy.service.DefaultUserService;
 
 public class DefaultUserServiceUnitTest {
 
-    private UserDao userDao;
-    private DefaultUserService userService;
-    private PasswordEncoder passwordEncoder;
+	private UserDao userDao;
+	private DefaultUserService userService;
+	private PasswordEncoder passwordEncoder;
 
-    public DefaultUserServiceUnitTest() {
-        userDao = Mockito.mock();
-        passwordEncoder = Mockito.mock();
-        userService = new DefaultUserService(userDao, passwordEncoder);
-    }
+	public DefaultUserServiceUnitTest() {
+		userDao = Mockito.mock();
+		passwordEncoder = Mockito.mock();
+		userService = new DefaultUserService(userDao, passwordEncoder);
+	}
 
-    @Test
-    public void shouldGetUserByUsername() {
-        User mockUser = TestUtils.generateRandomUser();
+	@Test
+	public void shouldGetUserByUsername() {
+		User mockUser = TestUtils.generateRandomUser();
 
-        Mockito.when(userDao.findUserByUserName("user")).thenReturn(mockUser);
+		Mockito.when(userDao.findUserByUserName("user")).thenReturn(mockUser);
 
-        User user = userService.findUserByUsername("user");
+		User user = userService.findUserByUsername("user");
 
-        Mockito.verify(userDao).findUserByUserName("user");
+		Mockito.verify(userDao).findUserByUserName("user");
 
-        Assertions.assertEquals(mockUser, user);
-    }
+		Assertions.assertEquals(mockUser, user);
+	}
 
-    @Test
-    public void shouldRegisterUser() throws BadRequestException {
-        UserRegistrationRequest request = createMockUserRegistrationRequest();
+	@Test
+	public void shouldRegisterUser() throws BadRequestException {
+		UserRegistrationRequest request = createMockUserRegistrationRequest();
 
-        Mockito.doAnswer(invocation -> {
-            User user = (User) invocation.getArguments()[0];
+		Mockito.doAnswer(invocation -> {
+			User user = (User) invocation.getArguments()[0];
 
-            Assertions.assertNotNull(user);
-            Assertions.assertNotEquals("testPass", user.getPassword());
+			Assertions.assertNotNull(user);
+			Assertions.assertNotEquals("testPass", user.getPassword());
 
-            return true;
-        }).when(userDao).registerUser(Mockito.any());
+			return true;
+		}).when(userDao).registerUser(Mockito.any());
 
-        userService.registerUserFromRequest(request);
-    }
+		userService.registerUserFromRequest(request);
+	}
 
-    private UserRegistrationRequest createMockUserRegistrationRequest() {
-        UserRegistrationRequest request = new UserRegistrationRequest(
-                "test",
-                "testPass1",
-                "test@test.com",
-                "test",
-                "test");
+	private UserRegistrationRequest createMockUserRegistrationRequest() {
+		UserRegistrationRequest request =
+				new UserRegistrationRequest("test", "testPass1", "test@test.com", "test", "test");
 
-        return request;
-    }
+		return request;
+	}
 
-    @Test
-    public void shouldReturnTrueOnValidToken() {
-        User user = TestUtils.generateRandomUser();
-        Instant tokenIssueDate = Instant.now();
+	@Test
+	public void shouldReturnTrueOnValidToken() {
+		User user = TestUtils.generateRandomUser();
+		Instant tokenIssueDate = Instant.now();
 
-        Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.minus(1, ChronoUnit.MINUTES));
+		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.minus(1, ChronoUnit.MINUTES));
 
-        user.setLogoutDate(changeTimestamp);
-        user.setPasswordChangeDate(changeTimestamp);
+		user.setLogoutDate(changeTimestamp);
+		user.setPasswordChangeDate(changeTimestamp);
 
-        Mockito.when(userDao.findUserByUserName(Mockito.anyString()))
-                .thenReturn(user);
+		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
 
-        Assertions.assertTrue(userService
-                .isTokenStillValidForUser(tokenIssueDate, ""));
-    }
+		Assertions.assertTrue(userService.isTokenStillValidForUser(tokenIssueDate, ""));
+	}
 
-    @Test
-    public void shouldReturnFalseOnValidToken() {
-        User user = TestUtils.generateRandomUser();
-        Instant tokenIssueDate = Instant.now();
+	@Test
+	public void shouldReturnFalseOnValidToken() {
+		User user = TestUtils.generateRandomUser();
+		Instant tokenIssueDate = Instant.now();
 
-        Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.plus(1, ChronoUnit.MINUTES));
+		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.plus(1, ChronoUnit.MINUTES));
 
-        user.setLogoutDate(changeTimestamp);
-        user.setPasswordChangeDate(changeTimestamp);
+		user.setLogoutDate(changeTimestamp);
+		user.setPasswordChangeDate(changeTimestamp);
 
-        Mockito.when(userDao.findUserByUserName(Mockito.anyString()))
-                .thenReturn(user);
+		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
 
-        Assertions.assertFalse(userService
-                .isTokenStillValidForUser(tokenIssueDate, ""));
-    }
+		Assertions.assertFalse(userService.isTokenStillValidForUser(tokenIssueDate, ""));
+	}
 
-    @Test
-    public void shouldLogoutUser() {
-        User user = Mockito.mock();
+	@Test
+	public void shouldLogoutUser() {
+		User user = Mockito.mock();
 
-        userService.logoutUser(user);
+		userService.logoutUser(user);
 
-        Mockito.verify(user).setLogoutDate(Mockito.any());
-        Mockito.verify(userDao).saveUserChanges(user);
-    }
+		Mockito.verify(user).setLogoutDate(Mockito.any());
+		Mockito.verify(userDao).saveUserChanges(user);
+	}
 
-    @Test
-    public void shouldUpdateUserPassword() throws BadRequestException {
-        User user = Mockito.mock();
+	@Test
+	public void shouldUpdateUserPassword() throws BadRequestException {
+		User user = Mockito.mock();
 
-        Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("encoded");
+		Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("encoded");
 
-        userService.updateUserPassword(user, "newStrongPassword");
+		userService.updateUserPassword(user, "newStrongPassword");
 
-        Mockito.verify(user).setPasswordChangeDate(Mockito.any());
+		Mockito.verify(user).setPasswordChangeDate(Mockito.any());
 
-        Mockito.verify(userDao).saveUserChanges(user);
-    }
+		Mockito.verify(userDao).saveUserChanges(user);
+	}
 }

@@ -9,21 +9,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 public class WebConfig extends WebMvcConfigurationSupport {
 
-    private UserInterceptor userInterceptor;
+	private UserInterceptor userInterceptor;
 
-    public WebConfig(UserInterceptor userInterceptor) {
-        this.userInterceptor = userInterceptor;
-    }
+	public WebConfig(UserInterceptor userInterceptor) {
+		this.userInterceptor = userInterceptor;
+	}
 
-    @Override
-    protected void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(userInterceptor);
-    }
+	@Override
+	protected void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(userInterceptor);
+	}
 
-    @Override
-    protected void configureContentNegotiation(
-            ContentNegotiationConfigurer configurer) {
+	@Override
+	protected void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 
-        configurer.defaultContentType(MediaType.APPLICATION_JSON);
-    }
+		configurer.defaultContentType(MediaType.APPLICATION_JSON);
+	}
 }

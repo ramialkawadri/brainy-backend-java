@@ -10,29 +10,27 @@ import com.brainy.TestUtils;
 import com.brainy.model.entity.User;
 
 /**
- * All integration tests mush inherit from this class as it does basic
- * configuration for the tests. In addition it provide a default test and a rest
- * template user that can be used for testing.
+ * All integration tests mush inherit from this class as it does basic configuration for the tests.
+ * In addition it provide a default test and a rest template user that can be used for testing.
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class IntegrationTest {
 
-    protected final User testUser;
+	protected final User testUser;
 
-    @Autowired
-    protected TestRestTemplate restTemplate;
+	@Autowired
+	protected TestRestTemplate restTemplate;
 
-    public IntegrationTest() {
-        testUser = TestUtils.generateRandomUser();
-    }
+	public IntegrationTest() {
+		testUser = TestUtils.generateRandomUser();
+	}
 
-    @BeforeEach
-    public void setUpTestUser() {
-        IntegrationTestUtils.registerUser(restTemplate, testUser);
-    }
+	@BeforeEach
+	public void setUpTestUser() {
+		IntegrationTestUtils.registerUser(restTemplate, testUser);
+	}
 
-    protected TestRestTemplate authenticatedRequest() {
-        return restTemplate.withBasicAuth(
-                testUser.getUsername(), testUser.getPassword());
-    }
+	protected TestRestTemplate authenticatedRequest() {
+		return restTemplate.withBasicAuth(testUser.getUsername(), testUser.getPassword());
+	}
 }

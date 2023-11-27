@@ -15,171 +15,161 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 public class User {
 
-    // One capital letter, one small letter, one number and at least 8 characters
-    public final static String userPasswordValidationRegExpr = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$";
+	// One capital letter, one small letter, one number and at least 8 characters
+	public final static String userPasswordValidationRegExpr =
+			"^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$";
 
-    @Id
-    @Column(name = "username", nullable = false, length = 50)
-    private String username;
+	@Id
+	@Column(name = "username", nullable = false, length = 50)
+	private String username;
 
-    @Column(name = "password", nullable = false, length = 100)
-    @JsonIgnore
-    private String password;
+	@Column(name = "password", nullable = false, length = 100)
+	@JsonIgnore
+	private String password;
 
-    @Column(name = "email", nullable = false, length = 50, unique = true)
-    private String email;
+	@Column(name = "email", nullable = false, length = 50, unique = true)
+	private String email;
 
-    @Column(name = "first_name", nullable = false, length = 50)
-    private String firstName;
+	@Column(name = "first_name", nullable = false, length = 50)
+	private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 50)
-    private String lastName;
+	@Column(name = "last_name", nullable = false, length = 50)
+	private String lastName;
 
-    @Column(name = "password_change_date", nullable = false)
-    @JsonIgnore
-    private Timestamp passwordChangeDate;
+	@Column(name = "password_change_date", nullable = false)
+	@JsonIgnore
+	private Timestamp passwordChangeDate;
 
-    @Column(name = "logout_date", nullable = false)
-    @JsonIgnore
-    private Timestamp logoutDate;
+	@Column(name = "logout_date", nullable = false)
+	@JsonIgnore
+	private Timestamp logoutDate;
 
-    public User() {
-        // We subtract one so that testing work
-        Instant now = Instant.now().minus(1, ChronoUnit.MINUTES);
+	public User() {
+		// We subtract one so that testing work
+		Instant now = Instant.now().minus(1, ChronoUnit.MINUTES);
 
-        passwordChangeDate = Timestamp.from(now);
-        logoutDate = Timestamp.from(now);
-    }
+		passwordChangeDate = Timestamp.from(now);
+		logoutDate = Timestamp.from(now);
+	}
 
-    public User(
-            String username,
-            String password,
-            String email,
-            String firstName,
-            String lastName) {
+	public User(String username, String password, String email, String firstName, String lastName) {
 
-        this();
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+		this();
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
 
-    public User(
-            String username,
-            String password,
-            String email,
-            String firstName,
-            String lastName,
-            Timestamp passwordChangeDate,
-            Timestamp logoutDate) {
+	public User(String username, String password, String email, String firstName, String lastName,
+			Timestamp passwordChangeDate, Timestamp logoutDate) {
 
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.passwordChangeDate = passwordChangeDate;
-        this.logoutDate = logoutDate;
-    }
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.passwordChangeDate = passwordChangeDate;
+		this.logoutDate = logoutDate;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public Timestamp getPasswordChangeDate() {
-        return passwordChangeDate;
-    }
+	public Timestamp getPasswordChangeDate() {
+		return passwordChangeDate;
+	}
 
-    public void setPasswordChangeDate(Timestamp passwordChangeDate) {
-        this.passwordChangeDate = passwordChangeDate;
-    }
+	public void setPasswordChangeDate(Timestamp passwordChangeDate) {
+		this.passwordChangeDate = passwordChangeDate;
+	}
 
-    public Timestamp getLogoutDate() {
-        return logoutDate;
-    }
+	public Timestamp getLogoutDate() {
+		return logoutDate;
+	}
 
-    public void setLogoutDate(Timestamp logoutDate) {
-        this.logoutDate = logoutDate;
-    }
+	public void setLogoutDate(Timestamp logoutDate) {
+		this.logoutDate = logoutDate;
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((username == null) ? 0 : username.hashCode());
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
-        result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-        result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        User other = (User) obj;
-        if (username == null) {
-            if (other.username != null)
-                return false;
-        } else if (!username.equals(other.username))
-            return false;
-        if (email == null) {
-            if (other.email != null)
-                return false;
-        } else if (!email.equals(other.email))
-            return false;
-        if (firstName == null) {
-            if (other.firstName != null)
-                return false;
-        } else if (!firstName.equals(other.firstName))
-            return false;
-        if (lastName == null) {
-            if (other.lastName != null)
-                return false;
-        } else if (!lastName.equals(other.lastName))
-            return false;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (firstName == null) {
+			if (other.firstName != null)
+				return false;
+		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (lastName == null) {
+			if (other.lastName != null)
+				return false;
+		} else if (!lastName.equals(other.lastName))
+			return false;
+		return true;
+	}
 }

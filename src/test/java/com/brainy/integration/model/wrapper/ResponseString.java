@@ -5,7 +5,7 @@ import com.brainy.model.ResponseStatus;
 
 public class ResponseString extends Response<String> {
 
-    public ResponseString(String body, ResponseStatus status) {
-        super(body, status);
-    }
+	public ResponseString(String body, ResponseStatus status) {
+		super(body, status);
+	}
 }

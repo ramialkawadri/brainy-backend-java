@@ -16,33 +16,33 @@ import com.brainy.service.UserService;
 
 public class UserControllerUnitTest {
 
-    private UserService userService;
-    private UserController userController;
+	private UserService userService;
+	private UserController userController;
 
-    public UserControllerUnitTest() {
-        userService = Mockito.mock();
-        userController = new UserController(userService);
-    }
+	public UserControllerUnitTest() {
+		userService = Mockito.mock();
+		userController = new UserController(userService);
+	}
 
-    @Test
-    public void shouldReturnUserInformation() {
-        User user = TestUtils.generateRandomUser();
+	@Test
+	public void shouldReturnUserInformation() {
+		User user = TestUtils.generateRandomUser();
 
-        Response<User> response = userController.getUserInformation(user);
+		Response<User> response = userController.getUserInformation(user);
 
-        Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
-        Assertions.assertEquals(user, response.getData());
-    }
+		Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
+		Assertions.assertEquals(user, response.getData());
+	}
 
-    @Test
-    public void shouldUpdateUser() throws BadRequestException {
-        User user = TestUtils.generateRandomUser();
-        UpdateUserRequest request = Mockito.mock();
+	@Test
+	public void shouldUpdateUser() throws BadRequestException {
+		User user = TestUtils.generateRandomUser();
+		UpdateUserRequest request = Mockito.mock();
 
-        ResponseWithoutData response = userController.updateUser(user, request);
+		ResponseWithoutData response = userController.updateUser(user, request);
 
-        Mockito.verify(request).applyUpdatesOnUser(user);
-        Mockito.verify(userService).saveUserChanges(user);
-        Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
-    }
+		Mockito.verify(request).applyUpdatesOnUser(user);
+		Mockito.verify(userService).saveUserChanges(user);
+		Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
+	}
 }

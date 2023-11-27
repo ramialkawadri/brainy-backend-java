@@ -26,143 +26,131 @@ import jakarta.validation.Valid;
 @RequestMapping("api/files")
 public class UserFilesController {
 
-    private UserFilesService userFilesService;
+	private UserFilesService userFilesService;
 
-    public UserFilesController(UserFilesService userFilesService) {
-        this.userFilesService = userFilesService;
-    }
+	public UserFilesController(UserFilesService userFilesService) {
+		this.userFilesService = userFilesService;
+	}
 
-    @GetMapping
-    public Response<Object> getFileContentOrUserFiles(
-            @RequestAttribute User user,
-            @RequestParam(required = false) String filename) {
+	@GetMapping
+	public Response<Object> getFileContentOrUserFiles(@RequestAttribute User user,
+			@RequestParam(required = false) String filename) {
 
-        Object body = null;
+		Object body = null;
 
-        if (filename != null)
-            body = userFilesService.getFileContent(user.getUsername(), filename);
-        else
-            body = userFilesService.getUserFiles(user.getUsername());
+		if (filename != null)
+			body = userFilesService.getFileContent(user.getUsername(), filename);
+		else
+			body = userFilesService.getUserFiles(user.getUsername());
 
-        return new Response<>(body);
-    }
+		return new Response<>(body);
+	}
 
-    // Only JSON files can be uploaded through this endpoint
-    @PostMapping
-    public Response<String> createOrUpdateJsonFile(
-            @RequestAttribute User user,
-            @RequestParam String filename,
-            @RequestBody String body) throws BadRequestException {
+	// Only JSON files can be uploaded through this endpoint
+	@PostMapping
+	public Response<String> createOrUpdateJsonFile(@RequestAttribute User user,
+			@RequestParam String filename, @RequestBody String body) throws BadRequestException {
 
-        if (filename.isBlank())
-            throw new BadRequestException("the filename must be at least one character long");
+		if (filename.isBlank())
+			throw new BadRequestException("the filename must be at least one character long");
 
-        boolean canUserCreateTheFile = userFilesService.canUserCreateFileWithSize(
-                user.getUsername(), filename, body.length());
+		boolean canUserCreateTheFile = userFilesService
+				.canUserCreateFileWithSize(user.getUsername(), filename, body.length());
 
-        if (!canUserCreateTheFile)
-            throw new BadRequestException("there isn't enough space");
+		if (!canUserCreateTheFile)
+			throw new BadRequestException("there isn't enough space");
 
-        userFilesService.createOrUpdateJsonFile(user.getUsername(), filename, body);
-        return new Response<>("the file has been created");
-    }
+		userFilesService.createOrUpdateJsonFile(user.getUsername(), filename, body);
+		return new Response<>("the file has been created");
+	}
 
-    @DeleteMapping
-    public ResponseWithoutData deleteFile(
-            @RequestAttribute User user,
-            @RequestParam String filename) {
-        userFilesService.deleteFile(user.getUsername(), filename);
-        return new ResponseWithoutData();
-    }
+	@DeleteMapping
+	public ResponseWithoutData deleteFile(@RequestAttribute User user,
+			@RequestParam String filename) {
+		userFilesService.deleteFile(user.getUsername(), filename);
+		return new ResponseWithoutData();
+	}
 
-    @GetMapping("size")
-    public Response<Long> getUserUsedStorage(@RequestAttribute User user) {
-        long size = userFilesService.getUserUsedStorage(user.getUsername());
-        return new Response<>(size);
-    }
+	@GetMapping("size")
+	public Response<Long> getUserUsedStorage(@RequestAttribute User user) {
+		long size = userFilesService.getUserUsedStorage(user.getUsername());
+		return new Response<>(size);
+	}
 
-    @PostMapping("folder")
-    public Response<String> createFolder(@RequestAttribute User user,
-            @RequestParam String foldername) throws BadRequestException {
+	@PostMapping("folder")
+	public Response<String> createFolder(@RequestAttribute User user,
+			@RequestParam String foldername) throws BadRequestException {
 
-        if (foldername.isBlank())
-            throw new BadRequestException("the foldername must be at least one character long");
+		if (foldername.isBlank())
+			throw new BadRequestException("the foldername must be at least one character long");
 
-        userFilesService.createFolder(user.getUsername(), foldername);
+		userFilesService.createFolder(user.getUsername(), foldername);
 
-        return new Response<String>("folder created");
-    }
+		return new Response<String>("folder created");
+	}
 
-    @DeleteMapping("folder")
-    public Response<String> deleteFolder(@RequestAttribute User user,
-            @RequestParam String foldername) throws BadRequestException {
+	@DeleteMapping("folder")
+	public Response<String> deleteFolder(@RequestAttribute User user,
+			@RequestParam String foldername) throws BadRequestException {
 
-        if (foldername.isBlank())
-            throw new BadRequestException("the foldername must be at least one character long");
+		if (foldername.isBlank())
+			throw new BadRequestException("the foldername must be at least one character long");
 
-        userFilesService.deleteFolder(user.getUsername(), foldername);
+		userFilesService.deleteFolder(user.getUsername(), foldername);
 
-        return new Response<String>("folder deleted");
-    }
+		return new Response<String>("folder deleted");
+	}
 
-    // TODO: test: Integration
-    @GetMapping("sharedWith")
-    public Response<List<SharedFile>> getFilesSharedWithUser(
-            @RequestAttribute User user) {
+	// TODO: test: Integration
+	@GetMapping("sharedWith")
+	public Response<List<SharedFile>> getFilesSharedWithUser(@RequestAttribute User user) {
 
-        List<SharedFile> sharedFiles = userFilesService.getFilesSharedWithUser(user);
+		List<SharedFile> sharedFiles = userFilesService.getFilesSharedWithUser(user);
 
-        return new Response<>(sharedFiles);
-    }
+		return new Response<>(sharedFiles);
+	}
 
-    // TODO: Integration
-    @GetMapping("share")
-    public Response<List<SharedFile>> getFileShares(
-            @RequestAttribute User user, @RequestParam String filename) {
+	// TODO: Integration
+	@GetMapping("share")
+	public Response<List<SharedFile>> getFileShares(@RequestAttribute User user,
+			@RequestParam String filename) {
 
-        List<SharedFile> sharedFiles = userFilesService.getFileShares(user, filename);
-        return new Response<>(sharedFiles);
-    }
+		List<SharedFile> sharedFiles = userFilesService.getFileShares(user, filename);
+		return new Response<>(sharedFiles);
+	}
 
-    // TODO: Integration
-    @PostMapping("share")
-    public Response<String> shareFileWith(
-            @RequestAttribute(name = "user") User fileOwner,
-            @RequestParam String filename,
-            @RequestParam(name = "sharedWith") String sharedWithUsername,
-            @RequestParam(defaultValue = "false") boolean canEdit)
-            throws BadRequestException {
+	// TODO: Integration
+	@PostMapping("share")
+	public Response<String> shareFileWith(@RequestAttribute(name = "user") User fileOwner,
+			@RequestParam String filename,
+			@RequestParam(name = "sharedWith") String sharedWithUsername,
+			@RequestParam(defaultValue = "false") boolean canEdit) throws BadRequestException {
 
-        userFilesService.shareFileWith(
-                fileOwner, filename, sharedWithUsername, canEdit);
-        return new Response<String>("file shared successfully");
-    }
+		userFilesService.shareFileWith(fileOwner, filename, sharedWithUsername, canEdit);
+		return new Response<String>("file shared successfully");
+	}
 
-    // TODO: Integration
-    @DeleteMapping("share")
-    public Response<String> deleteShare(
-            @RequestAttribute(name = "user") User fileOwner,
-            @RequestParam String filename,
-            @RequestParam(name = "sharedWith") String sharedWithUsername)
-            throws BadRequestException {
+	// TODO: Integration
+	@DeleteMapping("share")
+	public Response<String> deleteShare(@RequestAttribute(name = "user") User fileOwner,
+			@RequestParam String filename,
+			@RequestParam(name = "sharedWith") String sharedWithUsername)
+			throws BadRequestException {
 
-        userFilesService.deleteShare(fileOwner, filename, sharedWithUsername);
+		userFilesService.deleteShare(fileOwner, filename, sharedWithUsername);
 
-        return new Response<String>("removed the share successfully");
-    }
+		return new Response<String>("removed the share successfully");
+	}
 
-    // TODO: Integration
-    @PatchMapping("share")
-    public Response<String> updateSharedFileAccess(
-            @RequestAttribute(name = "user") User fileOwner,
-            @RequestParam String filename,
-            @RequestParam(name = "sharedWith") String sharedWithUsername,
-            @RequestBody @Valid UpdateSharedFileAccessRequest request)
-            throws BadRequestException {
+	// TODO: Integration
+	@PatchMapping("share")
+	public Response<String> updateSharedFileAccess(@RequestAttribute(name = "user") User fileOwner,
+			@RequestParam String filename,
+			@RequestParam(name = "sharedWith") String sharedWithUsername,
+			@RequestBody @Valid UpdateSharedFileAccessRequest request) throws BadRequestException {
 
-        userFilesService.updateSharedFileAccess(fileOwner, filename,
-                sharedWithUsername, request);
+		userFilesService.updateSharedFileAccess(fileOwner, filename, sharedWithUsername, request);
 
-        return new Response<>("the update has been applied");
-    }
+		return new Response<>("the update has been applied");
+	}
 }

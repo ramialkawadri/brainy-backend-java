@@ -17,83 +17,78 @@ import jakarta.persistence.EntityExistsException;
 @Service
 public class DefaultUserService implements UserService {
 
-    private UserDao userDao;
-    private PasswordEncoder passwordEncoder;
+	private UserDao userDao;
+	private PasswordEncoder passwordEncoder;
 
-    public DefaultUserService(
-            UserDao userDao,
-            PasswordEncoder passwordEncoder) {
+	public DefaultUserService(UserDao userDao, PasswordEncoder passwordEncoder) {
 
-        this.userDao = userDao;
-        this.passwordEncoder = passwordEncoder;
-    }
+		this.userDao = userDao;
+		this.passwordEncoder = passwordEncoder;
+	}
 
-    @Override
-    public User findUserByUsername(String username) {
-        return userDao.findUserByUserName(username);
-    }
+	@Override
+	public User findUserByUsername(String username) {
+		return userDao.findUserByUserName(username);
+	}
 
-    @Override
-    public void registerUserFromRequest(UserRegistrationRequest request)
-            throws BadRequestException {
+	@Override
+	public void registerUserFromRequest(UserRegistrationRequest request)
+			throws BadRequestException {
 
-        User user = request.toUser();
+		User user = request.toUser();
 
-        encodeAndUpdateUserPassword(user, user.getPassword());
+		encodeAndUpdateUserPassword(user, user.getPassword());
 
-        try {
-            userDao.registerUser(user);
-        } catch (EntityExistsException | DataIntegrityViolationException e) {
-            throw new BadRequestException(
-                    "a user with the same username or email already exists");
-        }
-    }
+		try {
+			userDao.registerUser(user);
+		} catch (EntityExistsException | DataIntegrityViolationException e) {
+			throw new BadRequestException("a user with the same username or email already exists");
+		}
+	}
 
-    @Override
-    public boolean isTokenStillValidForUser(Instant issuedAt, String username) {
-        User user = findUserByUsername(username);
+	@Override
+	public boolean isTokenStillValidForUser(Instant issuedAt, String username) {
+		User user = findUserByUsername(username);
 
-        if (user == null)
-            return false;
+		if (user == null)
+			return false;
 
-        Instant passwordChangeDate = user.getPasswordChangeDate().toInstant();
-        Instant logoutDate = user.getLogoutDate().toInstant();
+		Instant passwordChangeDate = user.getPasswordChangeDate().toInstant();
+		Instant logoutDate = user.getLogoutDate().toInstant();
 
-        return passwordChangeDate.isBefore(issuedAt) &&
-                logoutDate.isBefore(issuedAt);
-    }
+		return passwordChangeDate.isBefore(issuedAt) && logoutDate.isBefore(issuedAt);
+	}
 
-    @Override
-    public void logoutUser(User user) {
-        Timestamp now = Timestamp.from(Instant.now());
-        user.setLogoutDate(now);
+	@Override
+	public void logoutUser(User user) {
+		Timestamp now = Timestamp.from(Instant.now());
+		user.setLogoutDate(now);
 
-        userDao.saveUserChanges(user);
-    }
+		userDao.saveUserChanges(user);
+	}
 
-    @Override
-    public void updateUserPassword(User user, String newPassword) {
+	@Override
+	public void updateUserPassword(User user, String newPassword) {
 
-        encodeAndUpdateUserPassword(user, newPassword);
+		encodeAndUpdateUserPassword(user, newPassword);
 
-        Timestamp now = Timestamp.from(Instant.now());
-        user.setPasswordChangeDate(now);
+		Timestamp now = Timestamp.from(Instant.now());
+		user.setPasswordChangeDate(now);
 
-        userDao.saveUserChanges(user);
-    }
+		userDao.saveUserChanges(user);
+	}
 
-    private void encodeAndUpdateUserPassword(User user, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
-        user.setPassword(encodedPassword);
-    }
+	private void encodeAndUpdateUserPassword(User user, String password) {
+		String encodedPassword = passwordEncoder.encode(password);
+		user.setPassword(encodedPassword);
+	}
 
-    @Override
-    public void saveUserChanges(User user) throws BadRequestException {
-        try {
-            userDao.saveUserChanges(user);
-        } catch (EntityExistsException | DataIntegrityViolationException e) {
-            throw new BadRequestException(
-                    "a user with the same username or email already exists");
-        }
-    }
+	@Override
+	public void saveUserChanges(User user) throws BadRequestException {
+		try {
+			userDao.saveUserChanges(user);
+		} catch (EntityExistsException | DataIntegrityViolationException e) {
+			throw new BadRequestException("a user with the same username or email already exists");
+		}
+	}
 }

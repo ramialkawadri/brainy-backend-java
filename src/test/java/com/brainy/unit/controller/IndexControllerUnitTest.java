@@ -9,17 +9,17 @@ import com.brainy.model.ResponseStatus;
 
 public class IndexControllerUnitTest {
 
-    private IndexController indexController;
+	private IndexController indexController;
 
-    public IndexControllerUnitTest() {
-        indexController = new IndexController();
-    }
+	public IndexControllerUnitTest() {
+		indexController = new IndexController();
+	}
 
-    @Test
-    public void shouldGetStatus() {
-        Response<String> response = indexController.getServerStatus();
+	@Test
+	public void shouldGetStatus() {
+		Response<String> response = indexController.getServerStatus();
 
-        Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
-        Assertions.assertEquals("server is up and running!", response.getData());
-    }
+		Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
+		Assertions.assertEquals("server is up and running!", response.getData());
+	}
 }

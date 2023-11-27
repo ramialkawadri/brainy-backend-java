@@ -13,43 +13,43 @@ import com.brainy.model.request.UpdateUserRequest;
 
 public class UserControllerIntegrationTest extends IntegrationTest {
 
-    @Test
-    public void shouldGetUserInformation() {
-        ResponseEntity<ResponseUser> response = getUserInformation();
+	@Test
+	public void shouldGetUserInformation() {
+		ResponseEntity<ResponseUser> response = getUserInformation();
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        ResponseUser body = response.getBody();
+		ResponseUser body = response.getBody();
 
-        Assertions.assertNotNull(body);
+		Assertions.assertNotNull(body);
 
-        User responseUser = body.getData();
-        Assertions.assertEquals(testUser.getUsername(), responseUser.getUsername());
-        Assertions.assertEquals(testUser.getEmail(), responseUser.getEmail());
-    }
+		User responseUser = body.getData();
+		Assertions.assertEquals(testUser.getUsername(), responseUser.getUsername());
+		Assertions.assertEquals(testUser.getEmail(), responseUser.getEmail());
+	}
 
-    @Test
-    public void shouldUpdateUser() {
-        HttpEntity<UpdateUserRequest> request = new HttpEntity<>(new UpdateUserRequest("new", null, null));
+	@Test
+	public void shouldUpdateUser() {
+		HttpEntity<UpdateUserRequest> request =
+				new HttpEntity<>(new UpdateUserRequest("new", null, null));
 
-        ResponseEntity<Void> updateResponse = authenticatedRequest()
-                .postForEntity("/api/user", request, Void.class);
+		ResponseEntity<Void> updateResponse =
+				authenticatedRequest().postForEntity("/api/user", request, Void.class);
 
-        Assertions.assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
 
-        ResponseEntity<ResponseUser> userInformation = getUserInformation();
+		ResponseEntity<ResponseUser> userInformation = getUserInformation();
 
-        Assertions.assertEquals(HttpStatus.OK, userInformation.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, userInformation.getStatusCode());
 
-        ResponseUser body = userInformation.getBody();
+		ResponseUser body = userInformation.getBody();
 
-        Assertions.assertNotNull(body);
+		Assertions.assertNotNull(body);
 
-        Assertions.assertEquals(body.getData().getFirstName(), "new");
-    }
+		Assertions.assertEquals(body.getData().getFirstName(), "new");
+	}
 
-    private ResponseEntity<ResponseUser> getUserInformation() {
-        return authenticatedRequest()
-                .getForEntity("/api/user", ResponseUser.class);
-    }
+	private ResponseEntity<ResponseUser> getUserInformation() {
+		return authenticatedRequest().getForEntity("/api/user", ResponseUser.class);
+	}
 }

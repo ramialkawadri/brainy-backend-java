@@ -20,24 +20,23 @@ import jakarta.validation.Valid;
 @RequestMapping("api/user")
 public class UserController {
 
-    private UserService userService;
+	private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
-    @GetMapping
-    public Response<User> getUserInformation(@RequestAttribute User user) {
-        return new Response<User>(user);
-    }
+	@GetMapping
+	public Response<User> getUserInformation(@RequestAttribute User user) {
+		return new Response<User>(user);
+	}
 
-    @PostMapping
-    public ResponseWithoutData updateUser(
-            @RequestAttribute User user,
-            @RequestBody @Valid UpdateUserRequest request) throws BadRequestException {
+	@PostMapping
+	public ResponseWithoutData updateUser(@RequestAttribute User user,
+			@RequestBody @Valid UpdateUserRequest request) throws BadRequestException {
 
-        request.applyUpdatesOnUser(user);
-        userService.saveUserChanges(user);
-        return new ResponseWithoutData();
-    }
+		request.applyUpdatesOnUser(user);
+		userService.saveUserChanges(user);
+		return new ResponseWithoutData();
+	}
 }

@@ -17,11 +17,14 @@ environments.
 
 Those are the primary development tools used in developing the backend:
 
+- IntelliJ IDEA is used for code coverage
+- Postman
 - Visual studio code
 - [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack)
 - [Spring Boot Extension Pack](https://marketplace.visualstudio.com/items?itemName=vmware.vscode-boot-dev-pack)
-- IntelliJ IDEA is used for code coverage
-- Postman
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- [XML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
+- [Bash Beautify](https://marketplace.visualstudio.com/items?itemName=shakram02.bash-beautify)
 
 ### Setting up Database
 

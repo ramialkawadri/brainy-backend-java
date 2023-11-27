@@ -16,23 +16,20 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 @Configuration
 public class JwtConfig {
 
-    @Value("${jwt-key}")
-    private String jwtKey;
+	@Value("${jwt-key}")
+	private String jwtKey;
 
-    @Bean
-    JwtEncoder jwtEncoder() {
-        return new NimbusJwtEncoder(new ImmutableSecret<>(jwtKey.getBytes()));
-    }
+	@Bean
+	JwtEncoder jwtEncoder() {
+		return new NimbusJwtEncoder(new ImmutableSecret<>(jwtKey.getBytes()));
+	}
 
-    @Bean
-    JwtDecoder jwtDecoder() {
-        byte[] bytes = jwtKey.getBytes();
+	@Bean
+	JwtDecoder jwtDecoder() {
+		byte[] bytes = jwtKey.getBytes();
 
-        SecretKeySpec originalKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
+		SecretKeySpec originalKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
 
-        return NimbusJwtDecoder
-                .withSecretKey(originalKey)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
+		return NimbusJwtDecoder.withSecretKey(originalKey).macAlgorithm(MacAlgorithm.HS512).build();
+	}
 }

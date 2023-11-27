@@ -8,8 +8,8 @@ import com.brainy.model.Response;
 @RestController
 public class IndexController {
 
-    @GetMapping("/")
-    public Response<String> getServerStatus() {
-        return new Response<String>("server is up and running!");
-    }
+	@GetMapping("/")
+	public Response<String> getServerStatus() {
+		return new Response<String>("server is up and running!");
+	}
 }

@@ -19,59 +19,52 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class HttpSecurityConfig {
 
-    private BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter;
+	private BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter;
 
-    public HttpSecurityConfig(
-            BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter) {
+	public HttpSecurityConfig(BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter) {
 
-        this.bearerTokenAuthenticationFilter = bearerTokenAuthenticationFilter;
-    }
+		this.bearerTokenAuthenticationFilter = bearerTokenAuthenticationFilter;
+	}
 
-    @Bean
-    SecurityFilterChain securityConfiguration(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable());
-        http.logout(logout -> logout.disable());
-        http.passwordManagement(password -> password.disable());
+	@Bean
+	SecurityFilterChain securityConfiguration(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable());
+		http.logout(logout -> logout.disable());
+		http.passwordManagement(password -> password.disable());
 
-        authorizeHttpRequests(http);
+		authorizeHttpRequests(http);
 
-        http.addFilterBefore(
-                bearerTokenAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(bearerTokenAuthenticationFilter,
+				UsernamePasswordAuthenticationFilter.class);
 
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.sessionManagement(
+				session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.exceptionHandling(customizer -> customizer
-                .authenticationEntryPoint(new CustomUnauthorizedResponse()));
+		http.exceptionHandling(customizer -> customizer
+				.authenticationEntryPoint(new CustomUnauthorizedResponse()));
 
-        http.httpBasic(withDefaults());
+		http.httpBasic(withDefaults());
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    private void authorizeHttpRequests(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(
-                        "/api/**",
-                        "/token",
-                        "/password",
-                        "/logout")
-                .authenticated()
-                .anyRequest().permitAll());
-    }
+	private void authorizeHttpRequests(HttpSecurity http) throws Exception {
+		http.authorizeHttpRequests(
+				authorize -> authorize.requestMatchers("/api/**", "/token", "/password", "/logout")
+						.authenticated().anyRequest().permitAll());
+	}
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+		config.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("*");
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
 
-        return source;
-    }
+		return source;
+	}
 }

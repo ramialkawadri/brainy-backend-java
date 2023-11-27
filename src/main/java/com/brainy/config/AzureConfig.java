@@ -15,35 +15,32 @@ import com.azure.storage.blob.batch.BlobBatchClientBuilder;
 @Configuration
 public class AzureConfig {
 
-    @Value("${storage-account-name}")
-    private String storageAccountName;
+	@Value("${storage-account-name}")
+	private String storageAccountName;
 
-    private DefaultAzureCredential defaultAzureCredential;
-    private BlobServiceClient blobServiceClient;
+	private DefaultAzureCredential defaultAzureCredential;
+	private BlobServiceClient blobServiceClient;
 
-    @Bean
-    DefaultAzureCredential defaultCredential() {
-        defaultAzureCredential = new DefaultAzureCredentialBuilder().build();
-        return defaultAzureCredential;
-    }
+	@Bean
+	DefaultAzureCredential defaultCredential() {
+		defaultAzureCredential = new DefaultAzureCredentialBuilder().build();
+		return defaultAzureCredential;
+	}
 
-    @Bean
-    @DependsOn("defaultCredential")
-    BlobServiceClient blobServiceClient() {
-        String url = String.format("https://%s.blob.core.windows.net/",
-                storageAccountName);
+	@Bean
+	@DependsOn("defaultCredential")
+	BlobServiceClient blobServiceClient() {
+		String url = String.format("https://%s.blob.core.windows.net/", storageAccountName);
 
-        blobServiceClient = new BlobServiceClientBuilder()
-                .endpoint(url)
-                .credential(defaultAzureCredential)
-                .buildClient();
+		blobServiceClient = new BlobServiceClientBuilder().endpoint(url)
+				.credential(defaultAzureCredential).buildClient();
 
-        return blobServiceClient;
-    }
+		return blobServiceClient;
+	}
 
-    @Bean
-    @DependsOn("blobServiceClient")
-    BlobBatchClient blobBatchClient() {
-        return new BlobBatchClientBuilder(blobServiceClient).buildClient();
-    }
+	@Bean
+	@DependsOn("blobServiceClient")
+	BlobBatchClient blobBatchClient() {
+		return new BlobBatchClientBuilder(blobServiceClient).buildClient();
+	}
 }

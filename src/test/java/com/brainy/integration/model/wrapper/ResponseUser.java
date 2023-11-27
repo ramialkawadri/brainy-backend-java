@@ -6,7 +6,7 @@ import com.brainy.model.entity.User;
 
 public class ResponseUser extends Response<User> {
 
-    public ResponseUser(User body, ResponseStatus status) {
-        super(body, status);
-    }
+	public ResponseUser(User body, ResponseStatus status) {
+		super(body, status);
+	}
 }

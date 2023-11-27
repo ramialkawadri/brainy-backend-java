@@ -10,16 +10,15 @@ import org.springframework.security.provisioning.UserDetailsManager;
 @Configuration
 public class DatabaseConfig {
 
-    @Bean
-    UserDetailsManager databaseUserDetailsManager(DataSource dataSource) {
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+	@Bean
+	UserDetailsManager databaseUserDetailsManager(DataSource dataSource) {
+		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 
-        jdbcUserDetailsManager.setUsersByUsernameQuery(
-                "select username, password, true from users where username=?");
+		jdbcUserDetailsManager.setUsersByUsernameQuery(
+				"select username, password, true from users where username=?");
 
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
-                "select ?, 'user'");
+		jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select ?, 'user'");
 
-        return jdbcUserDetailsManager;
-    }
+		return jdbcUserDetailsManager;
+	}
 }

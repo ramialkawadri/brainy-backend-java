@@ -12,33 +12,34 @@ import com.brainy.model.request.UserRegistrationRequest;
 
 public class IntegrationTestUtils {
 
-    public static void registerUser(TestRestTemplate restTemplate, User user) {
-        UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.fromUser(user);
+	public static void registerUser(TestRestTemplate restTemplate, User user) {
+		UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.fromUser(user);
 
-        HttpEntity<UserRegistrationRequest> request = new HttpEntity<>(userRegistrationRequest);
+		HttpEntity<UserRegistrationRequest> request = new HttpEntity<>(userRegistrationRequest);
 
-        ResponseEntity<Void> response = restTemplate.postForEntity("/register", request, Void.class);
+		ResponseEntity<Void> response =
+				restTemplate.postForEntity("/register", request, Void.class);
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
 
-    public static String getAccessToken(TestRestTemplate restTemplate, User user) {
-        ResponseEntity<ResponseString> response = restTemplate
-                .withBasicAuth(user.getUsername(), user.getPassword())
-                .postForEntity("/token", null, ResponseString.class);
+	public static String getAccessToken(TestRestTemplate restTemplate, User user) {
+		ResponseEntity<ResponseString> response =
+				restTemplate.withBasicAuth(user.getUsername(), user.getPassword())
+						.postForEntity("/token", null, ResponseString.class);
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        ResponseString responseBody = response.getBody();
-        Assertions.assertNotNull(responseBody);
-        Assertions.assertNotNull(responseBody.getData());
+		ResponseString responseBody = response.getBody();
+		Assertions.assertNotNull(responseBody);
+		Assertions.assertNotNull(responseBody.getData());
 
-        return responseBody.getData();
-    }
+		return responseBody.getData();
+	}
 
-    public static TestRestTemplate getAuthenticatedTemplate(
-            TestRestTemplate restTemplate, User user) {
+	public static TestRestTemplate getAuthenticatedTemplate(TestRestTemplate restTemplate,
+			User user) {
 
-        return restTemplate.withBasicAuth(user.getUsername(), user.getPassword());
-    }
+		return restTemplate.withBasicAuth(user.getUsername(), user.getPassword());
+	}
 }

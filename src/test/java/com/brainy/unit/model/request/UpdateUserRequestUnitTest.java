@@ -13,18 +13,18 @@ import jakarta.validation.Validator;
 
 public class UpdateUserRequestUnitTest {
 
-    private Validator validator;
+	private Validator validator;
 
-    public UpdateUserRequestUnitTest() {
-        validator = UnitTestUtils.getValidator();
-    }
+	public UpdateUserRequestUnitTest() {
+		validator = UnitTestUtils.getValidator();
+	}
 
-    @Test
-    public void shouldNotAcceptUpdate() {
-        UpdateUserRequest request = new UpdateUserRequest("s", null, "email.com");
+	@Test
+	public void shouldNotAcceptUpdate() {
+		UpdateUserRequest request = new UpdateUserRequest("s", null, "email.com");
 
-        Set<ConstraintViolation<UpdateUserRequest>> violations = validator.validate(request);
+		Set<ConstraintViolation<UpdateUserRequest>> violations = validator.validate(request);
 
-        Assertions.assertEquals(2, violations.size());
-    }
+		Assertions.assertEquals(2, violations.size());
+	}
 }

@@ -12,14 +12,14 @@ LOCATION=$2
 
 echo "Creating storage account at RG ${RESOURCEGROUPNAME} and location ${LOCATION}"
 az storage account create \
-  --name $STORAGEACCOUNTNAME \
-  --resource-group $RESOURCEGROUPNAME \
-  --location $LOCATION \
-  --sku $SKU \
-  --kind $KIND
+--name $STORAGEACCOUNTNAME \
+--resource-group $RESOURCEGROUPNAME \
+--location $LOCATION \
+--sku $SKU \
+--kind $KIND
 
 echo "Creating storage account container"
 az storage container create \
-  --name $COTNAINERNAME \
-  --account-name $STORAGEACCOUNTNAME \
-  --resource-group $RESOURCEGROUPNAME
+--name $COTNAINERNAME \
+--account-name $STORAGEACCOUNTNAME \
+--resource-group $RESOURCEGROUPNAME

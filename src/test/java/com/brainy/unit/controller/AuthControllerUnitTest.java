@@ -20,66 +20,61 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class AuthControllerUnitTest {
 
-    private TokenService tokenService;
-    private UserService userService;
-    private AuthController authController;
+	private TokenService tokenService;
+	private UserService userService;
+	private AuthController authController;
 
-    public AuthControllerUnitTest() {
-        tokenService = Mockito.mock();
-        userService = Mockito.mock();
-        authController = new AuthController(tokenService, userService);
-    }
+	public AuthControllerUnitTest() {
+		tokenService = Mockito.mock();
+		userService = Mockito.mock();
+		authController = new AuthController(tokenService, userService);
+	}
 
-    @Test
-    public void shouldGetTokenAndAddItToCookies() {
-        HttpServletResponse servletResponse = Mockito.mock();
+	@Test
+	public void shouldGetTokenAndAddItToCookies() {
+		HttpServletResponse servletResponse = Mockito.mock();
 
-        Mockito.when(tokenService.generateToken(Mockito.any()))
-                .thenReturn("token_value");
+		Mockito.when(tokenService.generateToken(Mockito.any())).thenReturn("token_value");
 
-        Mockito.doAnswer(invocation -> {
-            Cookie cookie = (Cookie) invocation.getArguments()[0];
+		Mockito.doAnswer(invocation -> {
+			Cookie cookie = (Cookie) invocation.getArguments()[0];
 
-            Assertions.assertEquals("token", cookie.getName());
-            Assertions.assertEquals("token_value", cookie.getValue());
+			Assertions.assertEquals("token", cookie.getName());
+			Assertions.assertEquals("token_value", cookie.getValue());
 
-            return true;
-        }).when(servletResponse).addCookie(Mockito.any());
+			return true;
+		}).when(servletResponse).addCookie(Mockito.any());
 
-        Response<String> tokenResponse = authController.getToken(null, servletResponse);
+		Response<String> tokenResponse = authController.getToken(null, servletResponse);
 
-        Assertions.assertEquals(ResponseStatus.SUCCESS, tokenResponse.getStatus());
-        Assertions.assertEquals("token_value", tokenResponse.getData());
-    }
+		Assertions.assertEquals(ResponseStatus.SUCCESS, tokenResponse.getStatus());
+		Assertions.assertEquals("token_value", tokenResponse.getData());
+	}
 
-    @Test
-    public void shouldRegisterUser() throws Exception {
-        UserRegistrationRequest request = new UserRegistrationRequest(
-                "test",
-                "StrongPass1",
-                "test@test.com",
-                "firstName",
-                "lastName");
+	@Test
+	public void shouldRegisterUser() throws Exception {
+		UserRegistrationRequest request = new UserRegistrationRequest("test", "StrongPass1",
+				"test@test.com", "firstName", "lastName");
 
-        authController.registerUser(request);
+		authController.registerUser(request);
 
-        Mockito.verify(userService).registerUserFromRequest(request);
-    }
+		Mockito.verify(userService).registerUserFromRequest(request);
+	}
 
-    @Test
-    public void shouldLogout() {
-        User user = TestUtils.generateRandomUser();
-        authController.logout(user);
-        Mockito.verify(userService).logoutUser(user);
-    }
+	@Test
+	public void shouldLogout() {
+		User user = TestUtils.generateRandomUser();
+		authController.logout(user);
+		Mockito.verify(userService).logoutUser(user);
+	}
 
-    @Test
-    public void shouldChangePassword() throws BadRequestException {
-        User user = TestUtils.generateRandomUser();
-        UpdatePasswordRequest request = new UpdatePasswordRequest("StrongPass1");
+	@Test
+	public void shouldChangePassword() throws BadRequestException {
+		User user = TestUtils.generateRandomUser();
+		UpdatePasswordRequest request = new UpdatePasswordRequest("StrongPass1");
 
-        authController.changeUserPassword(user, request);
+		authController.changeUserPassword(user, request);
 
-        Mockito.verify(userService).updateUserPassword(user, "StrongPass1");
-    }
+		Mockito.verify(userService).updateUserPassword(user, "StrongPass1");
+	}
 }

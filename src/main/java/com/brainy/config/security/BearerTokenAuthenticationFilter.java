@@ -25,107 +25,101 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private TokenService tokenService;
-    private UserService userService;
-    private UserDetailsManager userDetailsManager;
+	private TokenService tokenService;
+	private UserService userService;
+	private UserDetailsManager userDetailsManager;
 
-    public BearerTokenAuthenticationFilter(
-            TokenService tokenService,
-            UserService userService,
-            UserDetailsManager userDetailsManager) {
+	public BearerTokenAuthenticationFilter(TokenService tokenService, UserService userService,
+			UserDetailsManager userDetailsManager) {
 
-        this.tokenService = tokenService;
-        this.userService = userService;
-        this.userDetailsManager = userDetailsManager;
-    }
+		this.tokenService = tokenService;
+		this.userService = userService;
+		this.userDetailsManager = userDetailsManager;
+	}
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest servletRequest,
-            HttpServletResponse servletResponse,
-            FilterChain chain) throws ServletException, IOException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest servletRequest,
+			HttpServletResponse servletResponse, FilterChain chain)
+			throws ServletException, IOException {
 
-        try {
-            Jwt token = getJwtFromRequest(servletRequest);
-            useTokenForAuthenticationIfValid(token);
-        } catch (BadJwtException ignored) {
-        } finally {
-            chain.doFilter(servletRequest, servletResponse);
-        }
-    }
+		try {
+			Jwt token = getJwtFromRequest(servletRequest);
+			useTokenForAuthenticationIfValid(token);
+		} catch (BadJwtException ignored) {
+		} finally {
+			chain.doFilter(servletRequest, servletResponse);
+		}
+	}
 
-    @Nullable
-    private Jwt getJwtFromRequest(HttpServletRequest request) {
-        String encodedToken;
+	@Nullable
+	private Jwt getJwtFromRequest(HttpServletRequest request) {
+		String encodedToken;
 
-        if (isJwtInCookies(request))
-            encodedToken = getJwtFromCookies(request);
-        else
-            encodedToken = getJwtFromAuthorizationHeader(request);
+		if (isJwtInCookies(request))
+			encodedToken = getJwtFromCookies(request);
+		else
+			encodedToken = getJwtFromAuthorizationHeader(request);
 
-        return (encodedToken == null || encodedToken.isEmpty())
-                ? null
-                : tokenService.decodeToken(encodedToken);
-    }
+		return (encodedToken == null || encodedToken.isEmpty()) ? null
+				: tokenService.decodeToken(encodedToken);
+	}
 
-    private void useTokenForAuthenticationIfValid(@Nullable Jwt jwt) {
-        if (jwt == null || tokenService.isTokenExpired(jwt) ||
-                !userService.isTokenStillValidForUser(
-                        jwt.getIssuedAt(), jwt.getSubject()))
-            return;
+	private void useTokenForAuthenticationIfValid(@Nullable Jwt jwt) {
+		if (jwt == null || tokenService.isTokenExpired(jwt)
+				|| !userService.isTokenStillValidForUser(jwt.getIssuedAt(), jwt.getSubject()))
+			return;
 
-        setAuthenticationFromToken(jwt);
-    }
+		setAuthenticationFromToken(jwt);
+	}
 
-    private void setAuthenticationFromToken(Jwt jwt) {
-        String username = jwt.getSubject();
+	private void setAuthenticationFromToken(Jwt jwt) {
+		String username = jwt.getSubject();
 
-        UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
+		UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+		UsernamePasswordAuthenticationToken authentication =
+				new UsernamePasswordAuthenticationToken(userDetails, null,
+						userDetails.getAuthorities());
 
-        SecurityContextHolder
-                .getContext()
-                .setAuthentication(authentication);
-    }
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	}
 
-    private boolean isJwtInCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+	private boolean isJwtInCookies(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
 
-        if (cookies == null)
-            return false;
+		if (cookies == null)
+			return false;
 
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token"))
-                return true;
-        }
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals("token"))
+				return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Nullable
-    private String getJwtFromAuthorizationHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+	@Nullable
+	private String getJwtFromAuthorizationHeader(HttpServletRequest request) {
+		String bearerToken = request.getHeader("Authorization");
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            String accessToken = bearerToken.substring(7);
-            return accessToken;
-        }
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			String accessToken = bearerToken.substring(7);
+			return accessToken;
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Nullable
-    private String getJwtFromCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+	@Nullable
+	private String getJwtFromCookies(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
 
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token"))
-                return cookie.getValue();
-        }
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals("token"))
+				return cookie.getValue();
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

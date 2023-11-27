@@ -4,9 +4,9 @@ import com.brainy.model.entity.User;
 
 public interface UserDao {
 
-    User findUserByUserName(String username);
+	User findUserByUserName(String username);
 
-    void registerUser(User user);
+	void registerUser(User user);
 
-    void saveUserChanges(User user);
+	void saveUserChanges(User user);
 }

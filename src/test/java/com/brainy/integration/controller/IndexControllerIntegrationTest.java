@@ -12,17 +12,18 @@ import com.brainy.integration.model.wrapper.ResponseString;
 
 public class IndexControllerIntegrationTest extends IntegrationTest {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
-    @Test
-    public void shouldStartServer() {
-        ResponseEntity<ResponseString> response = restTemplate.getForEntity("/", ResponseString.class);
+	@Test
+	public void shouldStartServer() {
+		ResponseEntity<ResponseString> response =
+				restTemplate.getForEntity("/", ResponseString.class);
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        ResponseString body = response.getBody();
-        Assertions.assertNotNull(body);
-        Assertions.assertEquals("server is up and running!", body.getData());
-    }
+		ResponseString body = response.getBody();
+		Assertions.assertNotNull(body);
+		Assertions.assertEquals("server is up and running!", body.getData());
+	}
 }

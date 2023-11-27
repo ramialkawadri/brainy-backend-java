@@ -8,16 +8,15 @@ import com.brainy.model.request.UserRegistrationRequest;
 
 public interface UserService {
 
-    User findUserByUsername(String name);
+	User findUserByUsername(String name);
 
-    void registerUserFromRequest(UserRegistrationRequest request)
-            throws BadRequestException;
+	void registerUserFromRequest(UserRegistrationRequest request) throws BadRequestException;
 
-    boolean isTokenStillValidForUser(Instant issuedAt, String username);
+	boolean isTokenStillValidForUser(Instant issuedAt, String username);
 
-    void logoutUser(User user);
+	void logoutUser(User user);
 
-    void updateUserPassword(User user, String newPassword);
+	void updateUserPassword(User user, String newPassword);
 
-    void saveUserChanges(User user) throws BadRequestException;
+	void saveUserChanges(User user) throws BadRequestException;
 }

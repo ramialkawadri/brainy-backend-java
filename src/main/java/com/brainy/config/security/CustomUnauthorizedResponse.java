@@ -15,21 +15,19 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CustomUnauthorizedResponse implements AuthenticationEntryPoint {
 
-    @Override
-    public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException)
-            throws IOException, ServletException {
+	@Override
+	public void commence(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException) throws IOException, ServletException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
+		ObjectMapper objectMapper = new ObjectMapper();
 
-        Response<String> responseBody = new Response<String>("please login", ResponseStatus.UNAUTHORIZED);
+		Response<String> responseBody =
+				new Response<String>("please login", ResponseStatus.UNAUTHORIZED);
 
-        response.setHeader("Content-Type", "application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
-        response.getWriter().flush();
-    }
+		response.setHeader("Content-Type", "application/json");
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+		response.getWriter().flush();
+	}
 
 }

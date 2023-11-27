@@ -16,67 +16,65 @@ import com.brainy.service.DefaultTokenService;
 
 public class DefaultTokenServiceUnitTest {
 
-    private JwtEncoder jwtEncoder;
-    private JwtDecoder jwtDecoder;
-    private DefaultTokenService tokenService;
+	private JwtEncoder jwtEncoder;
+	private JwtDecoder jwtDecoder;
+	private DefaultTokenService tokenService;
 
-    public DefaultTokenServiceUnitTest() {
-        jwtEncoder = Mockito.mock();
-        jwtDecoder = Mockito.mock();
-        tokenService = new DefaultTokenService(jwtEncoder, jwtDecoder);
-    }
+	public DefaultTokenServiceUnitTest() {
+		jwtEncoder = Mockito.mock();
+		jwtDecoder = Mockito.mock();
+		tokenService = new DefaultTokenService(jwtEncoder, jwtDecoder);
+	}
 
-    @Test
-    public void shouldGenerateToken() {
-        User user = TestUtils.generateRandomUser();
+	@Test
+	public void shouldGenerateToken() {
+		User user = TestUtils.generateRandomUser();
 
-        Jwt jwt = Mockito.mock();
+		Jwt jwt = Mockito.mock();
 
-        Mockito.when(jwtEncoder.encode(Mockito.any())).thenReturn(jwt);
+		Mockito.when(jwtEncoder.encode(Mockito.any())).thenReturn(jwt);
 
-        Mockito.when(jwt.getTokenValue()).thenReturn("token_value");
+		Mockito.when(jwt.getTokenValue()).thenReturn("token_value");
 
-        String token = tokenService.generateToken(user);
+		String token = tokenService.generateToken(user);
 
-        Mockito.verify(jwtEncoder).encode(Mockito.any());
+		Mockito.verify(jwtEncoder).encode(Mockito.any());
 
-        Assertions.assertEquals("token_value", token);
-    }
+		Assertions.assertEquals("token_value", token);
+	}
 
-    @Test
-    public void shouldDecodeToken() {
-        Jwt mockJwt = Mockito.mock();
+	@Test
+	public void shouldDecodeToken() {
+		Jwt mockJwt = Mockito.mock();
 
-        Mockito.when(jwtDecoder.decode("token_value")).thenReturn(mockJwt);
+		Mockito.when(jwtDecoder.decode("token_value")).thenReturn(mockJwt);
 
-        Jwt jwt = tokenService.decodeToken("token_value");
+		Jwt jwt = tokenService.decodeToken("token_value");
 
-        Mockito.verify(jwtDecoder).decode("token_value");
+		Mockito.verify(jwtDecoder).decode("token_value");
 
-        Assertions.assertEquals(mockJwt, jwt);
-    }
+		Assertions.assertEquals(mockJwt, jwt);
+	}
 
-    @Test
-    public void shouldReturnTokenIsExpired() {
-        Jwt mockJwt = Mockito.mock();
+	@Test
+	public void shouldReturnTokenIsExpired() {
+		Jwt mockJwt = Mockito.mock();
 
-        Mockito.when(mockJwt.getExpiresAt())
-                .thenReturn(Instant.now().minus(1, ChronoUnit.MINUTES));
+		Mockito.when(mockJwt.getExpiresAt()).thenReturn(Instant.now().minus(1, ChronoUnit.MINUTES));
 
-        boolean isExpired = tokenService.isTokenExpired(mockJwt);
+		boolean isExpired = tokenService.isTokenExpired(mockJwt);
 
-        Assertions.assertTrue(isExpired);
-    }
+		Assertions.assertTrue(isExpired);
+	}
 
-    @Test
-    public void shouldReturnTokenIsNotExpired() {
-        Jwt mockJwt = Mockito.mock();
+	@Test
+	public void shouldReturnTokenIsNotExpired() {
+		Jwt mockJwt = Mockito.mock();
 
-        Mockito.when(mockJwt.getExpiresAt())
-                .thenReturn(Instant.now().plus(1, ChronoUnit.MINUTES));
+		Mockito.when(mockJwt.getExpiresAt()).thenReturn(Instant.now().plus(1, ChronoUnit.MINUTES));
 
-        boolean isExpired = tokenService.isTokenExpired(mockJwt);
+		boolean isExpired = tokenService.isTokenExpired(mockJwt);
 
-        Assertions.assertFalse(isExpired);
-    }
+		Assertions.assertFalse(isExpired);
+	}
 }
