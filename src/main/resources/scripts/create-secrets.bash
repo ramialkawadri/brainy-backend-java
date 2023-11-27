@@ -15,18 +15,24 @@ DATABASE_PASSWORD=##
 STORAGE_ACCOUNT_NAME=##
 JWT_KEY=##
 
-if [[ $* == *--help* ]] || [[ $* == *-h* ]]; then
-    echo -e "Creates secret.properties \n"
+# Font styles
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
 
-    echo "The following arguments must be passed: ${REQUIRED_ARGUMENTS}"
+if [[ $* == *--help* ]] || [[ $* == *-h* ]]; then
+    echo -e "This script creates ${BOLD}secrets.properties${NORMAL} that are required to make the app work.\n"
+
+    echo "The following arguments must be passed on a ${BOLD}production${NORMAL} environment:"
     echo -e "\t--database-url\t\t\t{value}"
     echo -e "\t--database-username\t\t{value}"
-    echo -e "\t-database-password\t\t{value}"
+    echo -e "\t--database-password\t\t{value}"
     echo -e "\t--storage-account-name\t\t{value}"
     echo -e "\t--jwt-key\t\t\t{value}\n"
 
-    echo "Passing --development will automatically fill the following properties so that you don't need to pass them:"
-    echo -e "\t--database-url, --storage-account-name and --jwt-key"
+    echo "The following arguments must be passed on a ${BOLD}development${NORMAL} environment:"
+    echo -e "\t--develpoment"
+    echo -e "\t--database-username\t\t{value}"
+    echo -e "\t--database-password\t\t{value}"
     exit
 fi
 
