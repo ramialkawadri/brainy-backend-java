@@ -41,7 +41,7 @@ public class HttpSecurityConfig {
 
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-                
+
         http.exceptionHandling(customizer -> customizer
                 .authenticationEntryPoint(new CustomUnauthorizedResponse()));
 
@@ -69,8 +69,7 @@ public class HttpSecurityConfig {
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
-        UrlBasedCorsConfigurationSource source = 
-                new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return source;

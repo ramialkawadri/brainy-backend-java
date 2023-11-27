@@ -23,8 +23,7 @@ public class UpdateUserRequestUnitTest {
     public void shouldNotAcceptUpdate() {
         UpdateUserRequest request = new UpdateUserRequest("s", null, "email.com");
 
-        Set<ConstraintViolation<UpdateUserRequest>> violations =
-                validator.validate(request);
+        Set<ConstraintViolation<UpdateUserRequest>> violations = validator.validate(request);
 
         Assertions.assertEquals(2, violations.size());
     }

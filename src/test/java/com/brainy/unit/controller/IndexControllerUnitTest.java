@@ -8,7 +8,7 @@ import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;
 
 public class IndexControllerUnitTest {
-    
+
     private IndexController indexController;
 
     public IndexControllerUnitTest() {
@@ -21,5 +21,5 @@ public class IndexControllerUnitTest {
 
         Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
         Assertions.assertEquals("server is up and running!", response.getData());
-    }    
+    }
 }

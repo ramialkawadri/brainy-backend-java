@@ -16,8 +16,7 @@ import jakarta.persistence.Table;
 public class User {
 
     // One capital letter, one small letter, one number and at least 8 characters
-    public final static String userPasswordValidationRegExpr =
-            "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$";
+    public final static String userPasswordValidationRegExpr = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$";
 
     @Id
     @Column(name = "username", nullable = false, length = 50)

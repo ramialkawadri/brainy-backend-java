@@ -12,8 +12,7 @@ public class DatabaseConfig {
 
     @Bean
     UserDetailsManager databaseUserDetailsManager(DataSource dataSource) {
-        JdbcUserDetailsManager jdbcUserDetailsManager = 
-                new JdbcUserDetailsManager(dataSource);
+        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 
         jdbcUserDetailsManager.setUsersByUsernameQuery(
                 "select username, password, true from users where username=?");

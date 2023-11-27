@@ -1,0 +1,11 @@
+{
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.format.settings.url": "./java-style.xml",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.rulers": [100],
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  }
+}

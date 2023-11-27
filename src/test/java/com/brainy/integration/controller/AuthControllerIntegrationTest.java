@@ -25,14 +25,13 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
         ResponseEntity<ResponseString> response = restTemplate
                 .withBasicAuth(testUser.getUsername(), testUser.getPassword())
                 .postForEntity("/token", null, ResponseString.class);
-                
+
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void shouldNotAuthorize() {
-        ResponseEntity<Void> response =
-                restTemplate.postForEntity("/token", null, Void.class);
+        ResponseEntity<Void> response = restTemplate.postForEntity("/token", null, Void.class);
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
@@ -67,7 +66,7 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
         UpdatePasswordRequest body = new UpdatePasswordRequest("StrongPass1");
 
         ResponseEntity<Void> logoutResponse = restTemplate
-                .exchange("/password", HttpMethod.POST, 
+                .exchange("/password", HttpMethod.POST,
                         new HttpEntity<>(body, headers),
                         Void.class);
 
@@ -85,7 +84,7 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
         ResponseEntity<ResponseString> response = restTemplate
                 .withBasicAuth(testUser.getUsername(), testUser.getPassword())
                 .postForEntity("/token", null, ResponseString.class);
-                
+
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
         ResponseString responseBody = response.getBody();

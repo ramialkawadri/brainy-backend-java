@@ -30,8 +30,7 @@ public class UserControllerIntegrationTest extends IntegrationTest {
 
     @Test
     public void shouldUpdateUser() {
-        HttpEntity<UpdateUserRequest> request =
-                new HttpEntity<>(new UpdateUserRequest("new", null, null));
+        HttpEntity<UpdateUserRequest> request = new HttpEntity<>(new UpdateUserRequest("new", null, null));
 
         ResponseEntity<Void> updateResponse = authenticatedRequest()
                 .postForEntity("/api/user", request, Void.class);

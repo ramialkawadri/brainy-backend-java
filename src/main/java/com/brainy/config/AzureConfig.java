@@ -30,9 +30,9 @@ public class AzureConfig {
     @Bean
     @DependsOn("defaultCredential")
     BlobServiceClient blobServiceClient() {
-        String url = String.format("https://%s.blob.core.windows.net/", 
+        String url = String.format("https://%s.blob.core.windows.net/",
                 storageAccountName);
-        
+
         blobServiceClient = new BlobServiceClientBuilder()
                 .endpoint(url)
                 .credential(defaultAzureCredential)

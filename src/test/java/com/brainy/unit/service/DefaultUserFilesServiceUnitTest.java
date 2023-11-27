@@ -27,7 +27,7 @@ import com.brainy.service.DefaultUserFilesService;
 import com.brainy.service.UserFilesService;
 
 public class DefaultUserFilesServiceUnitTest {
-    
+
     private BlobServiceClient blobServiceClient;
     private BlobContainerClient blobContainerClient;
     private BlobItem defaultIteratorBlobItem;
@@ -48,7 +48,7 @@ public class DefaultUserFilesServiceUnitTest {
 
         Mockito.when(blobContainerClient.getBlobClient(Mockito.any()))
                 .thenReturn(blobClient);
-        
+
         Mockito.when(blobServiceClient
                 .createBlobContainerIfNotExists(Mockito.anyString()))
                 .thenReturn(blobContainerClient);
@@ -65,8 +65,7 @@ public class DefaultUserFilesServiceUnitTest {
 
         Mockito.when(blobContainerClient.listBlobs()).thenReturn(pagedIterable);
         Mockito.when(pagedIterable.iterator()).thenAnswer(
-            a -> List.of(defaultIteratorBlobItem).iterator()
-        );
+                a -> List.of(defaultIteratorBlobItem).iterator());
     }
 
     @Test
@@ -75,11 +74,10 @@ public class DefaultUserFilesServiceUnitTest {
 
         Mockito.when(defaultIteratorBlobItem.getName()).thenReturn("test");
 
-        List<String> userFiles = 
-                userFilesService.getUserFiles(tesUser.getUsername());
+        List<String> userFiles = userFilesService.getUserFiles(tesUser.getUsername());
 
         Mockito.verify(blobContainerClient).listBlobs();
-        
+
         Assertions.assertEquals("test", userFiles.get(0));
     }
 
@@ -87,15 +85,14 @@ public class DefaultUserFilesServiceUnitTest {
     public void shouldGetFileContent() {
         String fileContent = TestUtils.generateRandomFileContent();
         String filename = TestUtils.generateRandomFilename();
-        
+
         User user = TestUtils.generateRandomUser();
 
         Mockito.when(blobClient.downloadContent())
                 .thenReturn(BinaryData.fromBytes(fileContent.getBytes()));
 
-        String returnValue = 
-                userFilesService.getFileContent(user.getUsername(), filename);
-        
+        String returnValue = userFilesService.getFileContent(user.getUsername(), filename);
+
         Assertions.assertEquals(fileContent, returnValue);
     }
 
@@ -108,9 +105,9 @@ public class DefaultUserFilesServiceUnitTest {
 
         userFilesService.createOrUpdateJsonFile(
                 user.getUsername(), filename, jsonContent);
-        
+
         Mockito.verify(blobClient).deleteIfExists();
-        
+
         Mockito.verify(blobClient).upload(Mockito.any(BinaryData.class));
     }
 
@@ -256,7 +253,7 @@ public class DefaultUserFilesServiceUnitTest {
         List<SharedFile> sharedFiles = new ArrayList<>();
 
         Mockito.when(fileShareDAO.getFilesSharedWithUser(user))
-            .thenReturn(sharedFiles);
+                .thenReturn(sharedFiles);
 
         List<SharedFile> returnValue = userFilesService
                 .getFilesSharedWithUser(user);
@@ -271,7 +268,7 @@ public class DefaultUserFilesServiceUnitTest {
         List<SharedFile> sharedFiles = new ArrayList<>();
 
         Mockito.when(fileShareDAO.getFileShares(user, filename))
-            .thenReturn(sharedFiles);
+                .thenReturn(sharedFiles);
 
         List<SharedFile> returnValue = userFilesService.getFileShares(user, filename);
 
@@ -302,7 +299,7 @@ public class DefaultUserFilesServiceUnitTest {
         String filename = TestUtils.generateRandomFilename();
 
         Mockito.when(blobClient.exists()).thenReturn(false);
-        
+
         Assertions.assertThrowsExactly(BadRequestException.class, () -> {
             userFilesService.shareFileWith(fileOwner, filename, sharedWithUsername,
                     false);
@@ -331,7 +328,7 @@ public class DefaultUserFilesServiceUnitTest {
         String sharedWithUsername = TestUtils.generateRandomFilename();
         String filename = TestUtils.generateRandomFilename();
 
-        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), 
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(),
                 filename, sharedWithUsername)).thenReturn(true);
 
         userFilesService.deleteShare(fileOwner, filename, sharedWithUsername);
@@ -346,7 +343,7 @@ public class DefaultUserFilesServiceUnitTest {
         String sharedWithUsername = TestUtils.generateRandomFilename();
         String filename = TestUtils.generateRandomFilename();
 
-        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), 
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(),
                 filename, sharedWithUsername)).thenReturn(false);
 
         Assertions.assertThrowsExactly(BadRequestException.class, () -> {
@@ -359,13 +356,12 @@ public class DefaultUserFilesServiceUnitTest {
         User fileOwner = TestUtils.generateRandomUser();
         String sharedWithUsername = TestUtils.generateRandomFilename();
         String filename = TestUtils.generateRandomFilename();
-        UpdateSharedFileAccessRequest request = 
-            new UpdateSharedFileAccessRequest(false);
+        UpdateSharedFileAccessRequest request = new UpdateSharedFileAccessRequest(false);
 
-        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), 
+        Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(),
                 filename, sharedWithUsername)).thenReturn(true);
-        
-        userFilesService.updateSharedFileAccess(fileOwner, filename, 
+
+        userFilesService.updateSharedFileAccess(fileOwner, filename,
                 sharedWithUsername, request);
 
         Mockito.verify(fileShareDAO).updateSharedFileAccess(fileOwner.getUsername(),

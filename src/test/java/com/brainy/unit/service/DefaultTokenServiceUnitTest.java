@@ -25,7 +25,7 @@ public class DefaultTokenServiceUnitTest {
         jwtDecoder = Mockito.mock();
         tokenService = new DefaultTokenService(jwtEncoder, jwtDecoder);
     }
-    
+
     @Test
     public void shouldGenerateToken() {
         User user = TestUtils.generateRandomUser();

@@ -17,7 +17,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 public class DefaultFileShareDaoUnitTest {
-    
+
     private UserDao userDao;
     private EntityManager entityManager;
     private FileShareDao fileShareDao;
@@ -32,7 +32,7 @@ public class DefaultFileShareDaoUnitTest {
     public void shouldGetFilesSharedWithUser() {
         User user = TestUtils.generateRandomUser();
         TypedQuery<Object> query = Mockito.mock();
-        
+
         Mockito.when(entityManager.createQuery(Mockito.any(), Mockito.any()))
                 .thenReturn(query);
 
@@ -49,7 +49,7 @@ public class DefaultFileShareDaoUnitTest {
         User user = TestUtils.generateRandomUser();
         TypedQuery<Object> query = Mockito.mock();
         String filename = TestUtils.generateRandomFilename();
-        
+
         Mockito.when(entityManager.createQuery(Mockito.any(), Mockito.any()))
                 .thenReturn(query);
 
@@ -73,7 +73,7 @@ public class DefaultFileShareDaoUnitTest {
 
         setEntityMangerSingleSharedFileResult(sharedFile);
 
-        boolean returnValue = fileShareDao.isFileSharedWith(fileOwnerUsername, 
+        boolean returnValue = fileShareDao.isFileSharedWith(fileOwnerUsername,
                 filename, sharedWithUsername);
 
         Assertions.assertTrue(returnValue);
@@ -87,7 +87,7 @@ public class DefaultFileShareDaoUnitTest {
 
         setEntityMangerSingleSharedFileResult(null);
 
-        boolean returnValue = fileShareDao.isFileSharedWith(fileOwnerUsername, 
+        boolean returnValue = fileShareDao.isFileSharedWith(fileOwnerUsername,
                 filename, sharedWithUsername);
 
         Assertions.assertFalse(returnValue);
@@ -106,7 +106,7 @@ public class DefaultFileShareDaoUnitTest {
         Mockito.when(userDao.findUserByUserName(sharedWith.getUsername()))
                 .thenReturn(sharedWith);
 
-        fileShareDao.shareFile(fileOwner.getUsername(), filename, 
+        fileShareDao.shareFile(fileOwner.getUsername(), filename,
                 sharedWith.getUsername(), canEdit);
 
         Mockito.verify(entityManager).persist(Mockito.any());
@@ -150,8 +150,7 @@ public class DefaultFileShareDaoUnitTest {
         String fileOwnerUsername = TestUtils.generateUniqueUsername();
         String filename = TestUtils.generateRandomFilename();
         String sharedWithUsername = TestUtils.generateUniqueUsername();
-        UpdateSharedFileAccessRequest request = 
-                new UpdateSharedFileAccessRequest(true);
+        UpdateSharedFileAccessRequest request = new UpdateSharedFileAccessRequest(true);
         SharedFile sharedFile = Mockito.mock();
 
         setEntityMangerSingleSharedFileResult(sharedFile);

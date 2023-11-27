@@ -46,9 +46,8 @@ public class AuthControllerUnitTest {
             return true;
         }).when(servletResponse).addCookie(Mockito.any());
 
-        Response<String> tokenResponse 
-                = authController.getToken(null, servletResponse);
-        
+        Response<String> tokenResponse = authController.getToken(null, servletResponse);
+
         Assertions.assertEquals(ResponseStatus.SUCCESS, tokenResponse.getStatus());
         Assertions.assertEquals("token_value", tokenResponse.getData());
     }
@@ -56,12 +55,11 @@ public class AuthControllerUnitTest {
     @Test
     public void shouldRegisterUser() throws Exception {
         UserRegistrationRequest request = new UserRegistrationRequest(
-            "test",
-            "StrongPass1",
-            "test@test.com",
-            "firstName",
-            "lastName"
-        );
+                "test",
+                "StrongPass1",
+                "test@test.com",
+                "firstName",
+                "lastName");
 
         authController.registerUser(request);
 

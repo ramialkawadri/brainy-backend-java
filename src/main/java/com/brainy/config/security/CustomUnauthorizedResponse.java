@@ -24,13 +24,12 @@ public class CustomUnauthorizedResponse implements AuthenticationEntryPoint {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Response<String> responseBody =
-                new Response<String>("please login", ResponseStatus.UNAUTHORIZED);
+        Response<String> responseBody = new Response<String>("please login", ResponseStatus.UNAUTHORIZED);
 
         response.setHeader("Content-Type", "application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
         response.getWriter().flush();
     }
-    
+
 }

@@ -17,8 +17,7 @@ public class IndexControllerIntegrationTest extends IntegrationTest {
 
     @Test
     public void shouldStartServer() {
-        ResponseEntity<ResponseString> response = 
-                restTemplate.getForEntity("/", ResponseString.class);
+        ResponseEntity<ResponseString> response = restTemplate.getForEntity("/", ResponseString.class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 

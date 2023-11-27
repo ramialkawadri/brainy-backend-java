@@ -27,7 +27,7 @@ import jakarta.validation.Valid;
 public class UserFilesController {
 
     private UserFilesService userFilesService;
-    
+
     public UserFilesController(UserFilesService userFilesService) {
         this.userFilesService = userFilesService;
     }
@@ -36,10 +36,10 @@ public class UserFilesController {
     public Response<Object> getFileContentOrUserFiles(
             @RequestAttribute User user,
             @RequestParam(required = false) String filename) {
-        
+
         Object body = null;
 
-        if (filename != null) 
+        if (filename != null)
             body = userFilesService.getFileContent(user.getUsername(), filename);
         else
             body = userFilesService.getUserFiles(user.getUsername());
@@ -60,7 +60,7 @@ public class UserFilesController {
         boolean canUserCreateTheFile = userFilesService.canUserCreateFileWithSize(
                 user.getUsername(), filename, body.length());
 
-        if (!canUserCreateTheFile) 
+        if (!canUserCreateTheFile)
             throw new BadRequestException("there isn't enough space");
 
         userFilesService.createOrUpdateJsonFile(user.getUsername(), filename, body);
@@ -69,9 +69,8 @@ public class UserFilesController {
 
     @DeleteMapping
     public ResponseWithoutData deleteFile(
-        @RequestAttribute User user,
-        @RequestParam String filename
-    ) {
+            @RequestAttribute User user,
+            @RequestParam String filename) {
         userFilesService.deleteFile(user.getUsername(), filename);
         return new ResponseWithoutData();
     }
@@ -109,8 +108,8 @@ public class UserFilesController {
     // TODO: test: Integration
     @GetMapping("sharedWith")
     public Response<List<SharedFile>> getFilesSharedWithUser(
-        @RequestAttribute User user) {
-        
+            @RequestAttribute User user) {
+
         List<SharedFile> sharedFiles = userFilesService.getFilesSharedWithUser(user);
 
         return new Response<>(sharedFiles);

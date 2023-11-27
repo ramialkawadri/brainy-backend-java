@@ -29,18 +29,16 @@ public class UserRegistrationRequestUnitTest {
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationRequest>> violations =
-                validator.validate(user);
+        Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
         Assertions.assertEquals(0, violations.size());
     }
-    
+
     @Test
     public void shouldNotAcceptBlanks() {
         UserRegistrationRequest user = new UserRegistrationRequest("", "", "", "", "");
 
-        Set<ConstraintViolation<UserRegistrationRequest>> violations =
-                validator.validate(user);
+        Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
         Assertions.assertFalse(violations.isEmpty());
     }
@@ -54,8 +52,7 @@ public class UserRegistrationRequestUnitTest {
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationRequest>> violations =
-                validator.validate(user);
+        Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
         Assertions.assertEquals(1, violations.size());
     }
@@ -69,8 +66,7 @@ public class UserRegistrationRequestUnitTest {
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationRequest>> violations =
-                validator.validate(user);
+        Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
         // 2 Because of the regular expression also counts
         Assertions.assertEquals(2, violations.size());
@@ -85,8 +81,7 @@ public class UserRegistrationRequestUnitTest {
                 "firstName",
                 "lastName");
 
-        Set<ConstraintViolation<UserRegistrationRequest>> violations =
-                validator.validate(user);
+        Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
         Assertions.assertEquals(1, violations.size());
     }

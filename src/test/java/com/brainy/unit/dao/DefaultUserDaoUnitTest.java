@@ -46,5 +46,5 @@ public class DefaultUserDaoUnitTest {
         userDAO.saveUserChanges(user);
         Mockito.verify(entityManager).merge(user);
     }
-    
+
 }

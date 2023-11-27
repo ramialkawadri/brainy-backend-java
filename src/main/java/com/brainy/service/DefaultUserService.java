@@ -36,7 +36,7 @@ public class DefaultUserService implements UserService {
     @Override
     public void registerUserFromRequest(UserRegistrationRequest request)
             throws BadRequestException {
-        
+
         User user = request.toUser();
 
         encodeAndUpdateUserPassword(user, user.getPassword());
@@ -45,8 +45,7 @@ public class DefaultUserService implements UserService {
             userDao.registerUser(user);
         } catch (EntityExistsException | DataIntegrityViolationException e) {
             throw new BadRequestException(
-                    "a user with the same username or email already exists"
-            );
+                    "a user with the same username or email already exists");
         }
     }
 
@@ -94,8 +93,7 @@ public class DefaultUserService implements UserService {
             userDao.saveUserChanges(user);
         } catch (EntityExistsException | DataIntegrityViolationException e) {
             throw new BadRequestException(
-                    "a user with the same username or email already exists"
-            );
+                    "a user with the same username or email already exists");
         }
     }
 }

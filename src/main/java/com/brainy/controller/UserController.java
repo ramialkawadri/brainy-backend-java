@@ -33,9 +33,8 @@ public class UserController {
 
     @PostMapping
     public ResponseWithoutData updateUser(
-        @RequestAttribute User user,
-        @RequestBody @Valid UpdateUserRequest request
-    ) throws BadRequestException {
+            @RequestAttribute User user,
+            @RequestBody @Valid UpdateUserRequest request) throws BadRequestException {
 
         request.applyUpdatesOnUser(user);
         userService.saveUserChanges(user);

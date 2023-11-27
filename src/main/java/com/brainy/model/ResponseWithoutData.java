@@ -1,7 +1,7 @@
 package com.brainy.model;
 
 public class ResponseWithoutData {
-    
+
     private ResponseStatus status;
 
     /**

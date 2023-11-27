@@ -22,8 +22,7 @@ public class UpdatePasswordRequestUnitTest {
     public void shouldNotUpdatePassword() {
         UpdatePasswordRequest request = new UpdatePasswordRequest("week");
 
-        Set<ConstraintViolation<UpdatePasswordRequest>> violations =
-                validator.validate(request);
+        Set<ConstraintViolation<UpdatePasswordRequest>> violations = validator.validate(request);
 
         Assertions.assertEquals(2, violations.size());
     }

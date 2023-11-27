@@ -21,13 +21,13 @@ public class SharedFile {
     @OneToOne
     @JoinColumn(name = "file_owner")
     @Id
-    @JsonIgnore  // Handled in special method
+    @JsonIgnore // Handled in special method
     private User fileOwner;
 
     @OneToOne
     @JoinColumn(name = "shared_with")
     @Id
-    @JsonIgnore  // Handled in special method
+    @JsonIgnore // Handled in special method
     private User sharedWith;
 
     @Column(name = "filename")
@@ -92,7 +92,7 @@ public class SharedFile {
     }
 }
 
-class SharedFilePK implements Serializable  {
+class SharedFilePK implements Serializable {
 
     private User fileOwner;
     private User sharedWith;
@@ -167,5 +167,5 @@ class SharedFilePK implements Serializable  {
             return false;
         return true;
     }
-    
+
 }

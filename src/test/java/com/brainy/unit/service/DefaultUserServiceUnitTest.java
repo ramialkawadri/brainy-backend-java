@@ -17,7 +17,7 @@ import com.brainy.model.request.UserRegistrationRequest;
 import com.brainy.service.DefaultUserService;
 
 public class DefaultUserServiceUnitTest {
-    
+
     private UserDao userDao;
     private DefaultUserService userService;
     private PasswordEncoder passwordEncoder;
@@ -59,11 +59,11 @@ public class DefaultUserServiceUnitTest {
 
     private UserRegistrationRequest createMockUserRegistrationRequest() {
         UserRegistrationRequest request = new UserRegistrationRequest(
-            "test",
-            "testPass1",
-            "test@test.com",
-            "test",
-            "test");
+                "test",
+                "testPass1",
+                "test@test.com",
+                "test",
+                "test");
 
         return request;
     }
@@ -73,15 +73,14 @@ public class DefaultUserServiceUnitTest {
         User user = TestUtils.generateRandomUser();
         Instant tokenIssueDate = Instant.now();
 
-        Timestamp changeTimestamp = 
-                Timestamp.from(tokenIssueDate.minus(1, ChronoUnit.MINUTES));
+        Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.minus(1, ChronoUnit.MINUTES));
 
         user.setLogoutDate(changeTimestamp);
         user.setPasswordChangeDate(changeTimestamp);
 
         Mockito.when(userDao.findUserByUserName(Mockito.anyString()))
                 .thenReturn(user);
-        
+
         Assertions.assertTrue(userService
                 .isTokenStillValidForUser(tokenIssueDate, ""));
     }
@@ -90,16 +89,15 @@ public class DefaultUserServiceUnitTest {
     public void shouldReturnFalseOnValidToken() {
         User user = TestUtils.generateRandomUser();
         Instant tokenIssueDate = Instant.now();
-        
-        Timestamp changeTimestamp = 
-                Timestamp.from(tokenIssueDate.plus(1, ChronoUnit.MINUTES));
+
+        Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.plus(1, ChronoUnit.MINUTES));
 
         user.setLogoutDate(changeTimestamp);
         user.setPasswordChangeDate(changeTimestamp);
 
         Mockito.when(userDao.findUserByUserName(Mockito.anyString()))
                 .thenReturn(user);
-        
+
         Assertions.assertFalse(userService
                 .isTokenStillValidForUser(tokenIssueDate, ""));
     }

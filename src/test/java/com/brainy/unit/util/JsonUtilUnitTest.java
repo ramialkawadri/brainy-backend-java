@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import com.brainy.util.JsonUtil;
 
 public class JsonUtilUnitTest {
-    
+
     @Test
     public void shouldCompressJson() {
         String uncompressedJson = "   {\"isJson\"   :  true}";

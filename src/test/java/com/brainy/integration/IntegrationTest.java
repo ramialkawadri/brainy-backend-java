@@ -10,7 +10,7 @@ import com.brainy.TestUtils;
 import com.brainy.model.entity.User;
 
 /**
- * All integration tests mush inherit from this class as it does basic 
+ * All integration tests mush inherit from this class as it does basic
  * configuration for the tests. In addition it provide a default test and a rest
  * template user that can be used for testing.
  */

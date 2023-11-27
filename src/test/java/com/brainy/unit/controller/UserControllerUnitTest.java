@@ -15,7 +15,7 @@ import com.brainy.model.request.UpdateUserRequest;
 import com.brainy.service.UserService;
 
 public class UserControllerUnitTest {
-    
+
     private UserService userService;
     private UserController userController;
 

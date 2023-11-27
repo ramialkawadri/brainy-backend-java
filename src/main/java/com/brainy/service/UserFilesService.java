@@ -8,7 +8,7 @@ import com.brainy.model.exception.BadRequestException;
 import com.brainy.model.request.UpdateSharedFileAccessRequest;
 
 public interface UserFilesService {
-    List<String> getUserFiles(String username); 
+    List<String> getUserFiles(String username);
 
     String getFileContent(String username, String filename);
 
@@ -17,7 +17,7 @@ public interface UserFilesService {
 
     void deleteFile(String username, String filename);
 
-    /** 
+    /**
      * Returns if the user have enough size to create a file with the given size.
      * If the file already exists its previous size is not taken into account
      * when creating the file.
@@ -25,11 +25,11 @@ public interface UserFilesService {
     boolean canUserCreateFileWithSize(
             String username, String filename, long fileSize);
 
-    /** 
+    /**
      * @param filesToIgnore is a set of file names that are not considered
-     * when calculating the size!
+     *                      when calculating the size!
      */
-    long getUserUsedStorage(String username, String ...filesToIgnore);
+    long getUserUsedStorage(String username, String... filesToIgnore);
 
     void createFolder(String username, String foldername);
 

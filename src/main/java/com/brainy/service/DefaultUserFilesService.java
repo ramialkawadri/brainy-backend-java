@@ -30,7 +30,7 @@ import com.brainy.util.JsonUtil;
 public class DefaultUserFilesService implements UserFilesService {
 
     private BlobBatchClient blobBatchClient;
-    
+
     private BlobServiceClient blobServiceClient;
 
     private FileShareDao fileShareDAO;
@@ -84,9 +84,9 @@ public class DefaultUserFilesService implements UserFilesService {
 
         return binaryData.toString();
     }
-    
+
     @Override
-    public void createOrUpdateJsonFile(String username, String filename, 
+    public void createOrUpdateJsonFile(String username, String filename,
             String content) throws BadRequestException {
 
         String compressedJson = getCompressedJson(content);
@@ -104,10 +104,10 @@ public class DefaultUserFilesService implements UserFilesService {
             throws BadRequestException {
 
         String compressedJson = JsonUtil.compressJson(content);
-        
+
         if (compressedJson == null)
             throw new BadRequestException("please provide valid JSON content!");
-        
+
         return compressedJson;
     }
 
@@ -134,7 +134,7 @@ public class DefaultUserFilesService implements UserFilesService {
     }
 
     @Override
-    public long getUserUsedStorage(String username, String ...filesToIgnore) {
+    public long getUserUsedStorage(String username, String... filesToIgnore) {
         BlobContainerClient containerClient = getUserBlobContainerClient(username);
 
         long totalSize = 0;
@@ -215,8 +215,7 @@ public class DefaultUserFilesService implements UserFilesService {
             String sharedWithUsername, boolean canEdit)
             throws BadRequestException {
 
-        BlobContainerClient fileOwnerBlobContainerClient =
-                getUserBlobContainerClient(fileOwner.getUsername());
+        BlobContainerClient fileOwnerBlobContainerClient = getUserBlobContainerClient(fileOwner.getUsername());
 
         BlobClient fileBlobClient = fileOwnerBlobContainerClient
                 .getBlobClient(filename);
@@ -225,11 +224,11 @@ public class DefaultUserFilesService implements UserFilesService {
             throw new BadRequestException("couldn't find the file " + filename);
 
         boolean isFileAlreadyShard = fileShareDAO.isFileSharedWith(
-            fileOwner.getUsername(), filename, sharedWithUsername);
+                fileOwner.getUsername(), filename, sharedWithUsername);
 
         if (isFileAlreadyShard)
             throw new BadRequestException("the file is already shared!");
-        
+
         fileShareDAO.shareFile(fileOwner.getUsername(), filename,
                 sharedWithUsername, canEdit);
     }
@@ -257,12 +256,12 @@ public class DefaultUserFilesService implements UserFilesService {
         String fileOwnerUsername = fileOwner.getUsername();
 
         validateThatAFileIsShared(filename, sharedWithUsername, fileOwnerUsername);
-        
+
         fileShareDAO.updateSharedFileAccess(fileOwnerUsername, filename,
                 sharedWithUsername, request);
     }
 
-    private void validateThatAFileIsShared(String filename, 
+    private void validateThatAFileIsShared(String filename,
             String sharedWithUsername, String fileOwnerUsername)
             throws BadRequestException {
 

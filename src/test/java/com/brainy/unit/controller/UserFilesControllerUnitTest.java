@@ -71,7 +71,7 @@ public class UserFilesControllerUnitTest {
         Mockito.when(userFilesService.canUserCreateFileWithSize(
                 user.getUsername(), filename, fileContent.length()))
                 .thenReturn(true);
-        
+
         userFilesController.createOrUpdateJsonFile(user, filename, fileContent);
 
         Mockito.verify(userFilesService).createOrUpdateJsonFile(
@@ -144,10 +144,9 @@ public class UserFilesControllerUnitTest {
         List<SharedFile> list = new ArrayList<>();
 
         Mockito.when(userFilesService.getFilesSharedWithUser(user))
-            .thenReturn(list);
+                .thenReturn(list);
 
-        Response<List<SharedFile>> response =
-                userFilesController.getFilesSharedWithUser(user);
+        Response<List<SharedFile>> response = userFilesController.getFilesSharedWithUser(user);
 
         Mockito.verify(userFilesService).getFilesSharedWithUser(user);
 
@@ -161,10 +160,9 @@ public class UserFilesControllerUnitTest {
         String filename = TestUtils.generateRandomFilename();
 
         Mockito.when(userFilesService.getFileShares(user, filename))
-            .thenReturn(list);
+                .thenReturn(list);
 
-        Response<List<SharedFile>> response = 
-                userFilesController.getFileShares(user, filename);
+        Response<List<SharedFile>> response = userFilesController.getFileShares(user, filename);
 
         Mockito.verify(userFilesService).getFileShares(user, filename);
 
@@ -178,13 +176,13 @@ public class UserFilesControllerUnitTest {
         String sharedWithUsername = TestUtils.generateUniqueUsername();
 
         userFilesController.shareFileWith(user, filename, sharedWithUsername, false);
-        
+
         Mockito.verify(userFilesService)
                 .shareFileWith(user, filename, sharedWithUsername, false);
     }
 
     @Test
-        public void shouldDeleteFileShare() throws BadRequestException {
+    public void shouldDeleteFileShare() throws BadRequestException {
         User user = TestUtils.generateRandomUser();
         String filename = TestUtils.generateRandomFilename();
         String sharedWithUsername = TestUtils.generateUniqueUsername();
@@ -199,8 +197,7 @@ public class UserFilesControllerUnitTest {
         User user = TestUtils.generateRandomUser();
         String filename = TestUtils.generateRandomFilename();
         String sharedWithUsername = TestUtils.generateUniqueUsername();
-        UpdateSharedFileAccessRequest request =
-                new UpdateSharedFileAccessRequest(true);
+        UpdateSharedFileAccessRequest request = new UpdateSharedFileAccessRequest(true);
 
         userFilesController.updateSharedFileAccess(user, filename,
                 sharedWithUsername, request);

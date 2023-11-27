@@ -18,25 +18,21 @@ import com.brainy.model.exception.RequestException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<Response<String>>
-            requestExceptionHandler(RequestException e) {
+    public ResponseEntity<Response<String>> requestExceptionHandler(RequestException e) {
 
         String responseString = e.getRequestExceptionTitle() + ": "
                 + e.getMessage();
 
-        Response<String> responseBody = 
-                new Response<String>(responseString, e.getResponseStatus());
+        Response<String> responseBody = new Response<String>(responseString, e.getResponseStatus());
 
         return new ResponseEntity<Response<String>>(
                 responseBody, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<Response<String>>
-            handleMissingBody(HttpMessageNotReadableException e) {
+    public ResponseEntity<Response<String>> handleMissingBody(HttpMessageNotReadableException e) {
 
-        Response<String> response =
-                new Response<>("missing body", ResponseStatus.BAD_REQUEST);
+        Response<String> response = new Response<>("missing body", ResponseStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -63,22 +59,20 @@ public class GlobalExceptionHandler {
             NoHandlerFoundException e) {
 
         String errorMessage = e.getRequestURL() + " is an invalid endpoint!";
-        
-        Response<String> response =
-                new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
-        
+
+        Response<String> response = new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
+
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     public ResponseEntity<Response<String>> handleMissingParameter(
-                    MissingServletRequestParameterException e) {
+            MissingServletRequestParameterException e) {
 
         String errorMessage = "the query string '" + e.getParameterName() + "' is missing!";
 
-        Response<String> response =
-                new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
-        
+        Response<String> response = new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
+
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

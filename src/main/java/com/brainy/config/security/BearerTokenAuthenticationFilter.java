@@ -82,8 +82,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
         UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
 
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder

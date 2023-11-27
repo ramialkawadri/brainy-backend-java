@@ -15,7 +15,7 @@ public class TestUtils {
 
     public static User generateRandomUser() {
         String username = generateUniqueUsername();
-    
+
         return new User(
                 username,
                 "testPassword123",
@@ -38,12 +38,11 @@ public class TestUtils {
 
     public static String generateStringOfMaxLength(int maxLength) {
         Random random = new Random();
-        int length = random.nextInt(maxLength) + 1;  // +1 to not allow zero
+        int length = random.nextInt(maxLength) + 1; // +1 to not allow zero
         String result = "";
 
         for (int i = 0; i < length; ++i) {
-            char nextCharacter = (char)
-            ('a' + random.nextInt(NUMBER_OF_ENGLISH_CHARACTERS));
+            char nextCharacter = (char) ('a' + random.nextInt(NUMBER_OF_ENGLISH_CHARACTERS));
 
             boolean isUpperCase = random.nextBoolean();
 

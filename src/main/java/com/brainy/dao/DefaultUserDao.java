@@ -9,7 +9,7 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public class DefaultUserDao implements UserDao {
-    
+
     private EntityManager entityManager;
 
     public DefaultUserDao(EntityManager entityManager) {

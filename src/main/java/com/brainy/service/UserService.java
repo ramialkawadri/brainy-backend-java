@@ -10,7 +10,7 @@ public interface UserService {
 
     User findUserByUsername(String name);
 
-    void registerUserFromRequest(UserRegistrationRequest request) 
+    void registerUserFromRequest(UserRegistrationRequest request)
             throws BadRequestException;
 
     boolean isTokenStillValidForUser(Instant issuedAt, String username);
