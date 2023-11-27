@@ -30,7 +30,7 @@ if [[ $* == *--help* ]] || [[ $* == *-h* ]]; then
     echo -e "\t--jwt-key\t\t\t{value}\n"
 
     echo "The following arguments must be passed on a ${BOLD}development${NORMAL} environment:"
-    echo -e "\t--develpoment"
+    echo -e "\t--development"
     echo -e "\t--database-username\t\t{value}"
     echo -e "\t--database-password\t\t{value}"
     exit
