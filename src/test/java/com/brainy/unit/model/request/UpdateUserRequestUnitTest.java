@@ -21,10 +21,13 @@ public class UpdateUserRequestUnitTest {
 
 	@Test
 	public void shouldNotAcceptUpdate() {
+		// Arrange
 		UpdateUserRequest request = new UpdateUserRequest("s", null, "email.com");
 
+		// Act
 		Set<ConstraintViolation<UpdateUserRequest>> violations = validator.validate(request);
 
+		// Assert
 		Assertions.assertEquals(2, violations.size());
 	}
 }

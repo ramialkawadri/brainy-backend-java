@@ -8,8 +8,8 @@ public enum ResponseStatus {
 
 	private String statusString;
 
-	ResponseStatus(String staString) {
-		this.statusString = staString;
+	ResponseStatus(String statusString) {
+		this.statusString = statusString;
 	}
 
 	@JsonValue

@@ -30,7 +30,7 @@ public class IntegrationTest {
 		IntegrationTestUtils.registerUser(restTemplate, testUser);
 	}
 
-	protected TestRestTemplate authenticatedRequest() {
+	protected TestRestTemplate getAuthenticatedRequest() {
 		return restTemplate.withBasicAuth(testUser.getUsername(), testUser.getPassword());
 	}
 }

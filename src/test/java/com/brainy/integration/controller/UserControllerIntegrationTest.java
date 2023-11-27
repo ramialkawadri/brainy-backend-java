@@ -15,41 +15,41 @@ public class UserControllerIntegrationTest extends IntegrationTest {
 
 	@Test
 	public void shouldGetUserInformation() {
+		// Arrange & Act
 		ResponseEntity<ResponseUser> response = getUserInformation();
-
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
 		ResponseUser body = response.getBody();
 
-		Assertions.assertNotNull(body);
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
+		Assertions.assertNotNull(body);
 		User responseUser = body.getData();
+
 		Assertions.assertEquals(testUser.getUsername(), responseUser.getUsername());
 		Assertions.assertEquals(testUser.getEmail(), responseUser.getEmail());
 	}
 
 	@Test
 	public void shouldUpdateUser() {
+		// Arrange & Act
 		HttpEntity<UpdateUserRequest> request =
 				new HttpEntity<>(new UpdateUserRequest("new", null, null));
 
 		ResponseEntity<Void> updateResponse =
-				authenticatedRequest().postForEntity("/api/user", request, Void.class);
-
-		Assertions.assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
+				getAuthenticatedRequest().postForEntity("/api/user", request, Void.class);
 
 		ResponseEntity<ResponseUser> userInformation = getUserInformation();
 
-		Assertions.assertEquals(HttpStatus.OK, userInformation.getStatusCode());
-
 		ResponseUser body = userInformation.getBody();
 
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, userInformation.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
 		Assertions.assertNotNull(body);
-
 		Assertions.assertEquals(body.getData().getFirstName(), "new");
 	}
 
 	private ResponseEntity<ResponseUser> getUserInformation() {
-		return authenticatedRequest().getForEntity("/api/user", ResponseUser.class);
+		return getAuthenticatedRequest().getForEntity("/api/user", ResponseUser.class);
 	}
 }

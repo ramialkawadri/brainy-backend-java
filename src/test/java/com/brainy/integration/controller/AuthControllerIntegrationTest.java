@@ -19,43 +19,51 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
 
 	@Test
 	public void shouldRegisterUser() {
+		// Arrange
 		User tmpUser = TestUtils.generateRandomUser();
 		IntegrationTestUtils.registerUser(restTemplate, tmpUser);
 
+		// Act
 		ResponseEntity<ResponseString> response =
 				restTemplate.withBasicAuth(testUser.getUsername(), testUser.getPassword())
 						.postForEntity("/token", null, ResponseString.class);
 
+		// Assert
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 
 	@Test
 	public void shouldNotAuthorize() {
+		// Arrange & Act
 		ResponseEntity<Void> response = restTemplate.postForEntity("/token", null, Void.class);
 
+		// Assert
 		Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
 	}
 
 	@Test
 	public void shouldNotAuthorizeTokenAfterLogout() {
+		// Arrange
 		String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer " + token);
 
+		// Act
 		ResponseEntity<Void> logoutResponse = restTemplate.exchange("/logout", HttpMethod.POST,
 				new HttpEntity<>(headers), Void.class);
 
-		Assertions.assertEquals(HttpStatus.OK, logoutResponse.getStatusCode());
-
-		ResponseEntity<Void> response = restTemplate.exchange("/token", HttpMethod.POST,
+		ResponseEntity<Void> loginResponse = restTemplate.exchange("/token", HttpMethod.POST,
 				new HttpEntity<>(headers), Void.class);
 
-		Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, logoutResponse.getStatusCode());
+		Assertions.assertEquals(HttpStatus.UNAUTHORIZED, loginResponse.getStatusCode());
 	}
 
 	@Test
 	public void shouldNotAuthorizeTokenAfterPasswordChange() {
+		// Arrange
 		String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -63,89 +71,102 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
 
 		UpdatePasswordRequest body = new UpdatePasswordRequest("StrongPass1");
 
+		// Act
 		ResponseEntity<Void> logoutResponse = restTemplate.exchange("/password", HttpMethod.POST,
 				new HttpEntity<>(body, headers), Void.class);
 
-		Assertions.assertEquals(HttpStatus.OK, logoutResponse.getStatusCode());
-
-		ResponseEntity<Void> response = restTemplate.exchange("/token", HttpMethod.POST,
+		ResponseEntity<Void> loginResponse = restTemplate.exchange("/token", HttpMethod.POST,
 				new HttpEntity<>(headers), Void.class);
 
-		Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, logoutResponse.getStatusCode());
+		Assertions.assertEquals(HttpStatus.UNAUTHORIZED, loginResponse.getStatusCode());
 	}
 
 	@Test
 	public void shouldAuthorizeUsingHeaders() {
+		// Arrange & Act
 		ResponseEntity<ResponseString> response =
 				restTemplate.withBasicAuth(testUser.getUsername(), testUser.getPassword())
 						.postForEntity("/token", null, ResponseString.class);
 
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
 		ResponseString responseBody = response.getBody();
+
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());
 	}
 
 	@Test
 	public void shouldNotAuthorizeBecauseOfBadToken() {
+		// Arrange
 		String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Cookie", "token=" + token + "RANDOM_STRING");
 
+		// Act
 		ResponseEntity<Void> response = restTemplate.exchange("/token", HttpMethod.POST,
 				new HttpEntity<>(headers), Void.class);
 
+		// Assert
 		Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
 	}
 
 	@Test
 	public void shouldAuthorizeUsingJwtCookies() {
+		// Arrange
 		String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Cookie", "token=" + token);
 
+		// Act
 		ResponseEntity<ResponseString> response = restTemplate.exchange("/token", HttpMethod.POST,
 				new HttpEntity<>(headers), ResponseString.class);
 
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
 		ResponseString responseBody = response.getBody();
+
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());
 	}
 
 	@Test
 	public void shouldAuthorizeUsingJwtAuthorizationHeader() {
+		// Arrange
 		String token = IntegrationTestUtils.getAccessToken(restTemplate, testUser);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer " + token);
 
+		// Act
 		ResponseEntity<ResponseString> response = restTemplate.exchange("/token", HttpMethod.POST,
 				new HttpEntity<>(headers), ResponseString.class);
 
+		ResponseString responseBody = response.getBody();
+
+		// Assert
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		ResponseString responseBody = response.getBody();
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());
 	}
 
 	@Test
 	public void shouldAddTokenCookieToResponse() {
+		// Arrange & Act
 		ResponseEntity<ResponseString> response =
 				restTemplate.withBasicAuth(testUser.getUsername(), testUser.getPassword())
 						.postForEntity("/token", null, ResponseString.class);
 
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
 		HttpHeaders headers = response.getHeaders();
-
 		String cookieHeader = headers.getFirst(HttpHeaders.SET_COOKIE);
 
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(cookieHeader);
 		Assertions.assertTrue(cookieHeader.contains("token="));
 	}

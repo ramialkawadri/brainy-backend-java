@@ -14,7 +14,6 @@ public class IntegrationTestUtils {
 
 	public static void registerUser(TestRestTemplate restTemplate, User user) {
 		UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.fromUser(user);
-
 		HttpEntity<UserRegistrationRequest> request = new HttpEntity<>(userRegistrationRequest);
 
 		ResponseEntity<Void> response =
@@ -35,11 +34,5 @@ public class IntegrationTestUtils {
 		Assertions.assertNotNull(responseBody.getData());
 
 		return responseBody.getData();
-	}
-
-	public static TestRestTemplate getAuthenticatedTemplate(TestRestTemplate restTemplate,
-			User user) {
-
-		return restTemplate.withBasicAuth(user.getUsername(), user.getPassword());
 	}
 }

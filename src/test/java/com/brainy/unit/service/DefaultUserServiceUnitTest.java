@@ -30,19 +30,22 @@ public class DefaultUserServiceUnitTest {
 
 	@Test
 	public void shouldGetUserByUsername() {
+		// Arrange
 		User mockUser = TestUtils.generateRandomUser();
 
 		Mockito.when(userDao.findUserByUserName("user")).thenReturn(mockUser);
 
+		// Act
 		User user = userService.findUserByUsername("user");
 
+		// Assert
 		Mockito.verify(userDao).findUserByUserName("user");
-
 		Assertions.assertEquals(mockUser, user);
 	}
 
 	@Test
 	public void shouldRegisterUser() throws BadRequestException {
+		// Arrange
 		UserRegistrationRequest request = createMockUserRegistrationRequest();
 
 		Mockito.doAnswer(invocation -> {
@@ -54,6 +57,7 @@ public class DefaultUserServiceUnitTest {
 			return true;
 		}).when(userDao).registerUser(Mockito.any());
 
+		// Act & Assert
 		userService.registerUserFromRequest(request);
 	}
 
@@ -66,54 +70,63 @@ public class DefaultUserServiceUnitTest {
 
 	@Test
 	public void shouldReturnTrueOnValidToken() {
+		// Arrange
 		User user = TestUtils.generateRandomUser();
 		Instant tokenIssueDate = Instant.now();
 
 		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.minus(1, ChronoUnit.MINUTES));
+		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
 
+		// Act
 		user.setLogoutDate(changeTimestamp);
 		user.setPasswordChangeDate(changeTimestamp);
 
-		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
-
+		// Assert
 		Assertions.assertTrue(userService.isTokenStillValidForUser(tokenIssueDate, ""));
 	}
 
 	@Test
 	public void shouldReturnFalseOnValidToken() {
+		// Arrange
 		User user = TestUtils.generateRandomUser();
 		Instant tokenIssueDate = Instant.now();
 
 		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.plus(1, ChronoUnit.MINUTES));
+		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
 
+		// Act
 		user.setLogoutDate(changeTimestamp);
 		user.setPasswordChangeDate(changeTimestamp);
 
-		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
-
+		// Assert
 		Assertions.assertFalse(userService.isTokenStillValidForUser(tokenIssueDate, ""));
 	}
 
 	@Test
 	public void shouldLogoutUser() {
+		// Arrange
 		User user = Mockito.mock();
 
+		// Act
 		userService.logoutUser(user);
 
+		// Assert
 		Mockito.verify(user).setLogoutDate(Mockito.any());
 		Mockito.verify(userDao).saveUserChanges(user);
 	}
 
 	@Test
 	public void shouldUpdateUserPassword() throws BadRequestException {
+		// Arrange
 		User user = Mockito.mock();
 
 		Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("encoded");
 
+		// Act
 		userService.updateUserPassword(user, "newStrongPassword");
 
+		// Assert
 		Mockito.verify(user).setPasswordChangeDate(Mockito.any());
-
 		Mockito.verify(userDao).saveUserChanges(user);
 	}
 }

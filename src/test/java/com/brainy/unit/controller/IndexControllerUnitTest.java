@@ -17,8 +17,10 @@ public class IndexControllerUnitTest {
 
 	@Test
 	public void shouldGetStatus() {
+		// Arrange & Act
 		Response<String> response = indexController.getServerStatus();
 
+		// Assert
 		Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		Assertions.assertEquals("server is up and running!", response.getData());
 	}

@@ -17,12 +17,14 @@ public class IndexControllerIntegrationTest extends IntegrationTest {
 
 	@Test
 	public void shouldStartServer() {
+		// Arrange & Act
 		ResponseEntity<ResponseString> response =
 				restTemplate.getForEntity("/", ResponseString.class);
 
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
 		ResponseString body = response.getBody();
+
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals("server is up and running!", body.getData());
 	}

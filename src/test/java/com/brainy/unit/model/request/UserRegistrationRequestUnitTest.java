@@ -22,55 +22,70 @@ public class UserRegistrationRequestUnitTest {
 
 	@Test
 	public void shouldAcceptValidValues() {
+		// Arrange
 		UserRegistrationRequest user =
 				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "StrongPassword1",
 						"test@test.com", "firstName", "lastName");
 
+		// Act
 		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
+		// Assert
 		Assertions.assertEquals(0, violations.size());
 	}
 
 	@Test
 	public void shouldNotAcceptBlanks() {
+		// Arrange
 		UserRegistrationRequest user = new UserRegistrationRequest("", "", "", "", "");
 
+		// Act
 		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
+		// Assert
 		Assertions.assertFalse(violations.isEmpty());
 	}
 
 	@Test
 	public void shouldNotAcceptInvalidEmail() {
+		// Arrange
 		UserRegistrationRequest user =
 				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "StrongPassword1",
 						"test@.com", "firstName", "lastName");
 
+		// Act
 		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
+		// Assert
 		Assertions.assertEquals(1, violations.size());
 	}
 
 	@Test
 	public void shouldNotAcceptShortPassword() {
+		// Arrange
 		UserRegistrationRequest user =
 				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "Pass1",
 						"test@test.com", "firstName", "lastName");
 
+		// Act
 		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
+		// Assert
 		// 2 Because of the regular expression also counts
 		Assertions.assertEquals(2, violations.size());
 	}
 
 	@Test
 	public void shouldNotAcceptWeekPassword() {
+		// Arrange
 		UserRegistrationRequest user =
 				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "password",
 						"test@test.com", "firstName", "lastName");
 
+		// Act
 		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
+		// Assert
 		Assertions.assertEquals(1, violations.size());
 	}
 }

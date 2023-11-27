@@ -26,21 +26,27 @@ public class UserControllerUnitTest {
 
 	@Test
 	public void shouldReturnUserInformation() {
+		// Arrange
 		User user = TestUtils.generateRandomUser();
 
+		// Act
 		Response<User> response = userController.getUserInformation(user);
 
+		// Assert
 		Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		Assertions.assertEquals(user, response.getData());
 	}
 
 	@Test
 	public void shouldUpdateUser() throws BadRequestException {
+		// Arrange
 		User user = TestUtils.generateRandomUser();
 		UpdateUserRequest request = Mockito.mock();
 
+		// Act
 		ResponseWithoutData response = userController.updateUser(user, request);
 
+		// Assert
 		Mockito.verify(request).applyUpdatesOnUser(user);
 		Mockito.verify(userService).saveUserChanges(user);
 		Assertions.assertEquals(ResponseStatus.SUCCESS, response.getStatus());
