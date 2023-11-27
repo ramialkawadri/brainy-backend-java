@@ -45,17 +45,21 @@ public class DefaultFileShareDao implements FileShareDao {
     }
 
     @Override
-    public boolean isFileSharedWith(String fileOwnerUsername, String filename,
-            String sharedWithUsername) {
+    public boolean isFileSharedWith(
+        String fileOwnerUsername,
+        String filename,
+        String sharedWithUsername) {
 
         return getSharedFile(fileOwnerUsername, filename, sharedWithUsername) != null;
     }
 
     @Override
     @Transactional
-    public void shareFile(String fileOwnerUsername, String filename,
-            String sharedWithUsername, boolean canEdit)
-            throws BadRequestException {
+    public void shareFile(
+        String fileOwnerUsername,
+        String filename,
+        String sharedWithUsername,
+        boolean canEdit) throws BadRequestException {
 
         User fileOwner = userDao.findUserByUserName(fileOwnerUsername);
         User sharedWith = userDao.findUserByUserName(sharedWithUsername);
@@ -71,19 +75,24 @@ public class DefaultFileShareDao implements FileShareDao {
 
     @Override
     @Transactional
-    public void deleteFileShare(String fileOwnerUsername, String filename,
-            String sharedWithUsername) {
+    public void deleteFileShare(
+        String fileOwnerUsername,
+        String filename,
+        String sharedWithUsername) {
 
-        SharedFile sharedFile = getSharedFile(fileOwnerUsername, filename,
-                sharedWithUsername);
+        SharedFile sharedFile = getSharedFile(
+            fileOwnerUsername, filename, sharedWithUsername);
 
         entityManager.remove(sharedFile);
     }
 
     @Override
     @Transactional
-    public void updateSharedFileAccess(String fileOwnerUsername, String filename,
-            String sharedWithUsername, UpdateSharedFileAccessRequest request) {
+    public void updateSharedFileAccess(
+        String fileOwnerUsername,
+        String filename,
+        String sharedWithUsername,
+        UpdateSharedFileAccessRequest request) {
 
         SharedFile sharedFile = getSharedFile(fileOwnerUsername, filename, 
                 sharedWithUsername);
@@ -93,8 +102,10 @@ public class DefaultFileShareDao implements FileShareDao {
         entityManager.merge(sharedFile);
     }
 
-    private SharedFile getSharedFile(String fileOwnerUsername, String filename,
-            String sharedWithUsername) {
+    private SharedFile getSharedFile(
+        String fileOwnerUsername,
+        String filename,
+        String sharedWithUsername) {
 
         String query = "FROM SharedFile s WHERE s.filename=:filename AND s.fileOwner.username=:fileOwner AND s.sharedWith.username=:sharedWith";
 
