@@ -22,7 +22,6 @@ public class HttpSecurityConfig {
 	private BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter;
 
 	public HttpSecurityConfig(BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter) {
-
 		this.bearerTokenAuthenticationFilter = bearerTokenAuthenticationFilter;
 	}
 

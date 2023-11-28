@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-BrainyApplication<brainy>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.brainy.BrainyApplication",
+      "projectName": "brainy",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

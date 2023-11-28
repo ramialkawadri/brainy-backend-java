@@ -5,7 +5,10 @@ OUTPUT=$(cat $TEMPLATEPATH)
 
 # Development values
 DEVELOPMENT_DATABASE_URL=jdbc:postgresql://localhost:5432/brainy
-DEVELOPMENT_STORAGE_ACCOUNT_NAME=brainy7198
+
+DEVELOPMENT_STORAGE_ACCOUNT_NAME=brainy30379
+DEVELOPMENT_STORAGE_ACCOUNT_KEY=HK6SXWEL2tr5iCEY465oaWoN/qJ8hRDYr+hblNmNxZ5R5O5DPvrR1p+XFQ0Kt+0vNHCG0d80O3My+ASt+Qy3PA==
+
 DEVELOPMENT_JWT_KEY=xn+Qgj44apCFF9Kr+8gvpa+Hau+W0D+BOPv4SD0caULHBxausydBqyZO0HVMYRx7OUUbK4jgSE0LQdWymhp1gyK6u6Ye2W7fCHaKnco5jSWoA18cJ4+fFhjkqIKEV29Xk7BFad0dykNCg07CJ/mCim9Zn+okR/qCxoYBUZmIrUW4sWxlS4FztVYi7XKQ1zxLZugeP1HRZ5JIRnjWgmBTCJbP8K3+vMBFCtV+H1NebW9Hm59wpOgjdDlfhgxxWYEVcZ1RKCty22WrHharzIFhe9xaIPkHMfDx8sGJizilVyouIFOLYUjV0FMbifeVuxiYgKtIiQ31nOzWkxPiubhhmm1Z0trsED/cUYFWS8nYn78=
 
 # Passed valeus
@@ -13,6 +16,7 @@ DATABASE_URL=##
 DATABASE_USERNAME=##
 DATABASE_PASSWORD=##
 STORAGE_ACCOUNT_NAME=##
+STORAGE_ACCOUNT_KEY=##
 JWT_KEY=##
 
 # Font styles
@@ -27,6 +31,7 @@ if [[ $* == *--help* ]] || [[ $* == *-h* ]]; then
     echo -e "\t--database-username\t\t{value}"
     echo -e "\t--database-password\t\t{value}"
     echo -e "\t--storage-account-name\t\t{value}"
+    echo -e "\t--storage-account-key\t\t{value}"
     echo -e "\t--jwt-key\t\t\t{value}\n"
     
     echo "The following arguments must be passed on a ${BOLD}development${NORMAL} environment:"
@@ -39,6 +44,7 @@ fi
 if [[ $* == *--development* ]]; then
     DATABASE_URL=$DEVELOPMENT_DATABASE_URL
     STORAGE_ACCOUNT_NAME=$DEVELOPMENT_STORAGE_ACCOUNT_NAME
+    STORAGE_ACCOUNT_KEY=$DEVELOPMENT_STORAGE_ACCOUNT_KEY
     JWT_KEY=$DEVELOPMENT_JWT_KEY
 fi
 
@@ -68,6 +74,10 @@ while true; do
             STORAGE_ACCOUNT_NAME="$2"
             shift 2
         ;;
+        --storage-account-key)
+            STORAGE_ACCOUNT_KEY="$2"
+            shift 2
+        ;;
         *)
             shift
         ;;
@@ -79,5 +89,6 @@ OUTPUT="${OUTPUT/DATABASEUSERNAME/"$DATABASE_USERNAME"}"
 OUTPUT="${OUTPUT/DATABASEPASSWORD/"$DATABASE_PASSWORD"}"
 OUTPUT="${OUTPUT/JWTKEY/"$JWT_KEY"}"
 OUTPUT="${OUTPUT/STORAGEACCOUNTNAME/"$STORAGE_ACCOUNT_NAME"}"
+OUTPUT="${OUTPUT/STORAGEACCOUNTKEY/"$STORAGE_ACCOUNT_KEY"}"
 printf "$OUTPUT" > ../secrets.properties
 echo "Created"
