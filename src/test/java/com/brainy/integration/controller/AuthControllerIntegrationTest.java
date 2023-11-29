@@ -48,6 +48,7 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer " + token);
+		headers.set("Cookie", "test=test");
 
 		// Act
 		ResponseEntity<Void> logoutResponse = restTemplate.exchange("/logout", HttpMethod.POST,

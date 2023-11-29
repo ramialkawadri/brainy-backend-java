@@ -67,6 +67,26 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 	}
 
 	@Test
+	public void shouldHandleNonValidMethodArguments() {
+		// Arrange
+		UserRegistrationRequest registrationRequest =
+				new UserRegistrationRequest("", "Test12345678", "test@email.com", "name", "name");
+		String expectedBody = "username: missing";
+
+		// Act
+		// POST /register contains a validation of the arguments
+		ResponseEntity<ResponseString> response =
+				restTemplate.postForEntity("/register", registrationRequest, ResponseString.class);
+		ResponseString body = response.getBody();
+
+		// Assert
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		Assertions.assertNotNull(body);
+		Assertions.assertEquals(ResponseStatus.BAD_REQUEST, body.getStatus());
+		Assertions.assertEquals(expectedBody, body.getData());
+	}
+
+	@Test
 	public void shouldHandleMissingParameter() {
 		// Arrange
 		String expectedBodyData = "the query string 'filename' is missing!";

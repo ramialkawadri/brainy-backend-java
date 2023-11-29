@@ -103,6 +103,7 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 		String bearerToken = request.getHeader("Authorization");
 
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			// 7 is the first index after "Bearer "
 			String accessToken = bearerToken.substring(7);
 			return accessToken;
 		}
@@ -110,16 +111,18 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 		return null;
 	}
 
-	@Nullable
 	private String getJwtFromCookies(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
+		String jwt = "";
 
 		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("token"))
-				return cookie.getValue();
+			if (cookie.getName().equals("token")) {
+				jwt = cookie.getValue();
+				break;
+			}
 		}
 
-		return null;
+		return jwt;
 	}
 
 }

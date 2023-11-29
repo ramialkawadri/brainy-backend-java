@@ -104,7 +104,6 @@ public class UserFilesController {
 		return new Response<String>("folder deleted");
 	}
 
-	// TODO: test: Integration
 	@GetMapping("sharedWith")
 	public Response<List<SharedFile>> getFilesSharedWithUser(@RequestAttribute User user) {
 
@@ -113,7 +112,6 @@ public class UserFilesController {
 		return new Response<>(sharedFiles);
 	}
 
-	// TODO: Integration
 	@GetMapping("share")
 	public Response<List<SharedFile>> getFileShares(@RequestAttribute User user,
 			@RequestParam String filename) {
@@ -122,7 +120,6 @@ public class UserFilesController {
 		return new Response<>(sharedFiles);
 	}
 
-	// TODO: Integration
 	@PostMapping("share")
 	public Response<String> shareFileWith(@RequestAttribute(name = "user") User fileOwner,
 			@RequestParam String filename,
@@ -133,7 +130,6 @@ public class UserFilesController {
 		return new Response<String>("file shared successfully");
 	}
 
-	// TODO: Integration
 	@DeleteMapping("share")
 	public Response<String> deleteShare(@RequestAttribute(name = "user") User fileOwner,
 			@RequestParam String filename,
@@ -145,7 +141,6 @@ public class UserFilesController {
 		return new Response<String>("removed the share successfully");
 	}
 
-	// TODO: Integration
 	@PatchMapping("share")
 	public Response<String> updateSharedFileAccess(@RequestAttribute(name = "user") User fileOwner,
 			@RequestParam String filename,

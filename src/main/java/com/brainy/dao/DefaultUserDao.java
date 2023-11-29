@@ -17,7 +17,7 @@ public class DefaultUserDao implements UserDao {
 	}
 
 	@Override
-	public User findUserByUserName(String username) {
+	public User findUserByUsername(String username) {
 		User user = entityManager.find(User.class, username);
 		return user;
 	}

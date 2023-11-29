@@ -28,7 +28,7 @@ public class DefaultUserDaoUnitTest {
 		Mockito.when(entityManager.find(User.class, "user")).thenReturn(testUser);
 
 		// Act
-		User returnValue = userDAO.findUserByUserName("user");
+		User returnValue = userDAO.findUserByUsername("user");
 
 		// Assert
 		Assertions.assertEquals(testUser, returnValue);

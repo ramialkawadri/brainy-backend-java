@@ -111,9 +111,9 @@ public class DefaultFileShareDaoUnitTest {
 		User sharedWith = TestUtils.generateRandomUser();
 		boolean canEdit = false;
 
-		Mockito.when(userDao.findUserByUserName(fileOwner.getUsername())).thenReturn(fileOwner);
+		Mockito.when(userDao.findUserByUsername(fileOwner.getUsername())).thenReturn(fileOwner);
 
-		Mockito.when(userDao.findUserByUserName(sharedWith.getUsername())).thenReturn(sharedWith);
+		Mockito.when(userDao.findUserByUsername(sharedWith.getUsername())).thenReturn(sharedWith);
 
 		// Act
 		fileShareDao.shareFile(fileOwner.getUsername(), filename, sharedWith.getUsername(),
@@ -131,9 +131,9 @@ public class DefaultFileShareDaoUnitTest {
 		User sharedWith = TestUtils.generateRandomUser();
 		boolean canEdit = false;
 
-		Mockito.when(userDao.findUserByUserName(fileOwner.getUsername())).thenReturn(fileOwner);
+		Mockito.when(userDao.findUserByUsername(fileOwner.getUsername())).thenReturn(fileOwner);
 
-		Mockito.when(userDao.findUserByUserName(sharedWith.getUsername())).thenReturn(null);
+		Mockito.when(userDao.findUserByUsername(sharedWith.getUsername())).thenReturn(null);
 
 		// Act & Assert
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {

@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.brainy.TestUtils;
@@ -33,13 +34,13 @@ public class DefaultUserServiceUnitTest {
 		// Arrange
 		User mockUser = TestUtils.generateRandomUser();
 
-		Mockito.when(userDao.findUserByUserName("user")).thenReturn(mockUser);
+		Mockito.when(userDao.findUserByUsername("user")).thenReturn(mockUser);
 
 		// Act
 		User user = userService.findUserByUsername("user");
 
 		// Assert
-		Mockito.verify(userDao).findUserByUserName("user");
+		Mockito.verify(userDao).findUserByUsername("user");
 		Assertions.assertEquals(mockUser, user);
 	}
 
@@ -75,7 +76,7 @@ public class DefaultUserServiceUnitTest {
 		Instant tokenIssueDate = Instant.now();
 
 		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.minus(1, ChronoUnit.MINUTES));
-		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
+		Mockito.when(userDao.findUserByUsername(Mockito.anyString())).thenReturn(user);
 
 		// Act
 		user.setLogoutDate(changeTimestamp);
@@ -86,13 +87,13 @@ public class DefaultUserServiceUnitTest {
 	}
 
 	@Test
-	public void shouldReturnFalseOnValidToken() {
+	public void shouldReturnFalseOnOutdatedToken() {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		Instant tokenIssueDate = Instant.now();
 
 		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.plus(1, ChronoUnit.MINUTES));
-		Mockito.when(userDao.findUserByUserName(Mockito.anyString())).thenReturn(user);
+		Mockito.when(userDao.findUserByUsername(Mockito.anyString())).thenReturn(user);
 
 		// Act
 		user.setLogoutDate(changeTimestamp);
@@ -100,6 +101,19 @@ public class DefaultUserServiceUnitTest {
 
 		// Assert
 		Assertions.assertFalse(userService.isTokenStillValidForUser(tokenIssueDate, ""));
+	}
+
+	@Test
+	public void shouldReturnFalseOnTokenFOrNonExistingUser() {
+		// Arrange
+		String username = TestUtils.generateUniqueUsername();
+		Mockito.when(userDao.findUserByUsername(username)).thenReturn(null);
+
+		// Act
+		boolean actual = userService.isTokenStillValidForUser(Instant.now(), username);
+
+		// Assert
+		Assertions.assertFalse(actual);
 	}
 
 	@Test
@@ -128,5 +142,19 @@ public class DefaultUserServiceUnitTest {
 		// Assert
 		Mockito.verify(user).setPasswordChangeDate(Mockito.any());
 		Mockito.verify(userDao).saveUserChanges(user);
+	}
+
+	@Test
+	public void shouldNotSaveUserCHangesWhenInvalid() {
+		// Arrange
+		User user = TestUtils.generateRandomUser();
+		Mockito.doAnswer(invocation -> {
+			throw new DataIntegrityViolationException("");
+		}).when(userDao).saveUserChanges(user);
+
+		// Act & Assert
+		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+			userService.saveUserChanges(user);
+		});
 	}
 }

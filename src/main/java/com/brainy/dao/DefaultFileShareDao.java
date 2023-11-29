@@ -51,8 +51,8 @@ public class DefaultFileShareDao implements FileShareDao {
 	public void shareFile(String fileOwnerUsername, String filename, String sharedWithUsername,
 			boolean canEdit) throws BadRequestException {
 
-		User fileOwner = userDao.findUserByUserName(fileOwnerUsername);
-		User sharedWith = userDao.findUserByUserName(sharedWithUsername);
+		User fileOwner = userDao.findUserByUsername(fileOwnerUsername);
+		User sharedWith = userDao.findUserByUsername(sharedWithUsername);
 
 		if (sharedWith == null)
 			throw new BadRequestException("cannot find a user with username " + sharedWithUsername);
@@ -90,12 +90,8 @@ public class DefaultFileShareDao implements FileShareDao {
 		String query =
 				"FROM SharedFile s WHERE s.filename=:filename AND s.fileOwner.username=:fileOwner AND s.sharedWith.username=:sharedWith";
 
-		try {
-			return entityManager.createQuery(query, SharedFile.class)
-					.setParameter("filename", filename).setParameter("fileOwner", fileOwnerUsername)
-					.setParameter("sharedWith", sharedWithUsername).getSingleResult();
-		} catch (Exception e) {
-			return null;
-		}
+		return entityManager.createQuery(query, SharedFile.class).setParameter("filename", filename)
+				.setParameter("fileOwner", fileOwnerUsername)
+				.setParameter("sharedWith", sharedWithUsername).getSingleResult();
 	}
 }

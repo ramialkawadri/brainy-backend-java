@@ -263,6 +263,26 @@ public class DefaultUserFilesServiceUnitTest {
 	}
 
 	@Test
+	public void shouldNotCreateAlreadyExistingFolder() {
+		// Arrange
+		String username = TestUtils.generateUniqueUsername();
+		String foldername = TestUtils.generateRandomFilename();
+
+		BlobClient blobClient = Mockito.mock();
+
+		Mockito.when(blobContainerClient.getBlobClient(foldername + "/.hidden"))
+				.thenReturn(blobClient);
+
+		Mockito.when(blobClient.exists()).thenReturn(true);
+
+		// Act
+		userFilesService.createFolder(username, foldername);
+
+		// Assert
+		Mockito.verify(blobClient, Mockito.never()).upload(Mockito.any(BinaryData.class));
+	}
+
+	@Test
 	public void shouldDeleteFolder() {
 		// Arrange
 		String username = TestUtils.generateUniqueUsername();

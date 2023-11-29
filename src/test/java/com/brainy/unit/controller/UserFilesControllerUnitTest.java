@@ -83,7 +83,18 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldNotCreateOrUpdateFile() {
+	public void shouldNotCreateOrUpdateFileWhenFilenameIsEmpty() {
+		// Arrange
+		User user = TestUtils.generateRandomUser();
+
+		// Act & Assert
+		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+			userFilesController.createOrUpdateJsonFile(user, "", "");
+		});
+	}
+
+	@Test
+	public void shouldNotCreateOrUpdateFileBecauseOfNoRemainingSpace() {
 		// Arrange
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
@@ -142,16 +153,38 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldDeleteFolder() throws FileDoesNotExistException {
+	public void shouldNotCreateFolderWhenFolderNameIsEmpty() {
+		// Arrange
+		User user = TestUtils.generateRandomUser();
+
+		// Act & Assert
+		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+			userFilesController.createFolder(user, "");
+		});
+	}
+
+	@Test
+	public void shouldDeleteFolder() throws BadRequestException {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String foldername = TestUtils.generateRandomFilename();
 
 		// Act
-		userFilesController.deleteFile(user, foldername);
+		userFilesController.deleteFolder(user, foldername);
 
 		// Assert
-		Mockito.verify(userFilesService).deleteFile(user.getUsername(), foldername);
+		Mockito.verify(userFilesService).deleteFolder(user.getUsername(), foldername);
+	}
+
+	@Test
+	public void shouldNotDeleteFolderWhenFolderNameIsEmpty() {
+		// Arrange
+		User user = TestUtils.generateRandomUser();
+
+		// Act & Assert
+		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+			userFilesController.deleteFolder(user, "");
+		});
 	}
 
 	@Test
