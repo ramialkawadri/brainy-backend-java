@@ -22,6 +22,7 @@ import com.brainy.dao.FileShareDao;
 import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.exception.FileDoesNotExistException;
 import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.service.DefaultUserFilesService;
 import com.brainy.service.UserFilesService;
@@ -81,13 +82,14 @@ public class DefaultUserFilesServiceUnitTest {
 	}
 
 	@Test
-	public void shouldGetFileContent() {
+	public void shouldGetFileContent() throws FileDoesNotExistException {
 		// Arrange
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
 
 		User user = TestUtils.generateRandomUser();
 
+		Mockito.when(blobClient.exists()).thenReturn(true);
 		Mockito.when(blobClient.downloadContent())
 				.thenReturn(BinaryData.fromBytes(fileContent.getBytes()));
 
@@ -96,6 +98,24 @@ public class DefaultUserFilesServiceUnitTest {
 
 		// Assert
 		Assertions.assertEquals(fileContent, returnValue);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenGettingNonExistingFileContent() {
+		// Arrange
+		String fileContent = TestUtils.generateRandomFileContent();
+		String filename = TestUtils.generateRandomFilename();
+
+		User user = TestUtils.generateRandomUser();
+
+		Mockito.when(blobClient.exists()).thenReturn(false);
+		Mockito.when(blobClient.downloadContent())
+				.thenReturn(BinaryData.fromBytes(fileContent.getBytes()));
+
+		// Act & Assert
+		Assertions.assertThrowsExactly(FileDoesNotExistException.class, () -> {
+			userFilesService.getFileContent(user.getUsername(), filename);
+		});
 	}
 
 	@Test
@@ -129,16 +149,30 @@ public class DefaultUserFilesServiceUnitTest {
 	}
 
 	@Test
-	public void shouldDeleteFile() {
+	public void shouldDeleteFile() throws FileDoesNotExistException {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
+		Mockito.when(blobClient.exists()).thenReturn(true);
 
 		// Act
 		userFilesService.deleteFile(user.getUsername(), filename);
 
 		// Assert
 		Mockito.verify(blobClient).deleteIfExists();
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenDeletingNonExistingFile() {
+		// Arrange
+		User user = TestUtils.generateRandomUser();
+		String filename = TestUtils.generateRandomFilename();
+		Mockito.when(blobClient.exists()).thenReturn(false);
+
+		// Act & Assert
+		Assertions.assertThrowsExactly(FileDoesNotExistException.class, () -> {
+			userFilesService.deleteFile(user.getUsername(), filename);
+		});
 	}
 
 	@Test
@@ -166,13 +200,12 @@ public class DefaultUserFilesServiceUnitTest {
 
 		Mockito.when(defaultIteratorBlobItem.getProperties()).thenReturn(itemProperties);
 
-		Mockito.when(itemProperties.getContentLength()).thenReturn(maxFileSize + 1);
+		// Act
+		boolean returnValue =
+				userFilesService.canUserCreateFileWithSize("user", filename, maxFileSize + 1);
 
 		// Act
-		boolean returnValue = userFilesService.canUserCreateFileWithSize("user", filename, 1);
-
-		// Act
-		Assertions.assertTrue(returnValue);
+		Assertions.assertFalse(returnValue);
 	}
 
 	@Test

@@ -19,6 +19,7 @@ import com.brainy.dao.FileShareDao;
 import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.exception.FileDoesNotExistException;
 import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.util.JsonUtil;
 
@@ -33,6 +34,9 @@ public class DefaultUserFilesService implements UserFilesService {
 	private BlobServiceClient blobServiceClient;
 
 	private FileShareDao fileShareDAO;
+
+	// Files that have this file extension should be hidden to the user
+	private final String hiddenFilesFileExtension = ".hidden";
 
 	@Value("${max-size-per-user}")
 	private long maxStoragePerUser;
@@ -74,10 +78,14 @@ public class DefaultUserFilesService implements UserFilesService {
 	}
 
 	@Override
-	public String getFileContent(String username, String filename) {
+	public String getFileContent(String username, String filename)
+			throws FileDoesNotExistException {
 		BlobContainerClient containerClient = getUserBlobContainerClient(username);
 
 		BlobClient blobClient = containerClient.getBlobClient(filename);
+
+		if (!blobClient.exists())
+			throw new FileDoesNotExistException(filename);
 
 		BinaryData binaryData = blobClient.downloadContent();
 
@@ -110,10 +118,13 @@ public class DefaultUserFilesService implements UserFilesService {
 	}
 
 	@Override
-	public void deleteFile(String username, String filename) {
+	public void deleteFile(String username, String filename) throws FileDoesNotExistException {
 		BlobContainerClient containerClient = getUserBlobContainerClient(username);
 
 		BlobClient blobClient = containerClient.getBlobClient(filename);
+
+		if (!blobClient.exists())
+			throw new FileDoesNotExistException(filename);
 
 		blobClient.deleteIfExists();
 	}
@@ -148,15 +159,17 @@ public class DefaultUserFilesService implements UserFilesService {
 	}
 
 	/**
-	 * Folders doesn't exist in Azure, so instead we name files using folder names as prefix. When
-	 * creating a new folder, we just make a file inside the folder, the file is called ".hidden"
-	 * and should not be displayed in front-end.
+	 * Folders doesn't exist in Azure, so instead we name files using foldername as a prefix.
+	 * 
+	 * When creating a new folder, we just make a file inside the folder, the file is called
+	 * ".hidden" and should not be displayed in front-end.
 	 */
 	@Override
 	public void createFolder(String username, String foldername) {
 		BlobContainerClient containerClient = getUserBlobContainerClient(username);
 
-		BlobClient blobClient = containerClient.getBlobClient(foldername + "/.hidden");
+		BlobClient blobClient =
+				containerClient.getBlobClient(foldername + "/" + hiddenFilesFileExtension);
 
 		if (blobClient.exists())
 			return;

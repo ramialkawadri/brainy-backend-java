@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
 
 		String errorMessage = "the query string '" + e.getParameterName() + "' is missing!";
 
-		Response<String> response = new Response<String>(errorMessage, ResponseStatus.NOT_FOUND);
+		Response<String> response = new Response<String>(errorMessage, ResponseStatus.BAD_REQUEST);
 
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}

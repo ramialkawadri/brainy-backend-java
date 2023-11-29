@@ -5,17 +5,18 @@ import java.util.List;
 import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.exception.FileDoesNotExistException;
 import com.brainy.model.request.UpdateSharedFileAccessRequest;
 
 public interface UserFilesService {
 	List<String> getUserFiles(String username);
 
-	String getFileContent(String username, String filename);
+	String getFileContent(String username, String filename) throws FileDoesNotExistException;
 
 	void createOrUpdateJsonFile(String username, String filename, String content)
 			throws BadRequestException;
 
-	void deleteFile(String username, String filename);
+	void deleteFile(String username, String filename) throws FileDoesNotExistException;
 
 	/**
 	 * Returns if the user have enough size to create a file with the given size. If the file

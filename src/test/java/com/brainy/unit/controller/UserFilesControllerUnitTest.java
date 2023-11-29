@@ -13,6 +13,7 @@ import com.brainy.model.Response;
 import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.exception.FileDoesNotExistException;
 import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.service.UserFilesService;
 
@@ -27,7 +28,7 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldReturnUserFiles() {
+	public void shouldReturnUserFiles() throws FileDoesNotExistException {
 		// Arrange
 		List<String> userFiles = new ArrayList<>();
 		userFiles.add(TestUtils.generateRandomFilename());
@@ -45,7 +46,7 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldReturnFileContent() {
+	public void shouldReturnFileContent() throws FileDoesNotExistException {
 		// Arrange
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
@@ -98,7 +99,7 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldDeleteFile() {
+	public void shouldDeleteFile() throws FileDoesNotExistException {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
@@ -141,7 +142,7 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldDeleteFolder() {
+	public void shouldDeleteFolder() throws FileDoesNotExistException {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String foldername = TestUtils.generateRandomFilename();

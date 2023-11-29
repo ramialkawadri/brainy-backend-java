@@ -17,6 +17,7 @@ import com.brainy.model.ResponseWithoutData;
 import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
+import com.brainy.model.exception.FileDoesNotExistException;
 import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.service.UserFilesService;
 
@@ -34,14 +35,15 @@ public class UserFilesController {
 
 	@GetMapping
 	public Response<Object> getFileContentOrUserFiles(@RequestAttribute User user,
-			@RequestParam(required = false) String filename) {
+			@RequestParam(required = false) String filename) throws FileDoesNotExistException {
 
 		Object body = null;
 
-		if (filename != null)
+		if (filename != null) {
 			body = userFilesService.getFileContent(user.getUsername(), filename);
-		else
+		} else {
 			body = userFilesService.getUserFiles(user.getUsername());
+		}
 
 		return new Response<>(body);
 	}
@@ -66,7 +68,8 @@ public class UserFilesController {
 
 	@DeleteMapping
 	public ResponseWithoutData deleteFile(@RequestAttribute User user,
-			@RequestParam String filename) {
+			@RequestParam String filename) throws FileDoesNotExistException {
+
 		userFilesService.deleteFile(user.getUsername(), filename);
 		return new ResponseWithoutData();
 	}
