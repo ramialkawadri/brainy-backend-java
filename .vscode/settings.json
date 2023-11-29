@@ -26,5 +26,11 @@
   },
   "[shellscript]": {
     "editor.defaultFormatter": "shakram02.bash-beautify"
+  },
+  "[yaml]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "advanced",
+    "diffEditor.ignoreTrimWhitespace": false
   }
 }

@@ -10,9 +10,7 @@ name: Build & Test
 
 on:
   push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
 
 jobs:
   build:
@@ -27,4 +25,20 @@ jobs:
           distribution: "temurin"
           cache: maven
       - name: Build and test
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots verify -Pcoverage
+
+      # Uses: https://github.com/marketplace/actions/jacoco-reporter
+      - name: Code Coverage Report
+        id: jacoco_reporter
+        uses: PavanMudigonda/jacoco-reporter@v4.9
+        with:
+          coverage_results_path: target/site/jacoco/jacoco.xml
+          coverage_report_name: Code Coverage
+          coverage_report_title: Code Coveraage
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          minimum_coverage: 80
+          fail_below_threshold: true
+          publish_only_summary: false
+
+      - name: Add Coverage Job Summary
+        run: echo "${{ steps.jacoco_reporter.outputs.coverageSummary }}" >> $GITHUB_STEP_SUMMARY
