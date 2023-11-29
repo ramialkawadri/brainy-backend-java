@@ -2,6 +2,13 @@
 
 This the backend repository for the Brainy project.
 
+## See code coverage in vscode
+
+1. Press `Ctrl + Shift + P` so that the command palette is visible, then run `Tasks: Run task` and
+   choose the task with the name `Update test coverage`.
+1. Press `Ctrl + Shift + P` so that the command palette is visible again, run the command
+   `Coverage Gutters: Display Coverage`.
+
 ## How to setup the development/deployment environment
 
 This a guide about how to setup the development/deployment environment for the
@@ -10,14 +17,14 @@ environments.
 
 ### Requirements
 
-- JDK > 20
+- JDK 20
+- Maven installed and added to the path
 - PostgreSQL
 
 ### Development tools
 
 Those are the primary development tools used in developing the backend:
 
-- IntelliJ IDEA is used for code coverage
 - Postman
 - Visual studio code
 - [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack)
@@ -25,6 +32,7 @@ Those are the primary development tools used in developing the backend:
 - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 - [XML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
 - [Bash Beautify](https://marketplace.visualstudio.com/items?itemName=shakram02.bash-beautify)
+- [Coverage Gutters](https://marketplace.visualstudio.com/items?itemName=ryanluker.vscode-coverage-gutters)
 
 ### Setting up Database
 

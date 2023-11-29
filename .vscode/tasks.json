@@ -1,0 +1,16 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Update test coverage",
+      "type": "shell",
+      "command": "mvn jacoco:prepare-agent test install jacoco:report -Pcoverage",
+      "group": "test",
+      "icon": {
+        "id": "refresh"
+      }
+    }
+  ]
+}
