@@ -5,7 +5,7 @@ This the backend repository for the Brainy project.
 ## See code coverage in vscode
 
 1. Press `Ctrl + Shift + P` so that the command palette is visible, then run `Tasks: Run task` and
-   choose the task with the name `Update test coverage`.
+   choose the task with the name `Update code coverage`.
 1. Press `Ctrl + Shift + P` so that the command palette is visible again, run the command
    `Coverage Gutters: Display Coverage`.
 
