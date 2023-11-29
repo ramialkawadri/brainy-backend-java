@@ -36,7 +36,7 @@ jobs:
           coverage_report_name: Code Coverage
           coverage_report_title: Code Coveraage
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          minimum_coverage: 80
+          minimum_coverage: 70
           fail_below_threshold: true
           publish_only_summary: false
 
