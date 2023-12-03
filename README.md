@@ -2,13 +2,6 @@
 
 This the backend repository for the Brainy project.
 
-## See code coverage in vscode
-
-1. Press `Ctrl + Shift + P` so that the command palette is visible, then run `Tasks: Run task` and
-   choose the task with the name `Update code coverage`.
-1. Press `Ctrl + Shift + P` so that the command palette is visible again, run the command
-   `Coverage Gutters: Display Coverage`.
-
 ## How to setup the development/deployment environment
 
 This a guide about how to setup the development/deployment environment for the
@@ -55,3 +48,10 @@ Secrets are values (passwords, jwt-key, etc...) that are not shared with the
 git repo. Those are necessary to make the application work. How to setup those
 secrets can be found by running `create-secrets.bash -h`, the file can
 found in `src/main/resources/scripts`.
+
+## See code coverage in vscode
+
+1. Press `Ctrl + Shift + P` so that the command palette is visible, then run `Tasks: Run task` and
+   choose the task with the name `Update code coverage`.
+1. Press `Ctrl + Shift + P` so that the command palette is visible again, run the command
+   `Coverage Gutters: Display Coverage`.
