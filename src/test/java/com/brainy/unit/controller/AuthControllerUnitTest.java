@@ -34,20 +34,25 @@ public class AuthControllerUnitTest {
 	public void shouldGetTokenAndAddItToCookies() {
 		// Arrange
 		HttpServletResponse servletResponse = Mockito.mock();
+		User user = TestUtils.generateRandomUser();
 
-		Mockito.when(tokenService.generateToken(Mockito.any())).thenReturn("token_value");
+		Mockito.when(tokenService.generateToken(user)).thenReturn("token_value");
 
 		Mockito.doAnswer(invocation -> {
 			Cookie cookie = (Cookie) invocation.getArguments()[0];
 
 			Assertions.assertEquals("token", cookie.getName());
 			Assertions.assertEquals("token_value", cookie.getValue());
+			Assertions.assertTrue(cookie.isHttpOnly());
+			Assertions.assertEquals("/", cookie.getPath());
+			Assertions.assertEquals("Strict", cookie.getAttribute("SameSite"));
+			Assertions.assertTrue(cookie.getSecure());
 
 			return true;
 		}).when(servletResponse).addCookie(Mockito.any());
 
 		// Act
-		Response<String> tokenResponse = authController.getToken(null, servletResponse);
+		Response<String> tokenResponse = authController.getToken(user, servletResponse);
 
 		// Assert
 		Assertions.assertEquals(ResponseStatus.SUCCESS, tokenResponse.getStatus());

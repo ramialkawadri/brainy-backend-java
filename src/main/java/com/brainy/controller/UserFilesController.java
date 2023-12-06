@@ -104,9 +104,8 @@ public class UserFilesController {
 		return new Response<String>("folder deleted");
 	}
 
-	@GetMapping("sharedWith")
+	@GetMapping("shared-with-me")
 	public Response<List<SharedFile>> getFilesSharedWithUser(@RequestAttribute User user) {
-
 		List<SharedFile> sharedFiles = userFilesService.getFilesSharedWithUser(user);
 
 		return new Response<>(sharedFiles);

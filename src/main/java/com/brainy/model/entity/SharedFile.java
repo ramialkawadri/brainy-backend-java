@@ -10,7 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,13 +18,13 @@ import jakarta.persistence.Table;
 @IdClass(SharedFilePK.class)
 public class SharedFile {
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "file_owner")
 	@Id
 	@JsonIgnore // Handled in special method
 	private User fileOwner;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "shared_with")
 	@Id
 	@JsonIgnore // Handled in special method
@@ -89,6 +89,22 @@ public class SharedFile {
 	public void setCanEdit(boolean canEdit) {
 		this.canEdit = canEdit;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+
+		if (!(obj instanceof SharedFilePK))
+			return false;
+
+		SharedFile other = (SharedFile) obj;
+
+		return other.fileOwner.equals(fileOwner) && other.sharedWith.equals(sharedWith)
+				&& other.filename.equals(filename) && other.canEdit == canEdit;
+	}
 }
 
 
@@ -147,25 +163,13 @@ class SharedFilePK implements Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SharedFilePK other = (SharedFilePK) obj;
-		if (fileOwner == null) {
-			if (other.fileOwner != null)
-				return false;
-		} else if (!fileOwner.equals(other.fileOwner))
-			return false;
-		if (sharedWith == null) {
-			if (other.sharedWith != null)
-				return false;
-		} else if (!sharedWith.equals(other.sharedWith))
-			return false;
-		if (filename == null) {
-			if (other.filename != null)
-				return false;
-		} else if (!filename.equals(other.filename))
-			return false;
-		return true;
-	}
 
+		if (!(obj instanceof SharedFilePK))
+			return false;
+
+		SharedFilePK other = (SharedFilePK) obj;
+
+		return other.fileOwner.equals(fileOwner) && other.sharedWith.equals(sharedWith)
+				&& other.filename.equals(filename);
+	}
 }
