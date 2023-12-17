@@ -5,11 +5,13 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
-
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import com.brainy.TestUtils;
 import com.brainy.model.entity.User;
 import com.brainy.service.DefaultTokenService;
@@ -41,7 +43,17 @@ public class DefaultTokenServiceUnitTest {
 		String token = tokenService.generateToken(user);
 
 		// Assert
-		Mockito.verify(jwtEncoder).encode(Mockito.any());
+		Mockito.verify(jwtEncoder).encode(
+				Mockito.argThat((ArgumentMatcher<JwtEncoderParameters>) encoderParameter -> {
+					JwtClaimsSet claims = encoderParameter.getClaims();
+
+					// Adding 1 to include the current day
+					long tokenDuration =
+							ChronoUnit.DAYS.between(Instant.now(), claims.getExpiresAt()) + 1;
+
+					return claims.getSubject().equals(user.getUsername())
+							&& tokenDuration == DefaultTokenService.TOKEN_DURATION;
+				}));
 		Assertions.assertEquals("token_value", token);
 	}
 

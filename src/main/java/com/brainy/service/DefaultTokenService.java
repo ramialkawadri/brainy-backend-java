@@ -20,6 +20,8 @@ public class DefaultTokenService implements TokenService {
 	private final JwtEncoder jwtEncoder;
 	private final JwtDecoder jwtDecoder;
 
+	public static int TOKEN_DURATION = 14;
+
 	public DefaultTokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
 		this.jwtEncoder = jwtEncoder;
 		this.jwtDecoder = jwtDecoder;
@@ -30,7 +32,8 @@ public class DefaultTokenService implements TokenService {
 		Instant now = Instant.now();
 
 		JwtClaimsSet claims = JwtClaimsSet.builder().issuedAt(now)
-				.expiresAt(now.plus(14, ChronoUnit.DAYS)).subject(user.getUsername()).build();
+				.expiresAt(now.plus(TOKEN_DURATION, ChronoUnit.DAYS)).subject(user.getUsername())
+				.build();
 
 		JwtEncoderParameters encoderParameters =
 				JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS512).build(), claims);

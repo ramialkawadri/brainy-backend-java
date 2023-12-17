@@ -15,7 +15,6 @@ import com.brainy.model.request.UserRegistrationRequest;
 import com.brainy.service.TokenService;
 import com.brainy.service.UserService;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class AuthControllerUnitTest {
@@ -38,25 +37,18 @@ public class AuthControllerUnitTest {
 
 		Mockito.when(tokenService.generateToken(user)).thenReturn("token_value");
 
-		Mockito.doAnswer(invocation -> {
-			Cookie cookie = (Cookie) invocation.getArguments()[0];
-
-			Assertions.assertEquals("token", cookie.getName());
-			Assertions.assertEquals("token_value", cookie.getValue());
-			Assertions.assertTrue(cookie.isHttpOnly());
-			Assertions.assertEquals("/", cookie.getPath());
-			Assertions.assertEquals("Strict", cookie.getAttribute("SameSite"));
-			Assertions.assertTrue(cookie.getSecure());
-
-			return true;
-		}).when(servletResponse).addCookie(Mockito.any());
-
 		// Act
 		Response<String> tokenResponse = authController.getToken(user, servletResponse);
 
 		// Assert
 		Assertions.assertEquals(ResponseStatus.SUCCESS, tokenResponse.getStatus());
 		Assertions.assertEquals("token_value", tokenResponse.getData());
+		Mockito.verify(servletResponse).addCookie(Mockito.argThat(cookie -> {
+			return cookie.getName().equals("token") && cookie.getValue().equals("token_value")
+					&& cookie.getPath().equals("/")
+					&& cookie.getAttribute("SameSite").equals("Strict") && cookie.isHttpOnly()
+					&& cookie.getSecure();
+		}));
 	}
 
 	@Test
