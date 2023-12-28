@@ -21,7 +21,6 @@ public class DefaultUserService implements UserService {
 	private PasswordEncoder passwordEncoder;
 
 	public DefaultUserService(UserDao userDao, PasswordEncoder passwordEncoder) {
-
 		this.userDao = userDao;
 		this.passwordEncoder = passwordEncoder;
 	}
@@ -63,13 +62,11 @@ public class DefaultUserService implements UserService {
 	public void logoutUser(User user) {
 		Timestamp now = Timestamp.from(Instant.now());
 		user.setLogoutDate(now);
-
 		userDao.saveUserChanges(user);
 	}
 
 	@Override
 	public void updateUserPassword(User user, String newPassword) {
-
 		encodeAndUpdateUserPassword(user, newPassword);
 
 		Timestamp now = Timestamp.from(Instant.now());

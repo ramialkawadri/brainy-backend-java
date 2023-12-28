@@ -1,5 +1,6 @@
 package com.brainy.unit.service;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -43,8 +44,8 @@ public class DefaultTokenServiceUnitTest {
 		String token = tokenService.generateToken(user);
 
 		// Assert
-		Mockito.verify(jwtEncoder).encode(
-				Mockito.argThat((ArgumentMatcher<JwtEncoderParameters>) encoderParameter -> {
+		Mockito.verify(jwtEncoder)
+				.encode(argThat((ArgumentMatcher<JwtEncoderParameters>) encoderParameter -> {
 					JwtClaimsSet claims = encoderParameter.getClaims();
 
 					// Adding 1 to include the current day
@@ -54,6 +55,7 @@ public class DefaultTokenServiceUnitTest {
 					return claims.getSubject().equals(user.getUsername())
 							&& tokenDuration == DefaultTokenService.TOKEN_DURATION;
 				}));
+
 		Assertions.assertEquals("token_value", token);
 	}
 

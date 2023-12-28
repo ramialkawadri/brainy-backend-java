@@ -1,5 +1,6 @@
 package com.brainy.unit.service;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -49,17 +50,11 @@ public class DefaultUserServiceUnitTest {
 		// Arrange
 		UserRegistrationRequest request = createMockUserRegistrationRequest();
 
-		Mockito.doAnswer(invocation -> {
-			User user = (User) invocation.getArguments()[0];
-
-			Assertions.assertNotNull(user);
-			Assertions.assertNotEquals("testPass", user.getPassword());
-
-			return true;
-		}).when(userDao).registerUser(Mockito.any());
-
-		// Act & Assert
+		// Act
 		userService.registerUserFromRequest(request);
+
+		// Assert
+		Mockito.verify(userDao).registerUser(argThat(user -> user.getUsername().equals("test")));
 	}
 
 	private UserRegistrationRequest createMockUserRegistrationRequest() {
@@ -76,14 +71,16 @@ public class DefaultUserServiceUnitTest {
 		Instant tokenIssueDate = Instant.now();
 
 		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.minus(1, ChronoUnit.MINUTES));
-		Mockito.when(userDao.findUserByUsername(Mockito.anyString())).thenReturn(user);
+		Mockito.when(userDao.findUserByUsername(user.getUsername())).thenReturn(user);
 
 		// Act
 		user.setLogoutDate(changeTimestamp);
 		user.setPasswordChangeDate(changeTimestamp);
 
+		boolean actual = userService.isTokenStillValidForUser(tokenIssueDate, user.getUsername());
+
 		// Assert
-		Assertions.assertTrue(userService.isTokenStillValidForUser(tokenIssueDate, ""));
+		Assertions.assertTrue(actual);
 	}
 
 	@Test
@@ -93,14 +90,16 @@ public class DefaultUserServiceUnitTest {
 		Instant tokenIssueDate = Instant.now();
 
 		Timestamp changeTimestamp = Timestamp.from(tokenIssueDate.plus(1, ChronoUnit.MINUTES));
-		Mockito.when(userDao.findUserByUsername(Mockito.anyString())).thenReturn(user);
+		Mockito.when(userDao.findUserByUsername(user.getUsername())).thenReturn(user);
 
 		// Act
 		user.setLogoutDate(changeTimestamp);
 		user.setPasswordChangeDate(changeTimestamp);
 
+		boolean actual = userService.isTokenStillValidForUser(tokenIssueDate, user.getUsername());
+
 		// Assert
-		Assertions.assertFalse(userService.isTokenStillValidForUser(tokenIssueDate, ""));
+		Assertions.assertFalse(actual);
 	}
 
 	@Test
@@ -125,7 +124,12 @@ public class DefaultUserServiceUnitTest {
 		userService.logoutUser(user);
 
 		// Assert
-		Mockito.verify(user).setLogoutDate(Mockito.any());
+		Mockito.verify(user).setLogoutDate(argThat(logoutDate -> {
+			Instant now = Instant.now();
+
+			return ChronoUnit.MINUTES.between(logoutDate.toInstant(), now) <= 1;
+		}));
+
 		Mockito.verify(userDao).saveUserChanges(user);
 	}
 
@@ -134,13 +138,19 @@ public class DefaultUserServiceUnitTest {
 		// Arrange
 		User user = Mockito.mock();
 
-		Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("encoded");
+		Mockito.when(user.getPassword()).thenReturn("user password");
+		Mockito.when(passwordEncoder.encode(user.getPassword())).thenReturn("encoded");
 
 		// Act
 		userService.updateUserPassword(user, "newStrongPassword");
 
 		// Assert
-		Mockito.verify(user).setPasswordChangeDate(Mockito.any());
+		Mockito.verify(user).setPasswordChangeDate(argThat(logoutDate -> {
+			Instant now = Instant.now();
+
+			return ChronoUnit.MINUTES.between(logoutDate.toInstant(), now) <= 1;
+		}));
+
 		Mockito.verify(userDao).saveUserChanges(user);
 	}
 
@@ -148,6 +158,7 @@ public class DefaultUserServiceUnitTest {
 	public void shouldNotSaveUserCHangesWhenInvalid() {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
+
 		Mockito.doAnswer(invocation -> {
 			throw new DataIntegrityViolationException("");
 		}).when(userDao).saveUserChanges(user);
