@@ -122,7 +122,7 @@ public class UserFilesController {
 	@PostMapping("share")
 	public Response<String> shareFileWith(@RequestAttribute(name = "user") User fileOwner,
 			@RequestParam String filename,
-			@RequestParam(name = "sharedWith") String sharedWithUsername,
+			@RequestParam(name = "shared-with") String sharedWithUsername,
 			@RequestParam(defaultValue = "false") boolean canEdit) throws BadRequestException {
 
 		userFilesService.shareFileWith(fileOwner, filename, sharedWithUsername, canEdit);
@@ -132,7 +132,7 @@ public class UserFilesController {
 	@DeleteMapping("share")
 	public Response<String> deleteShare(@RequestAttribute(name = "user") User fileOwner,
 			@RequestParam String filename,
-			@RequestParam(name = "sharedWith") String sharedWithUsername)
+			@RequestParam(name = "shared-with") String sharedWithUsername)
 			throws BadRequestException {
 
 		userFilesService.deleteShare(fileOwner, filename, sharedWithUsername);
@@ -143,7 +143,7 @@ public class UserFilesController {
 	@PatchMapping("share")
 	public Response<String> updateSharedFileAccess(@RequestAttribute(name = "user") User fileOwner,
 			@RequestParam String filename,
-			@RequestParam(name = "sharedWith") String sharedWithUsername,
+			@RequestParam(name = "shared-with") String sharedWithUsername,
 			@RequestBody @Valid UpdateSharedFileAccessRequest request) throws BadRequestException {
 
 		userFilesService.updateSharedFileAccess(fileOwner, filename, sharedWithUsername, request);

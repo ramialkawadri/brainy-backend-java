@@ -1,7 +1,7 @@
 package com.brainy.model.request;
 
 import com.brainy.model.entity.User;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -18,8 +18,8 @@ public record UserRegistrationRequest(@NotBlank(message = "missing") String user
 						message = "must contain one small letter, capital letter and a number") String password,
 
 		@NotBlank(message = "missing") @Email(message = "invalid") String email,
-		@NotBlank(message = "missing") String firstName,
-		@NotBlank(message = "missing") String lastName) {
+		@JsonProperty("first-name") @NotBlank(message = "missing") String firstName,
+		@JsonProperty("last-name") @NotBlank(message = "missing") String lastName) {
 
 	public User toUser() {
 		return new User(username(), password(), email(), firstName(), lastName());
