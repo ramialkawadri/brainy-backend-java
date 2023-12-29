@@ -10,7 +10,9 @@ import jakarta.validation.constraints.Size;
 /**
  * Used to represent the object for registering the user!
  */
-public record UserRegistrationRequest(@NotBlank(message = "missing") String username,
+public record UserRegistrationRequest(
+		@NotBlank(message = "missing") @Size(min = 3,
+				message = "minimum length of username is 3") String username,
 
 		@NotBlank(message = "missing") @Size(min = 8,
 				message = "must be at least 8 characters") @Pattern(

@@ -105,7 +105,7 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldReturnFalseOnTokenFOrNonExistingUser() {
 		// Arrange
-		String username = TestUtils.generateUniqueUsername();
+		String username = TestUtils.generateRandomUsername();
 		Mockito.when(userDao.findUserByUsername(username)).thenReturn(null);
 
 		// Act

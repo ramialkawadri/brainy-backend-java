@@ -18,7 +18,8 @@ public class DefaultUserDao implements UserDao {
 
 	@Override
 	public User findUserByUsername(String username) {
-		User user = entityManager.find(User.class, username);
+		// All usernames are in lower case
+		User user = entityManager.find(User.class, username.toLowerCase());
 		return user;
 	}
 

@@ -3,7 +3,7 @@ package com.brainy.model.entity;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-
+import org.hibernate.annotations.ColumnTransformer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -21,6 +21,7 @@ public class User {
 
 	@Id
 	@Column(name = "username", nullable = false, length = 50)
+	@ColumnTransformer(write = "LOWER(?)", read = "LOWER(?)")
 	private String username;
 
 	@Column(name = "password", nullable = false, length = 100)
@@ -54,23 +55,23 @@ public class User {
 
 	public User(String username, String password, String email, String firstName, String lastName) {
 		this();
-		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		setUsername(username);
 	}
 
 	public User(String username, String password, String email, String firstName, String lastName,
 			Timestamp passwordChangeDate, Timestamp logoutDate) {
 
-		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.passwordChangeDate = passwordChangeDate;
 		this.logoutDate = logoutDate;
+		setUsername(username);
 	}
 
 	public String getUsername() {
@@ -78,7 +79,8 @@ public class User {
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		// All usernames must to be in lower case
+		this.username = username.toLowerCase();
 	}
 
 	public String getPassword() {

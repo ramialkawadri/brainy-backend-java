@@ -15,9 +15,9 @@ public class DatabaseConfig {
 		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 
 		jdbcUserDetailsManager.setUsersByUsernameQuery(
-				"select username, password, true from users where username=?");
+				"select username, password, true from users where username=LOWER(?)");
 
-		jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select ?, 'user'");
+		jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select LOWER(?), 'user'");
 
 		return jdbcUserDetailsManager;
 	}

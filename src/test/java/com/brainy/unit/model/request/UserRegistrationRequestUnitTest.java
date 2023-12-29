@@ -24,7 +24,7 @@ public class UserRegistrationRequestUnitTest {
 	public void shouldAcceptValidValues() {
 		// Arrange
 		UserRegistrationRequest user =
-				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "StrongPassword1",
+				new UserRegistrationRequest(TestUtils.generateRandomUsername(), "StrongPassword1",
 						"test@test.com", "firstName", "lastName");
 
 		// Act
@@ -50,7 +50,7 @@ public class UserRegistrationRequestUnitTest {
 	public void shouldNotAcceptInvalidEmail() {
 		// Arrange
 		UserRegistrationRequest user =
-				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "StrongPassword1",
+				new UserRegistrationRequest(TestUtils.generateRandomUsername(), "StrongPassword1",
 						"test@.com", "firstName", "lastName");
 
 		// Act
@@ -64,7 +64,7 @@ public class UserRegistrationRequestUnitTest {
 	public void shouldNotAcceptShortPassword() {
 		// Arrange
 		UserRegistrationRequest user =
-				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "Pass1",
+				new UserRegistrationRequest(TestUtils.generateRandomUsername(), "Pass1",
 						"test@test.com", "firstName", "lastName");
 
 		// Act
@@ -79,7 +79,7 @@ public class UserRegistrationRequestUnitTest {
 	public void shouldNotAcceptWeekPassword() {
 		// Arrange
 		UserRegistrationRequest user =
-				new UserRegistrationRequest(TestUtils.generateUniqueUsername(), "password",
+				new UserRegistrationRequest(TestUtils.generateRandomUsername(), "password",
 						"test@test.com", "firstName", "lastName");
 
 		// Act

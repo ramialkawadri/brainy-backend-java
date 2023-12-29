@@ -1,7 +1,6 @@
 package com.brainy;
 
 import java.util.Random;
-import java.util.UUID;
 
 import com.brainy.model.entity.User;
 
@@ -11,17 +10,22 @@ public class TestUtils {
 
 	// Arbitrary values, doesn't have any special meaning
 	private static final int MAX_RANDOM_FILENAME_LENGTH = 12;
-	private static final int MAX_RANDOM_FILE_CONTENT_LENGTH = 200;
+	private static final int MAX_RANDOM_USERNAME_LENGTH = 20;
+	private static final int MIN_RANDOM_USERNAME_LENGTH = 3;
+	private static final int MAX_JSON_PROPERTY_LENGTH = 10;
+	private static final int MAX_JSON_VALUE_LENGTH = 10;
+	private static final int MAX_NUMBER_OF_PROPERTIES_IN_JSON = 10;
 
 	public static User generateRandomUser() {
-		String username = generateUniqueUsername();
+		String username = generateRandomUsername();
 
 		return new User(username, "testPassword123", username + "@test.com",
 				"firstName_" + username, "lastName_" + username);
 	}
 
-	public static String generateUniqueUsername() {
-		return UUID.randomUUID().toString();
+	public static String generateRandomUsername() {
+		return generateStringOfMaxLength(MAX_RANDOM_USERNAME_LENGTH, MIN_RANDOM_USERNAME_LENGTH,
+				false);
 	}
 
 	public static String generateRandomFilename() {
@@ -29,12 +33,33 @@ public class TestUtils {
 	}
 
 	public static String generateRandomFileContent() {
-		return generateStringOfMaxLength(MAX_RANDOM_FILE_CONTENT_LENGTH);
+		Random random = new Random();
+		int numberOfProperties = random.nextInt(MAX_NUMBER_OF_PROPERTIES_IN_JSON);
+		String fileContent = "{";
+
+		for (int i = 0; i < numberOfProperties; i++) {
+			if (i > 0)
+				fileContent += ",";
+
+			fileContent += '"' + generateStringOfMaxLength(MAX_JSON_PROPERTY_LENGTH) + "\": " + '"'
+					+ generateStringOfMaxLength(MAX_JSON_VALUE_LENGTH) + '"';
+		}
+
+		return fileContent + "}";
 	}
 
 	public static String generateStringOfMaxLength(int maxLength) {
+		return generateStringOfMaxLength(maxLength, true);
+	}
+
+	public static String generateStringOfMaxLength(int maxLength, boolean includeUppercase) {
+		return generateStringOfMaxLength(maxLength, 1, includeUppercase);
+	}
+
+	public static String generateStringOfMaxLength(int maxLength, int minLength,
+			boolean includeUppercase) {
 		Random random = new Random();
-		int length = random.nextInt(maxLength) + 1; // +1 to not allow zero
+		int length = random.nextInt(maxLength - minLength) + minLength; // +1 to not allow zero
 		String result = "";
 
 		for (int i = 0; i < length; ++i) {
@@ -42,7 +67,7 @@ public class TestUtils {
 
 			boolean isUpperCase = random.nextBoolean();
 
-			if (isUpperCase)
+			if (isUpperCase && includeUppercase)
 				nextCharacter = Character.toUpperCase(nextCharacter);
 
 			result = result + nextCharacter;

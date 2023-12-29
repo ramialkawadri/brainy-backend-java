@@ -35,4 +35,39 @@ public class IntegrationTestUtils {
 
 		return responseBody.getData();
 	}
+
+	/**
+	 * @param restTemplate must be authenticated
+	 */
+	public static String uploadFile(TestRestTemplate restTemplate, String filename,
+			String fileContent) {
+
+		ResponseEntity<ResponseString> response =
+				restTemplate.postForEntity("/api/files?filename=" + filename,
+						new HttpEntity<>(fileContent), ResponseString.class);
+
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		ResponseString responseBody = response.getBody();
+		Assertions.assertNotNull(responseBody);
+		Assertions.assertNotNull(responseBody.getData());
+
+		return responseBody.getData();
+	}
+
+	/**
+	 * @param restTemplate must be authenticated
+	 */
+	public static String getFileContent(TestRestTemplate restTemplate, String filename) {
+		ResponseEntity<ResponseString> response =
+				restTemplate.getForEntity("/api/files?filename=" + filename, ResponseString.class);
+
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		ResponseString responseBody = response.getBody();
+		Assertions.assertNotNull(responseBody);
+		Assertions.assertNotNull(responseBody.getData());
+
+		return responseBody.getData();
+	}
 }

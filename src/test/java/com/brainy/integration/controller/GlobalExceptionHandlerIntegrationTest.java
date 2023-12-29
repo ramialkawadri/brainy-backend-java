@@ -70,8 +70,8 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 	public void shouldHandleNonValidMethodArguments() {
 		// Arrange
 		UserRegistrationRequest registrationRequest =
-				new UserRegistrationRequest("", "Test12345678", "test@email.com", "name", "name");
-		String expectedBody = "username: missing";
+				new UserRegistrationRequest("a", "Test12345678", "test@email.com", "name", "name");
+		String expectedBody = "username: minimum length of username is 3";
 
 		// Act
 		// POST /register contains a validation of the arguments

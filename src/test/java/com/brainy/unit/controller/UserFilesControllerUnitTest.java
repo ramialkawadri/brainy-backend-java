@@ -225,7 +225,7 @@ public class UserFilesControllerUnitTest {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
-		String sharedWithUsername = TestUtils.generateUniqueUsername();
+		String sharedWithUsername = TestUtils.generateRandomUsername();
 
 		// Act
 		userFilesController.shareFileWith(user, filename, sharedWithUsername, false);
@@ -239,7 +239,7 @@ public class UserFilesControllerUnitTest {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
-		String sharedWithUsername = TestUtils.generateUniqueUsername();
+		String sharedWithUsername = TestUtils.generateRandomUsername();
 
 		// Act
 		userFilesController.deleteShare(user, filename, sharedWithUsername);
@@ -253,7 +253,7 @@ public class UserFilesControllerUnitTest {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
-		String sharedWithUsername = TestUtils.generateUniqueUsername();
+		String sharedWithUsername = TestUtils.generateRandomUsername();
 		UpdateSharedFileAccessRequest request = new UpdateSharedFileAccessRequest(true);
 
 		// Act

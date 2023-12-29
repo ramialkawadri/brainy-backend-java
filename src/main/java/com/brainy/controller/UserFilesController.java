@@ -48,7 +48,9 @@ public class UserFilesController {
 		return new Response<>(body);
 	}
 
-	// Only JSON files can be uploaded through this endpoint
+	/**
+	 * @param body must be JSON
+	 */
 	@PostMapping
 	public Response<String> createOrUpdateJsonFile(@RequestAttribute User user,
 			@RequestParam String filename, @RequestBody String body) throws BadRequestException {
