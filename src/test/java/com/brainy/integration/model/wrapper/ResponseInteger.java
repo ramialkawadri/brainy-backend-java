@@ -1,4 +1,4 @@
-package com.brainy.integration.model;
+package com.brainy.integration.model.wrapper;
 
 import com.brainy.model.Response;
 import com.brainy.model.ResponseStatus;

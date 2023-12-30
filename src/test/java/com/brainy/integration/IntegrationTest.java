@@ -31,6 +31,6 @@ public class IntegrationTest {
 	}
 
 	protected TestRestTemplate getAuthenticatedRequest() {
-		return restTemplate.withBasicAuth(testUser.getUsername(), testUser.getPassword());
+		return IntegrationTestUtils.getAuthenticatedRestTemplateForUser(restTemplate, testUser);
 	}
 }

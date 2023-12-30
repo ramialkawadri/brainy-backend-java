@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -110,13 +111,17 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 	public void shouldHandleUnknownError() {
 		// Act
 
-		// This will result in unknown content type for the system so it throws an internal server
-		// error
-		HttpEntity<?> httpEntity = new HttpEntity<>(null);
+		// This will result in unknown content type for the system so it
+		// throws an internal server error
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", "text/plain");
+
+		// Act
 
 		// POST /api/user is used because it requires a body
-		ResponseEntity<ResponseString> response = getAuthenticatedRequest()
-				.postForEntity("/api/user", httpEntity, ResponseString.class);
+		ResponseEntity<ResponseString> response = getAuthenticatedRequest().exchange("/api/user",
+				HttpMethod.POST, new HttpEntity<>(headers), ResponseString.class);
+
 		ResponseString body = response.getBody();
 
 		// Assert

@@ -81,7 +81,7 @@ public class DefaultFileShareDaoUnitTest {
 		for (SharedFile sharedFile : actual) {
 			Assertions.assertEquals(filename, sharedFile.getFilename());
 			Assertions.assertEquals(fileOwner, sharedFile.getFileOwner());
-			Assertions.assertFalse(sharedFile.isCanEdit());
+			Assertions.assertFalse(sharedFile.canEdit());
 
 			boolean found = false;
 
@@ -180,7 +180,7 @@ public class DefaultFileShareDaoUnitTest {
 
 		// Assert
 		Assertions.assertEquals(1, actual.size());
-		Assertions.assertTrue(actual.get(0).isCanEdit());
+		Assertions.assertTrue(actual.get(0).canEdit());
 	}
 
 	private void shareFile(String filename) throws BadRequestException {

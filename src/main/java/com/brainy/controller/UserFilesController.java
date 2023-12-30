@@ -125,7 +125,8 @@ public class UserFilesController {
 	public Response<String> shareFileWith(@RequestAttribute(name = "user") User fileOwner,
 			@RequestParam String filename,
 			@RequestParam(name = "shared-with") String sharedWithUsername,
-			@RequestParam(defaultValue = "false") boolean canEdit) throws BadRequestException {
+			@RequestParam(defaultValue = "false", name = "can-edit") boolean canEdit)
+			throws BadRequestException {
 
 		userFilesService.shareFileWith(fileOwner, filename, sharedWithUsername, canEdit);
 		return new Response<String>("file shared successfully");

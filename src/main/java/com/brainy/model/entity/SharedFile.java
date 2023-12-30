@@ -41,19 +41,18 @@ public class SharedFile {
 	}
 
 	public SharedFile(User fileOwner, String filename, User sharedWith, boolean canEdit) {
-
 		this.fileOwner = fileOwner;
 		this.filename = filename;
 		this.sharedWith = sharedWith;
 		this.canEdit = canEdit;
 	}
 
-	@JsonProperty("fileOwner")
+	@JsonProperty("file-owner")
 	public String getFileOwnerUsername() {
 		return fileOwner.getUsername();
 	}
 
-	@JsonProperty("sharedWith")
+	@JsonProperty("shared-with")
 	public String getSharedWithUsername() {
 		return sharedWith.getUsername();
 	}
@@ -64,6 +63,13 @@ public class SharedFile {
 
 	public void setFileOwner(User fileOwner) {
 		this.fileOwner = fileOwner;
+	}
+
+	// Used when parsing JSON
+	@JsonProperty("file-owner")
+	public void setFileOwnerUsername(String fileOwnerUsername) {
+		fileOwner = new User();
+		fileOwner.setUsername(fileOwnerUsername);
 	}
 
 	public String getFilename() {
@@ -82,10 +88,19 @@ public class SharedFile {
 		this.sharedWith = sharedWith;
 	}
 
-	public boolean isCanEdit() {
+	// Used when parsing JSON
+	@JsonProperty("shared-with")
+	public void setSharedWithUsername(String sharedWithUsername) {
+		sharedWith = new User();
+		sharedWith.setUsername(sharedWithUsername);
+	}
+
+	@JsonProperty("can-edit")
+	public boolean canEdit() {
 		return canEdit;
 	}
 
+	@JsonProperty("can-edit")
 	public void setCanEdit(boolean canEdit) {
 		this.canEdit = canEdit;
 	}
