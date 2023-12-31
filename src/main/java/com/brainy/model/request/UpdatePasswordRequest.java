@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UpdatePasswordRequest(@NotBlank(message = "missing") @Size(min = 8,
-		message = "must be at least 8 characters") @Pattern(
-				regexp = User.userPasswordValidationRegExpr,
+		message = "must be at least 8 characters") @Pattern(regexp = User.PASSWORD_VALIDATION_REGEX,
 				message = "must contain one small letter, capital letter and a number") String password) {
 }

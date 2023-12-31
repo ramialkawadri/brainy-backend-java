@@ -1,6 +1,6 @@
 --Creating user table
 CREATE TABLE users (
-    username                        VARCHAR(50)         PRIMARY KEY,
+    username                        VARCHAR(63)         PRIMARY KEY,
     password                        VARCHAR(100)        NOT NULL,
     email                           VARCHAR(50)         NOT NULL UNIQUE,
     first_name                      VARCHAR(50)         NOT NULL,

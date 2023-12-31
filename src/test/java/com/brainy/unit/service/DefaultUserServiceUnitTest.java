@@ -8,7 +8,6 @@ import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.brainy.TestUtils;
@@ -62,6 +61,33 @@ public class DefaultUserServiceUnitTest {
 				new UserRegistrationRequest("test", "testPass1", "test@test.com", "test", "test");
 
 		return request;
+	}
+
+	@Test
+	public void shouldUpdateUsernameToLowerCaseWhenRegistering() throws BadRequestException {
+		// Arrange
+		UserRegistrationRequest request =
+				new UserRegistrationRequest("TeSt", "testPass1", "test@test.com", "test", "test");
+
+		// Act
+		userService.registerUserFromRequest(request);
+
+		// Assert
+		Mockito.verify(userDao).registerUser(argThat(user -> user.getUsername().equals("test")));
+	}
+
+	@Test
+	public void shouldUpdateEmailToLowerCaseWhenRegistering() throws BadRequestException {
+		// Arrange
+		UserRegistrationRequest request =
+				new UserRegistrationRequest("test", "testPass1", "TEST@test.com", "test", "test");
+
+		// Act
+		userService.registerUserFromRequest(request);
+
+		// Assert
+		Mockito.verify(userDao)
+				.registerUser(argThat(user -> user.getEmail().equals("test@test.com")));
 	}
 
 	@Test
@@ -155,17 +181,30 @@ public class DefaultUserServiceUnitTest {
 	}
 
 	@Test
-	public void shouldNotSaveUserCHangesWhenInvalid() {
+	public void shouldNotSaveChangesWhenAnotherUserWithSameEmailExists() {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
+		User anotherUser = TestUtils.generateRandomUser();
+		anotherUser.setEmail(user.getEmail());
 
-		Mockito.doAnswer(invocation -> {
-			throw new DataIntegrityViolationException("");
-		}).when(userDao).saveUserChanges(user);
+		Mockito.when(userDao.findUserByEmail(user.getEmail())).thenReturn(anotherUser);
 
 		// Act & Assert
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			userService.saveUserChanges(user);
 		});
+	}
+
+	@Test
+	public void shouldUpdateEmailToLowerCaseWhenSavingUserChanges() throws BadRequestException {
+		// Arrange
+		User user = new User("test", "testPass1", "TEST@test.com", "test", "test");
+
+		// Act
+		userService.saveUserChanges(user);
+
+		// Assert
+		Mockito.verify(userDao).saveUserChanges(
+				argThat(savedUser -> savedUser.getEmail().equals("test@test.com")));
 	}
 }

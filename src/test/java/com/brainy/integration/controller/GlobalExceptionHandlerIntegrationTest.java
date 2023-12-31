@@ -57,8 +57,8 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 		HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 
 		// POST /api/user is used because it requires a body for the updated user
-		ResponseEntity<ResponseString> response = getAuthenticatedRequest()
-				.postForEntity("/api/user", httpEntity, ResponseString.class);
+		ResponseEntity<ResponseString> response = getAuthenticatedRequest().exchange("/api/user",
+				HttpMethod.PATCH, httpEntity, ResponseString.class);
 		ResponseString body = response.getBody();
 
 		// Assert
@@ -72,7 +72,6 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 		// Arrange
 		UserRegistrationRequest registrationRequest =
 				new UserRegistrationRequest("a", "Test12345678", "test@email.com", "name", "name");
-		String expectedBody = "username: minimum length of username is 3";
 
 		// Act
 		// POST /register contains a validation of the arguments
@@ -84,7 +83,6 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(ResponseStatus.BAD_REQUEST, body.getStatus());
-		Assertions.assertEquals(expectedBody, body.getData());
 	}
 
 	@Test

@@ -28,10 +28,36 @@ public class DefaultUserDaoUnitTest {
 		entityManager.persist(testUser);
 
 		// Act
-		User returnValue = userDAO.findUserByUsername(testUser.getUsername());
+		User actual = userDAO.findUserByUsername(testUser.getUsername());
 
 		// Assert
-		Assertions.assertEquals(testUser, returnValue);
+		Assertions.assertEquals(testUser, actual);
+	}
+
+	@Test
+	public void shouldFindUserByEmail() {
+		// Arrange
+		User testUser = TestUtils.generateRandomUser();
+		entityManager.persist(testUser);
+
+		// Act
+		User actual = userDAO.findUserByEmail(testUser.getEmail());
+
+		// Assert
+		Assertions.assertEquals(testUser, actual);
+	}
+
+	@Test
+	public void shouldReturnNullWhenEmailIsNotFound() {
+		// Arrange
+		User testUser = TestUtils.generateRandomUser();
+		entityManager.persist(testUser);
+
+		// Act
+		User actual = userDAO.findUserByEmail(testUser.getEmail() + "ss");
+
+		// Assert
+		Assertions.assertNull(actual);
 	}
 
 	@Test

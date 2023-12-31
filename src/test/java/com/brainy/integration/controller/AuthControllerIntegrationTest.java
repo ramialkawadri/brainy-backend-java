@@ -33,6 +33,22 @@ public class AuthControllerIntegrationTest extends IntegrationTest {
 	}
 
 	@Test
+	public void shouldAuthorizeRequestsWithUpperCaseUsername() {
+		// Arrange
+		User user = TestUtils.generateRandomUser();
+		IntegrationTestUtils.registerUser(restTemplate, user);
+		user.setUsername(user.getUsername().toUpperCase());
+
+		// Act
+		ResponseEntity<ResponseString> response =
+				IntegrationTestUtils.getAuthenticatedRestTemplateForUser(restTemplate, user)
+						.postForEntity("/token", null, ResponseString.class);
+
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+
+	@Test
 	public void shouldNotAuthorize() {
 		// Arrange & Act
 		ResponseEntity<Void> response = restTemplate.postForEntity("/token", null, Void.class);

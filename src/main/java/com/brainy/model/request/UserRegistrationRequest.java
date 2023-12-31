@@ -10,13 +10,14 @@ import jakarta.validation.constraints.Size;
 /**
  * Used to represent the object for registering the user!
  */
-public record UserRegistrationRequest(
-		@NotBlank(message = "missing") @Size(min = 3,
-				message = "minimum length of username is 3") String username,
+public record UserRegistrationRequest(@NotBlank(message = "missing") @Size(min = 3, max = 63,
+		message = "username must be between 3 and 63 characters") @Pattern(
+				regexp = User.USERNAME_VALIDATION_REGEX,
+				message = "username must just include lowercase, numbers and hyphens and it should not begin or end with a hyphen") String username,
 
 		@NotBlank(message = "missing") @Size(min = 8,
 				message = "must be at least 8 characters") @Pattern(
-						regexp = User.userPasswordValidationRegExpr,
+						regexp = User.PASSWORD_VALIDATION_REGEX,
 						message = "must contain one small letter, capital letter and a number") String password,
 
 		@NotBlank(message = "missing") @Email(message = "invalid") String email,

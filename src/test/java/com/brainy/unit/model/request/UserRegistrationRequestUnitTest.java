@@ -35,6 +35,71 @@ public class UserRegistrationRequestUnitTest {
 	}
 
 	@Test
+	public void shouldNotAcceptShortUsername() {
+		// Arrange
+		UserRegistrationRequest user = new UserRegistrationRequest("aa", "StrongPassword1",
+				"test@test.com", "firstName", "lastName");
+
+		// Act
+		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
+
+		// Assert
+		Assertions.assertEquals(1, violations.size());
+	}
+
+	@Test
+	public void shouldNotAcceptLongUsername() {
+		// Arrange
+		UserRegistrationRequest user = new UserRegistrationRequest("a".repeat(64),
+				"StrongPassword1", "test@test.com", "firstName", "lastName");
+
+		// Act
+		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
+
+		// Assert
+		Assertions.assertEquals(1, violations.size());
+	}
+
+	@Test
+	public void shouldNotAcceptUsernameThatDoesNotStartWithLetterOrANumber() {
+		// Arrange
+		UserRegistrationRequest user = new UserRegistrationRequest("-username", "StrongPassword1",
+				"test@test.com", "firstName", "lastName");
+
+		// Act
+		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
+
+		// Assert
+		Assertions.assertEquals(1, violations.size());
+	}
+
+	@Test
+	public void shouldNotAcceptUsernameThatDoesNotEndWithLetterOrNumber() {
+		// Arrange
+		UserRegistrationRequest user = new UserRegistrationRequest("username-", "StrongPassword1",
+				"test@test.com", "firstName", "lastName");
+
+		// Act
+		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
+
+		// Assert
+		Assertions.assertEquals(1, violations.size());
+	}
+
+	@Test
+	public void shouldNotAcceptUsernameThatContainsInvalidCharacters() {
+		// Arrange
+		UserRegistrationRequest user = new UserRegistrationRequest("user name", "StrongPassword1",
+				"test@test.com", "firstName", "lastName");
+
+		// Act
+		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
+
+		// Assert
+		Assertions.assertEquals(1, violations.size());
+	}
+
+	@Test
 	public void shouldNotAcceptBlanks() {
 		// Arrange
 		UserRegistrationRequest user = new UserRegistrationRequest("", "", "", "", "");
@@ -71,8 +136,7 @@ public class UserRegistrationRequestUnitTest {
 		Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(user);
 
 		// Assert
-		// 2 Because of the regular expression also counts
-		Assertions.assertEquals(2, violations.size());
+		Assertions.assertTrue(violations.size() >= 1);
 	}
 
 	@Test

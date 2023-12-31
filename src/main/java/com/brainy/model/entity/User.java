@@ -16,12 +16,17 @@ import jakarta.persistence.Table;
 public class User {
 
 	// One capital letter, one small letter, one number and at least 8 characters
-	public final static String userPasswordValidationRegExpr =
+	public final static String PASSWORD_VALIDATION_REGEX =
 			"^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$";
 
+	// Starts with a letter or a number and contains only letters, hyphens and numbers and doesn't
+	// end with a hyphen
+	public final static String USERNAME_VALIDATION_REGEX =
+			"^[a-zA-Z0-9]([a-zA-Z0-9]|-)*[a-zA-Z0-9]$";
+
 	@Id
-	@Column(name = "username", nullable = false, length = 50)
-	@ColumnTransformer(write = "LOWER(?)", read = "LOWER(?)")
+	@Column(name = "username", nullable = false, length = 63)
+	@ColumnTransformer(write = "LOWER(?)", read = "LOWER(username)")
 	private String username;
 
 	@Column(name = "password", nullable = false, length = 100)
@@ -29,6 +34,7 @@ public class User {
 	private String password;
 
 	@Column(name = "email", nullable = false, length = 50, unique = true)
+	@ColumnTransformer(write = "LOWER(?)", read = "LOWER(email)")
 	private String email;
 
 	@Column(name = "first_name", nullable = false, length = 50)
@@ -55,23 +61,23 @@ public class User {
 
 	public User(String username, String password, String email, String firstName, String lastName) {
 		this();
+		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		setUsername(username);
 	}
 
 	public User(String username, String password, String email, String firstName, String lastName,
 			Timestamp passwordChangeDate, Timestamp logoutDate) {
 
+		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.passwordChangeDate = passwordChangeDate;
 		this.logoutDate = logoutDate;
-		setUsername(username);
 	}
 
 	public String getUsername() {
@@ -79,8 +85,7 @@ public class User {
 	}
 
 	public void setUsername(String username) {
-		// All usernames must to be in lower case
-		this.username = username.toLowerCase();
+		this.username = username;
 	}
 
 	public String getPassword() {

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.brainy.integration.IntegrationTest;
+import com.brainy.integration.model.wrapper.ResponseString;
 import com.brainy.integration.model.wrapper.ResponseUser;
 import com.brainy.model.entity.User;
 import com.brainy.model.request.UpdateUserRequest;
@@ -31,20 +32,20 @@ public class UserControllerIntegrationTest extends IntegrationTest {
 
 	@Test
 	public void shouldUpdateUser() {
-		// Arrange & Act
-		HttpEntity<UpdateUserRequest> request =
+		// Arrange
+		HttpEntity<UpdateUserRequest> updaterUserRequestBody =
 				new HttpEntity<>(new UpdateUserRequest("new", null, null));
 
-		ResponseEntity<Void> updateResponse =
-				getAuthenticatedRequest().postForEntity("/api/user", request, Void.class);
+		// Act
+		getAuthenticatedRequest().patchForObject("/api/user", updaterUserRequestBody,
+				ResponseString.class);
 
-		ResponseEntity<ResponseUser> userInformation = getUserInformation();
+		ResponseEntity<ResponseUser> userInformationResponse = getUserInformation();
 
-		ResponseUser body = userInformation.getBody();
+		ResponseUser body = userInformationResponse.getBody();
 
 		// Assert
-		Assertions.assertEquals(HttpStatus.OK, userInformation.getStatusCode());
-		Assertions.assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
+		Assertions.assertEquals(HttpStatus.OK, userInformationResponse.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(body.getData().getFirstName(), "new");
 	}

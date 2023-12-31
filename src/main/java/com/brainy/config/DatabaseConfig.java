@@ -14,6 +14,7 @@ public class DatabaseConfig {
 	UserDetailsManager databaseUserDetailsManager(DataSource dataSource) {
 		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 
+		// All usernames must be in lower case
 		jdbcUserDetailsManager.setUsersByUsernameQuery(
 				"select username, password, true from users where username=LOWER(?)");
 

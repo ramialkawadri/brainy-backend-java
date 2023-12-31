@@ -2,17 +2,13 @@ package com.brainy.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.brainy.dao.UserDao;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.model.request.UserRegistrationRequest;
 
-import jakarta.persistence.EntityExistsException;
 
 @Service
 public class DefaultUserService implements UserService {
@@ -38,11 +34,19 @@ public class DefaultUserService implements UserService {
 
 		encodeAndUpdateUserPassword(user, user.getPassword());
 
-		try {
-			userDao.registerUser(user);
-		} catch (EntityExistsException | DataIntegrityViolationException e) {
+		// All usernames must be in lower case
+		user.setUsername(user.getUsername().toLowerCase());
+
+		// All emails must be in lower case
+		user.setEmail(user.getEmail().toLowerCase());
+
+		if (findUserByUsername(user.getUsername()) != null)
 			throw new BadRequestException("a user with the same username or email already exists");
-		}
+
+		if (userDao.findUserByEmail(user.getEmail()) != null)
+			throw new BadRequestException("a user with the same username or email already exists");
+
+		userDao.registerUser(user);
 	}
 
 	@Override
@@ -82,10 +86,15 @@ public class DefaultUserService implements UserService {
 
 	@Override
 	public void saveUserChanges(User user) throws BadRequestException {
-		try {
-			userDao.saveUserChanges(user);
-		} catch (EntityExistsException | DataIntegrityViolationException e) {
+		// All emails must be in lower case
+		user.setEmail(user.getEmail().toLowerCase());
+
+		User currentUserWithSameEmail = userDao.findUserByEmail(user.getEmail());
+
+		if (currentUserWithSameEmail != null
+				&& !currentUserWithSameEmail.getUsername().equals(user.getUsername()))
 			throw new BadRequestException("a user with the same username or email already exists");
-		}
+
+		userDao.saveUserChanges(user);
 	}
 }

@@ -7,8 +7,9 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateUserRequest(
 		@JsonProperty("first-name") @Size(min = 2,
-				message = "fill the first name") String firstName,
-		@JsonProperty("last-name") @Size(min = 2, message = "fill the last name") String lastName,
+				message = "first name must be at least 2 characters in length") String firstName,
+		@JsonProperty("last-name") @Size(min = 2,
+				message = "last name must be at least 2 characters in length") String lastName,
 		@Email(message = "invalid email") String email) {
 
 	public void applyUpdatesOnUser(User user) {
