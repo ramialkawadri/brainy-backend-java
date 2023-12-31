@@ -311,6 +311,8 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		String url = String.format("/api/files/shared-file?filename=%s&file-owner=%s", filename,
 				testUser.getUsername());
 
+		String expected = JsonUtil.compressJson(fileContent);
+
 		// Act
 		ResponseEntity<ResponseString> response = IntegrationTestUtils
 				.getAuthenticatedRestTemplateForUser(restTemplate, sharedWithUser)
@@ -322,6 +324,6 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());
-		Assertions.assertEquals(fileContent, responseBody.getData());
+		Assertions.assertEquals(expected, responseBody.getData());
 	}
 }
