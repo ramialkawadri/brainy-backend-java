@@ -295,4 +295,33 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		Assertions.assertEquals(filename, sharedFile.getFilename());
 		Assertions.assertEquals(false, sharedFile.canEdit());
 	}
+
+	@Test
+	public void shouldGetSharedFileContent() {
+		// Arrange
+		User sharedWithUser = TestUtils.generateRandomUser();
+		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
+
+		String filename = TestUtils.generateRandomFilename();
+		String fileContent = TestUtils.generateRandomFileContent();
+		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
+		IntegrationTestUtils.shareFile(getAuthenticatedRequest(), filename,
+				sharedWithUser.getUsername(), false);
+
+		String url = String.format("/api/files/shared-file?filename=%s&file-owner=%s", filename,
+				testUser.getUsername());
+
+		// Act
+		ResponseEntity<ResponseString> response = IntegrationTestUtils
+				.getAuthenticatedRestTemplateForUser(restTemplate, sharedWithUser)
+				.getForEntity(url, ResponseString.class);
+
+		ResponseString responseBody = response.getBody();
+
+		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+		Assertions.assertNotNull(responseBody);
+		Assertions.assertNotNull(responseBody.getData());
+		Assertions.assertEquals(fileContent, responseBody.getData());
+	}
 }

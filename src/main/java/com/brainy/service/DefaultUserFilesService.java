@@ -247,7 +247,7 @@ public class DefaultUserFilesService implements UserFilesService {
 
 		String fileOwnerUsername = fileOwner.getUsername();
 
-		validateThatAFileIsShared(filename, sharedWithUsername, fileOwnerUsername);
+		validateThatFileIsShared(fileOwnerUsername, filename, sharedWithUsername);
 
 		fileShareDAO.deleteFileShare(fileOwnerUsername, filename, sharedWithUsername);
 	}
@@ -258,16 +258,30 @@ public class DefaultUserFilesService implements UserFilesService {
 
 		String fileOwnerUsername = fileOwner.getUsername();
 
-		validateThatAFileIsShared(filename, sharedWithUsername, fileOwnerUsername);
+		validateThatFileIsShared(fileOwnerUsername, filename, sharedWithUsername);
 
 		fileShareDAO.updateSharedFileAccess(fileOwnerUsername, filename, sharedWithUsername,
 				request);
 	}
 
-	private void validateThatAFileIsShared(String filename, String sharedWithUsername,
-			String fileOwnerUsername) throws BadRequestException {
+	@Override
+	public String getSharedFileContent(String fileOwnerUsername, String filename,
+			String sharedWithUsername) throws BadRequestException {
+
+		validateThatFileIsShared(fileOwnerUsername, filename, sharedWithUsername);
+
+		try {
+			return getFileContent(fileOwnerUsername, filename);
+		} catch (FileDoesNotExistException e) {
+			// The file will always exist as shares are deleted when files/folders are delete
+			return "";
+		}
+	}
+
+	private void validateThatFileIsShared(String fileOwnerUsername, String filename,
+			String sharedWithUsername) throws BadRequestException {
 
 		if (!fileShareDAO.isFileSharedWith(fileOwnerUsername, filename, sharedWithUsername))
-			throw new BadRequestException("you didn't share the file with the user");
+			throw new BadRequestException("couldn't find the specified file share!");
 	}
 }

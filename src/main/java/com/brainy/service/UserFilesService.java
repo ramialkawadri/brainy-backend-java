@@ -46,4 +46,7 @@ public interface UserFilesService {
 
 	void updateSharedFileAccess(User fileOwner, String filename, String sharedWithUsername,
 			UpdateSharedFileAccessRequest request) throws BadRequestException;
+
+	String getSharedFileContent(String fileOwnerUsername, String filename,
+			String sharedWithUsername) throws BadRequestException;
 }

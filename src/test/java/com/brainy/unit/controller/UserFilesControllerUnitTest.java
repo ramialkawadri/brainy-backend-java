@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import com.brainy.TestUtils;
 import com.brainy.controller.UserFilesController;
 import com.brainy.model.Response;
+import com.brainy.model.ResponseStatus;
 import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
@@ -262,5 +263,25 @@ public class UserFilesControllerUnitTest {
 		// Assert
 		Mockito.verify(userFilesService).updateSharedFileAccess(user, filename, sharedWithUsername,
 				request);
+	}
+
+	@Test
+	public void shouldGetSharedFileContent() throws BadRequestException {
+		// Arrange
+		User sharedWithUser = TestUtils.generateRandomUser();
+		String filename = TestUtils.generateRandomFilename();
+		String fileOwnerUsername = TestUtils.generateRandomUsername();
+		String fileContent = "[1, 2, 3]";
+
+		Mockito.when(userFilesService.getSharedFileContent(fileOwnerUsername, filename,
+				sharedWithUser.getUsername())).thenReturn(fileContent);
+
+		// Act
+		Response<String> actual = userFilesController.getSharedFileContent(sharedWithUser, filename,
+				fileOwnerUsername);
+
+		// Assert
+		Assertions.assertEquals(ResponseStatus.SUCCESS, actual.getStatus());
+		Assertions.assertEquals(fileContent, actual.getData());
 	}
 }

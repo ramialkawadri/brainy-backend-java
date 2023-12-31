@@ -426,4 +426,41 @@ public class DefaultUserFilesServiceUnitTest {
 		Mockito.verify(fileShareDAO).updateSharedFileAccess(fileOwner.getUsername(), filename,
 				sharedWithUsername, request);
 	}
+
+	@Test
+	public void shouldNotReturnSharedFileContentIfNotShared() {
+		// Arrange
+		String sharedWithUsername = TestUtils.generateRandomUsername();
+
+		Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), filename,
+				sharedWithUsername)).thenReturn(false);
+
+		// Act & Assert
+		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
+			userFilesService.getSharedFileContent(sharedWithUsername, filename,
+					fileOwner.getUsername());
+		});
+	}
+
+	@Test
+	public void shouldReturnSharedFileContent() throws BadRequestException {
+		// Arrange
+		String sharedWithUsername = TestUtils.generateRandomUsername();
+
+		Mockito.when(fileShareDAO.isFileSharedWith(fileOwner.getUsername(), filename,
+				sharedWithUsername)).thenReturn(true);
+
+		String fileContent = TestUtils.generateRandomFileContent();
+
+		Mockito.when(blobClient.exists()).thenReturn(true);
+		Mockito.when(blobClient.downloadContent())
+				.thenReturn(BinaryData.fromBytes(fileContent.getBytes()));
+
+		// Act
+		String actual = userFilesService.getSharedFileContent(fileOwner.getUsername(), filename,
+				sharedWithUsername);
+
+		// Assert
+		Assertions.assertEquals(fileContent, actual);
+	}
 }

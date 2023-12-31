@@ -39,11 +39,10 @@ public class UserFilesController {
 
 		Object body = null;
 
-		if (filename != null) {
+		if (filename != null)
 			body = userFilesService.getFileContent(user.getUsername(), filename);
-		} else {
+		else
 			body = userFilesService.getUserFiles(user.getUsername());
-		}
 
 		return new Response<>(body);
 	}
@@ -152,5 +151,17 @@ public class UserFilesController {
 		userFilesService.updateSharedFileAccess(fileOwner, filename, sharedWithUsername, request);
 
 		return new Response<>("the update has been applied");
+	}
+
+	@GetMapping("shared-file")
+	public Response<String> getSharedFileContent(
+			@RequestAttribute(name = "user") User sharedWithUser, @RequestParam String filename,
+			@RequestParam(name = "file-owner") String fileOwnerUsername)
+			throws BadRequestException {
+
+		String fileContent = userFilesService.getSharedFileContent(fileOwnerUsername, filename,
+				sharedWithUser.getUsername());
+
+		return new Response<String>(fileContent);
 	}
 }
