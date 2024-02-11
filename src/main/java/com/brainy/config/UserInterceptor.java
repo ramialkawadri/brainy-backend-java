@@ -1,13 +1,12 @@
 package com.brainy.config;
 
 import java.security.Principal;
-
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.brainy.model.entity.User;
 import com.brainy.service.UserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,8 +24,8 @@ public class UserInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+	public boolean preHandle(@NonNull HttpServletRequest request,
+			@NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
 
 		Principal principal = request.getUserPrincipal();
 

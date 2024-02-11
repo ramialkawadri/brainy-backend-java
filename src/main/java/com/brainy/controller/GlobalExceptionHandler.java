@@ -1,6 +1,7 @@
 package com.brainy.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -18,13 +19,16 @@ import com.brainy.model.exception.RequestException;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler
+	@SuppressWarnings("null")
 	public ResponseEntity<Response<String>> requestExceptionHandler(RequestException e) {
 
 		String responseString = e.getRequestExceptionTitle() + ": " + e.getMessage();
 
 		Response<String> responseBody = new Response<String>(responseString, e.getResponseStatus());
 
-		return new ResponseEntity<Response<String>>(responseBody, HttpStatus.BAD_REQUEST);
+		HttpStatusCode statusCode = e.getResponseStatus().toHttpStatusCode();
+
+		return new ResponseEntity<Response<String>>(responseBody, statusCode);
 	}
 
 	@ExceptionHandler
@@ -42,7 +46,8 @@ public class GlobalExceptionHandler {
 		FieldError fieldError = e.getFieldError();
 
 		if (fieldError == null)
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new Response<>("", ResponseStatus.BAD_REQUEST),
+					HttpStatus.BAD_REQUEST);
 
 		String error = fieldError.getField() + ": " + fieldError.getDefaultMessage();
 

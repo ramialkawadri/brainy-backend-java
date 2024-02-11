@@ -17,6 +17,7 @@ public class IntegrationTestUtils {
 		return restTemplate.withBasicAuth(user.getUsername(), user.getPassword());
 	}
 
+	@SuppressWarnings("null")
 	public static void registerUser(TestRestTemplate restTemplate, User user) {
 		UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.fromUser(user);
 		HttpEntity<UserRegistrationRequest> request = new HttpEntity<>(userRegistrationRequest);
@@ -44,11 +45,12 @@ public class IntegrationTestUtils {
 	/**
 	 * @param restTemplate must be authenticated
 	 */
+	@SuppressWarnings("null")
 	public static String uploadFile(TestRestTemplate restTemplate, String filename,
 			String fileContent) {
 
 		ResponseEntity<ResponseString> response =
-				restTemplate.postForEntity("/api/files?filename=" + filename,
+				restTemplate.postForEntity("/api/file?filename=" + filename,
 						new HttpEntity<>(fileContent), ResponseString.class);
 
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -65,7 +67,7 @@ public class IntegrationTestUtils {
 	 */
 	public static String getFileContent(TestRestTemplate restTemplate, String filename) {
 		ResponseEntity<ResponseString> response =
-				restTemplate.getForEntity("/api/files?filename=" + filename, ResponseString.class);
+				restTemplate.getForEntity("/api/file?filename=" + filename, ResponseString.class);
 
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -90,8 +92,8 @@ public class IntegrationTestUtils {
 	public static String shareFile(TestRestTemplate restTemplate, String filename,
 			String sharedWithUsername, boolean canEdit) {
 
-		String url = String.format("/api/files/share?filename=%s&shared-with=%s&can-edit=%s",
-				filename, sharedWithUsername, canEdit ? "true" : "false");
+		String url = String.format("/api/share?filename=%s&shared-with=%s&can-edit=%s", filename,
+				sharedWithUsername, canEdit ? "true" : "false");
 
 		ResponseEntity<ResponseString> response =
 				restTemplate.postForEntity(url, null, ResponseString.class);

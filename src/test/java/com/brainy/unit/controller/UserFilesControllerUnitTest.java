@@ -10,12 +10,9 @@ import org.mockito.Mockito;
 import com.brainy.TestUtils;
 import com.brainy.controller.UserFilesController;
 import com.brainy.model.Response;
-import com.brainy.model.ResponseStatus;
-import com.brainy.model.entity.SharedFile;
 import com.brainy.model.entity.User;
 import com.brainy.model.exception.BadRequestException;
 import com.brainy.model.exception.FileDoesNotExistException;
-import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.service.UserFilesService;
 
 public class UserFilesControllerUnitTest {
@@ -39,7 +36,7 @@ public class UserFilesControllerUnitTest {
 		Mockito.when(userFilesService.getUserFiles(user.getUsername())).thenReturn(userFiles);
 
 		// Act
-		Response<Object> returnValue = userFilesController.getFileContentOrUserFiles(user, null);
+		Response<List<String>> returnValue = userFilesController.getUserFiles(user);
 
 		// Assert
 		Mockito.verify(userFilesService).getUserFiles(user.getUsername());
@@ -57,8 +54,7 @@ public class UserFilesControllerUnitTest {
 				.thenReturn(fileContent);
 
 		// Act
-		Response<Object> returnValue =
-				userFilesController.getFileContentOrUserFiles(user, filename);
+		Response<String> returnValue = userFilesController.getFileContent(user, filename);
 
 		// Assert
 		Mockito.verify(userFilesService).getFileContent(user.getUsername(), filename);
@@ -66,7 +62,7 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldCreateOrUpdateFile() throws BadRequestException {
+	public void shouldCreateFile() throws BadRequestException {
 		// Arrange
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
@@ -76,7 +72,7 @@ public class UserFilesControllerUnitTest {
 				fileContent.length())).thenReturn(true);
 
 		// Act
-		userFilesController.createOrUpdateJsonFile(user, filename, fileContent);
+		userFilesController.createJsonFile(user, filename, fileContent);
 
 		// Assert
 		Mockito.verify(userFilesService).createOrUpdateJsonFile(user.getUsername(), filename,
@@ -84,18 +80,18 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldNotCreateOrUpdateFileWhenFilenameIsEmpty() {
+	public void shouldNotCreateFileWhenFilenameIsEmpty() {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 
 		// Act & Assert
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
-			userFilesController.createOrUpdateJsonFile(user, "", "");
+			userFilesController.createJsonFile(user, "", "");
 		});
 	}
 
 	@Test
-	public void shouldNotCreateOrUpdateFileBecauseOfNoRemainingSpace() {
+	public void shouldNotCreateFileBecauseOfNoRemainingSpace() {
 		// Arrange
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
@@ -106,8 +102,26 @@ public class UserFilesControllerUnitTest {
 
 		// Act & Assert
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
-			userFilesController.createOrUpdateJsonFile(user, filename, fileContent);
+			userFilesController.createJsonFile(user, filename, fileContent);
 		});
+	}
+
+	@Test
+	public void shouldUpdateFile() throws BadRequestException {
+		// Arrange
+		String fileContent = TestUtils.generateRandomFileContent();
+		String filename = TestUtils.generateRandomFilename();
+		User user = TestUtils.generateRandomUser();
+
+		Mockito.when(userFilesService.canUserCreateFileWithSize(user.getUsername(), filename,
+				fileContent.length())).thenReturn(true);
+
+		// Act
+		userFilesController.updateJsonFile(user, filename, fileContent);
+
+		// Assert
+		Mockito.verify(userFilesService).createOrUpdateJsonFile(user.getUsername(), filename,
+				fileContent);
 	}
 
 	@Test
@@ -165,7 +179,7 @@ public class UserFilesControllerUnitTest {
 	}
 
 	@Test
-	public void shouldDeleteFolder() throws BadRequestException {
+	public void shouldDeleteFolder() throws BadRequestException, FileDoesNotExistException {
 		// Arrange
 		User user = TestUtils.generateRandomUser();
 		String foldername = TestUtils.generateRandomFilename();
@@ -186,102 +200,5 @@ public class UserFilesControllerUnitTest {
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			userFilesController.deleteFolder(user, "");
 		});
-	}
-
-	@Test
-	public void shouldGetFilesSharedWithUser() {
-		// Arrange
-		User user = TestUtils.generateRandomUser();
-		List<SharedFile> list = new ArrayList<>();
-
-		Mockito.when(userFilesService.getFilesSharedWithUser(user)).thenReturn(list);
-
-		// Act
-		Response<List<SharedFile>> response = userFilesController.getFilesSharedWithUser(user);
-
-		// Assert
-		Mockito.verify(userFilesService).getFilesSharedWithUser(user);
-		Assertions.assertEquals(list, response.getData());
-	}
-
-	@Test
-	public void shouldGetFileShares() {
-		// Arrange
-		User user = TestUtils.generateRandomUser();
-		List<SharedFile> list = new ArrayList<>();
-		String filename = TestUtils.generateRandomFilename();
-
-		Mockito.when(userFilesService.getFileShares(user, filename)).thenReturn(list);
-
-		// Act
-		Response<List<SharedFile>> response = userFilesController.getFileShares(user, filename);
-
-		// Assert
-		Mockito.verify(userFilesService).getFileShares(user, filename);
-		Assertions.assertEquals(list, response.getData());
-	}
-
-	@Test
-	public void shouldShareFile() throws BadRequestException {
-		// Arrange
-		User user = TestUtils.generateRandomUser();
-		String filename = TestUtils.generateRandomFilename();
-		String sharedWithUsername = TestUtils.generateRandomUsername();
-
-		// Act
-		userFilesController.shareFileWith(user, filename, sharedWithUsername, false);
-
-		// Assert
-		Mockito.verify(userFilesService).shareFileWith(user, filename, sharedWithUsername, false);
-	}
-
-	@Test
-	public void shouldDeleteFileShare() throws BadRequestException {
-		// Arrange
-		User user = TestUtils.generateRandomUser();
-		String filename = TestUtils.generateRandomFilename();
-		String sharedWithUsername = TestUtils.generateRandomUsername();
-
-		// Act
-		userFilesController.deleteShare(user, filename, sharedWithUsername);
-
-		// Assert
-		Mockito.verify(userFilesService).deleteShare(user, filename, sharedWithUsername);
-	}
-
-	@Test
-	public void shouldUpdateSharedFileAccess() throws BadRequestException {
-		// Arrange
-		User user = TestUtils.generateRandomUser();
-		String filename = TestUtils.generateRandomFilename();
-		String sharedWithUsername = TestUtils.generateRandomUsername();
-		UpdateSharedFileAccessRequest request = new UpdateSharedFileAccessRequest(true);
-
-		// Act
-		userFilesController.updateSharedFileAccess(user, filename, sharedWithUsername, request);
-
-		// Assert
-		Mockito.verify(userFilesService).updateSharedFileAccess(user, filename, sharedWithUsername,
-				request);
-	}
-
-	@Test
-	public void shouldGetSharedFileContent() throws BadRequestException {
-		// Arrange
-		User sharedWithUser = TestUtils.generateRandomUser();
-		String filename = TestUtils.generateRandomFilename();
-		String fileOwnerUsername = TestUtils.generateRandomUsername();
-		String fileContent = "[1, 2, 3]";
-
-		Mockito.when(userFilesService.getSharedFileContent(fileOwnerUsername, filename,
-				sharedWithUser.getUsername())).thenReturn(fileContent);
-
-		// Act
-		Response<String> actual = userFilesController.getSharedFileContent(sharedWithUser, filename,
-				fileOwnerUsername);
-
-		// Assert
-		Assertions.assertEquals(ResponseStatus.SUCCESS, actual.getStatus());
-		Assertions.assertEquals(fileContent, actual.getData());
 	}
 }

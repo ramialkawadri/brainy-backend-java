@@ -32,7 +32,7 @@ public interface UserFilesService {
 
 	void createFolder(String username, String foldername);
 
-	void deleteFolder(String username, String foldername);
+	void deleteFolder(String username, String foldername) throws FileDoesNotExistException;
 
 	List<SharedFile> getFilesSharedWithUser(User user);
 

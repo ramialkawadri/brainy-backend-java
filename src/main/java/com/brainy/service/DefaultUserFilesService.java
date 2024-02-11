@@ -178,7 +178,7 @@ public class DefaultUserFilesService implements UserFilesService {
 	}
 
 	@Override
-	public void deleteFolder(String username, String foldername) {
+	public void deleteFolder(String username, String foldername) throws FileDoesNotExistException {
 		if (!foldername.endsWith("/"))
 			foldername = foldername + "/";
 
@@ -191,6 +191,9 @@ public class DefaultUserFilesService implements UserFilesService {
 				deleteUrls.add(getBlobItemUrl(blobItem, containerClient));
 			}
 		}
+
+		if (deleteUrls.isEmpty())
+			throw new FileDoesNotExistException(foldername.substring(0, foldername.length() - 1));
 
 		blobBatchClient.deleteBlobs(deleteUrls, DeleteSnapshotsOptionType.INCLUDE)
 				.forEach(response -> {

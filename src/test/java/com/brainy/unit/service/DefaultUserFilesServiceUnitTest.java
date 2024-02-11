@@ -277,7 +277,7 @@ public class DefaultUserFilesServiceUnitTest {
 	}
 
 	@Test
-	public void shouldDeleteFolder() {
+	public void shouldDeleteFolder() throws FileDoesNotExistException {
 		// Arrange
 		String foldername = TestUtils.generateRandomFilename();
 		String blobClientUrl = "custom-url";

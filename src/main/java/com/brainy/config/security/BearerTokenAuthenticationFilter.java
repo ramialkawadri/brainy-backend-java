@@ -1,7 +1,7 @@
 package com.brainy.config.security;
 
 import java.io.IOException;
-
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,8 +38,8 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest servletRequest,
-			HttpServletResponse servletResponse, FilterChain chain)
+	protected void doFilterInternal(@NonNull HttpServletRequest servletRequest,
+			@NonNull HttpServletResponse servletResponse, @NonNull FilterChain chain)
 			throws ServletException, IOException {
 
 		try {
@@ -124,5 +124,4 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
 
 		return jwt;
 	}
-
 }

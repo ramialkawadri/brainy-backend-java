@@ -16,6 +16,7 @@ import com.brainy.model.request.UserRegistrationRequest;
 public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 
 	@Test
+	@SuppressWarnings("null")
 	public void shouldHandleRequestException() {
 		// Arrange
 		UserRegistrationRequest userRegistrationRequest =
@@ -95,7 +96,7 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 
 		// POST /api/files requires a parameter
 		ResponseEntity<ResponseString> response = getAuthenticatedRequest()
-				.postForEntity("/api/files", httpEntity, ResponseString.class);
+				.postForEntity("/api/file", httpEntity, ResponseString.class);
 		ResponseString body = response.getBody();
 
 		// Assert

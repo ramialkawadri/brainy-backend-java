@@ -2,20 +2,16 @@ package com.brainy.integration.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.brainy.TestUtils;
 import com.brainy.integration.IntegrationTest;
 import com.brainy.integration.IntegrationTestUtils;
 import com.brainy.integration.model.wrapper.ResponseInteger;
-import com.brainy.integration.model.wrapper.ResponseListSharedFile;
 import com.brainy.integration.model.wrapper.ResponseString;
 import com.brainy.integration.model.wrapper.ResponseStringList;
-import com.brainy.model.entity.SharedFile;
-import com.brainy.model.entity.User;
-import com.brainy.model.request.UpdateSharedFileAccessRequest;
 import com.brainy.util.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -37,6 +33,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		Assertions.assertEquals(expected, actual);
 	}
 
+	@SuppressWarnings("null")
 	@Test
 	public void shouldUpdateFileContent() {
 		// Arrange
@@ -45,13 +42,16 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		String newFileContent = TestUtils.generateRandomFileContent();
 		String expected = JsonUtil.compressJson(newFileContent);
 
+		// Act
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
 
-		// Act
-		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, newFileContent);
+		ResponseEntity<Void> response =
+				getAuthenticatedRequest().exchange("/api/file?filename=" + filename, HttpMethod.PUT,
+						new HttpEntity<>(newFileContent), Void.class);
 		String actual = IntegrationTestUtils.getFileContent(getAuthenticatedRequest(), filename);
 
 		// Assert
+		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertEquals(expected, actual);
 	}
 
@@ -97,7 +97,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
 
 		// Act
-		getAuthenticatedRequest().delete("/api/files?filename=" + filename);
+		getAuthenticatedRequest().delete("/api/file?filename=" + filename);
 
 		ResponseEntity<ResponseStringList> response =
 				getAuthenticatedRequest().getForEntity("/api/files", ResponseStringList.class);
@@ -121,7 +121,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 
 		// Act
 		ResponseEntity<ResponseInteger> response =
-				getAuthenticatedRequest().getForEntity("/api/files/size", ResponseInteger.class);
+				getAuthenticatedRequest().getForEntity("/api/used-storage", ResponseInteger.class);
 		ResponseInteger responseBody = response.getBody();
 
 		// Assert
@@ -137,8 +137,8 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		String foldername = TestUtils.generateRandomFilename();
 
 		// Act
-		ResponseEntity<ResponseString> response = getAuthenticatedRequest().postForEntity(
-				"/api/files/folder?foldername=" + foldername, null, ResponseString.class);
+		ResponseEntity<ResponseString> response = getAuthenticatedRequest()
+				.postForEntity("/api/folder?foldername=" + foldername, null, ResponseString.class);
 
 		ResponseEntity<ResponseStringList> userFilesResponse =
 				getAuthenticatedRequest().getForEntity("/api/files", ResponseStringList.class);
@@ -162,7 +162,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), foldername + "/file2", "{}");
 
 		// Act
-		getAuthenticatedRequest().delete("/api/files/folder?foldername=" + foldername);
+		getAuthenticatedRequest().delete("/api/folder?foldername=" + foldername);
 
 		ResponseEntity<ResponseStringList> userFilesResponse =
 				getAuthenticatedRequest().getForEntity("/api/files", ResponseStringList.class);
@@ -173,157 +173,5 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		Assertions.assertNotNull(userFilesResponseBody);
 		Assertions.assertNotNull(userFilesResponseBody.getData());
 		Assertions.assertEquals(0, userFilesResponseBody.getData().length);
-	}
-
-	@Test
-	public void shouldShareAndGetFileShares() {
-		// Arrange
-		User sharedWithUser = TestUtils.generateRandomUser();
-		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
-
-		String filename = TestUtils.generateRandomFilename();
-		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, "{}");
-
-		// Act
-		IntegrationTestUtils.shareFile(getAuthenticatedRequest(), filename,
-				sharedWithUser.getUsername(), true);
-
-		ResponseEntity<ResponseListSharedFile> response = getAuthenticatedRequest().getForEntity(
-				"/api/files/share?filename=" + filename, ResponseListSharedFile.class);
-
-		ResponseListSharedFile sharedFiles = response.getBody();
-
-		// Assert
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-		Assertions.assertNotNull(sharedFiles);
-		Assertions.assertNotNull(sharedFiles.getData());
-		Assertions.assertEquals(1, sharedFiles.getData().size());
-
-		SharedFile sharedFile = sharedFiles.getData().get(0);
-		Assertions.assertEquals(filename, sharedFile.getFilename());
-		Assertions.assertEquals(true, sharedFile.canEdit());
-		Assertions.assertEquals(testUser.getUsername(), sharedFile.getFileOwnerUsername());
-		Assertions.assertEquals(sharedWithUser.getUsername(), sharedFile.getSharedWithUsername());
-	}
-
-	@Test
-	public void shouldDeleteShare() {
-		// Arrange
-		User sharedWithUser = TestUtils.generateRandomUser();
-		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
-
-		String filename = TestUtils.generateRandomFilename();
-		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, "{}");
-		IntegrationTestUtils.shareFile(getAuthenticatedRequest(), filename,
-				sharedWithUser.getUsername(), true);
-
-		String deleteShareUrl = String.format("/api/files/share?filename=%s&shared-with=%s",
-				filename, sharedWithUser.getUsername());
-
-		// Act
-		getAuthenticatedRequest().delete(deleteShareUrl);
-
-		ResponseEntity<ResponseListSharedFile> response = getAuthenticatedRequest().getForEntity(
-				"/api/files/share?filename=" + filename, ResponseListSharedFile.class);
-		ResponseListSharedFile sharedFiles = response.getBody();
-
-		// Assert
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-		Assertions.assertNotNull(sharedFiles);
-		Assertions.assertNotNull(sharedFiles.getData());
-		Assertions.assertEquals(0, sharedFiles.getData().size());
-	}
-
-	@Test
-	public void shouldGetFilesSharedWithMe() {
-		// Arrange
-		User sharedWithUser = TestUtils.generateRandomUser();
-		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
-		TestRestTemplate authenticatedRestTemplateForSharedWithUser = IntegrationTestUtils
-				.getAuthenticatedRestTemplateForUser(restTemplate, sharedWithUser);
-
-		String filename = TestUtils.generateRandomFilename();
-		IntegrationTestUtils.uploadFile(authenticatedRestTemplateForSharedWithUser, filename, "{}");
-
-		// Act
-		IntegrationTestUtils.shareFile(authenticatedRestTemplateForSharedWithUser, filename,
-				testUser.getUsername(), true);
-
-		ResponseEntity<ResponseListSharedFile> response = getAuthenticatedRequest()
-				.getForEntity("/api/files/shared-with-me", ResponseListSharedFile.class);
-		ResponseListSharedFile sharedFiles = response.getBody();
-
-		// Assert
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-		Assertions.assertNotNull(sharedFiles);
-		Assertions.assertNotNull(sharedFiles.getData());
-		Assertions.assertEquals(1, sharedFiles.getData().size());
-	}
-
-	@Test
-	public void shouldUpdateSharedFileAccess() {
-		// Arrange
-		User sharedWithUser = TestUtils.generateRandomUser();
-		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
-
-		String filename = TestUtils.generateRandomFilename();
-		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, "{}");
-		IntegrationTestUtils.shareFile(getAuthenticatedRequest(), filename,
-				sharedWithUser.getUsername(), true);
-
-		HttpEntity<UpdateSharedFileAccessRequest> requestBody =
-				new HttpEntity<>(new UpdateSharedFileAccessRequest(false));
-
-		String updateShareUrl = String.format("/api/files/share?filename=%s&shared-with=%s",
-				filename, sharedWithUser.getUsername());
-
-		// Act
-		getAuthenticatedRequest().patchForObject(updateShareUrl, requestBody, ResponseString.class);
-
-		ResponseEntity<ResponseListSharedFile> response = getAuthenticatedRequest().getForEntity(
-				"/api/files/share?filename=" + filename, ResponseListSharedFile.class);
-
-		ResponseListSharedFile sharedFiles = response.getBody();
-
-		// Assert
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-		Assertions.assertNotNull(sharedFiles);
-		Assertions.assertNotNull(sharedFiles.getData());
-		Assertions.assertEquals(1, sharedFiles.getData().size());
-
-		SharedFile sharedFile = sharedFiles.getData().get(0);
-		Assertions.assertEquals(filename, sharedFile.getFilename());
-		Assertions.assertEquals(false, sharedFile.canEdit());
-	}
-
-	@Test
-	public void shouldGetSharedFileContent() {
-		// Arrange
-		User sharedWithUser = TestUtils.generateRandomUser();
-		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
-
-		String filename = TestUtils.generateRandomFilename();
-		String fileContent = TestUtils.generateRandomFileContent();
-		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
-		IntegrationTestUtils.shareFile(getAuthenticatedRequest(), filename,
-				sharedWithUser.getUsername(), false);
-
-		String url = String.format("/api/files/shared-file?filename=%s&file-owner=%s", filename,
-				testUser.getUsername());
-
-		String expected = JsonUtil.compressJson(fileContent);
-
-		// Act
-		ResponseEntity<ResponseString> response = IntegrationTestUtils
-				.getAuthenticatedRestTemplateForUser(restTemplate, sharedWithUser)
-				.getForEntity(url, ResponseString.class);
-
-		ResponseString responseBody = response.getBody();
-
-		// Assert
-		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-		Assertions.assertNotNull(responseBody);
-		Assertions.assertNotNull(responseBody.getData());
-		Assertions.assertEquals(expected, responseBody.getData());
 	}
 }

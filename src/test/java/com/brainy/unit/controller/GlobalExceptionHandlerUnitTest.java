@@ -15,7 +15,7 @@ import com.brainy.model.Response;
 public class GlobalExceptionHandlerUnitTest {
 
 	@Test
-	public void shouldHandleNullFIeldErrorOnInvalidArgumentException() {
+	public void shouldHandleNullFieldErrorOnInvalidArgumentException() {
 		// Arrange
 		GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 		MethodArgumentNotValidException exception = Mockito.mock();
@@ -27,6 +27,5 @@ public class GlobalExceptionHandlerUnitTest {
 
 		// Assert
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
-		Assertions.assertNull(actual.getBody());
 	}
 }
