@@ -43,6 +43,12 @@ jobs:
       - name: Add Coverage Job Summary
         run: echo "${{ steps.jacoco_reporter.outputs.coverageSummary }}" >> $GITHUB_STEP_SUMMARY
 
+      - name: Delete integration storage account containers
+        run: |
+          chmod +x ./src/test/resources/scripts/delete-integration-storage-account-containers.bash
+          ./src/test/resources/scripts/delete-integration-storage-account-containers.bash
+        shell: bash
+
 permissions:
   contents: read
   pull-requests: write
