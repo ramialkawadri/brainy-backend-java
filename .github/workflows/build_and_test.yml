@@ -44,7 +44,7 @@ jobs:
         run: echo "${{ steps.jacoco_reporter.outputs.coverageSummary }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Delete integration storage account containers
-        with:
+        env:
           INTEGRATION_STORAGE_ACCOUNT_KEY: ${{ secrets.IntegrationStorageAccountKey }}
         run: |
           chmod +x ./src/test/resources/scripts/delete-integration-storage-account-containers.bash
