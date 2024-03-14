@@ -1,4 +1,6 @@
---Test user: do not insert them into production, just for development
+--Do not run this file on a production server, just for development
+
+--Username: test
 --Password: test
 INSERT INTO users VALUES(
     'test', 

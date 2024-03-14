@@ -5,17 +5,17 @@
 
 clear
 
-RESOURCEGROUPNAME=brainy
+RESOURCE_GROUP_NAME=brainy
 LOCATION=northeurope
 
 echo "Signing you in"
 az login
 
-if [ $(az group exists --name $RESOURCEGROUPNAME) = false ]; then
+if [ $(az group exists --name $RESOURCE_GROUP_NAME) = false ]; then
     echo "Creating resource group"
-    az group create --name $RESOURCEGROUPNAME --location $LOCATION
+    az group create --name $RESOURCE_GROUP_NAME --location $LOCATION
 else
     echo "Resource group allready created"
 fi
 
-source ./storage-account.bash $RESOURCEGROUPNAME $LOCATION
+source ./storage-account.bash $RESOURCE_GROUP_NAME $LOCATION

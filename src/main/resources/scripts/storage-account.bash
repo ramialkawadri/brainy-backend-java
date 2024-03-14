@@ -1,21 +1,19 @@
 #!/bin/bash
 
-# This random string is used to ensure that the storage account name is unique
 SKU=Premium_LRS
 KIND=BlockBlobStorage
-COTNAINERNAME=brainy
 
 # Getting the parameters
-RESOURCEGROUPNAME=$1
+RESOURCE_GROUP_NAME=$1
 LOCATION=$2
 
 echo -n "Enter storage account name: "
-read STORAGEACCOUNTNAME
+read STORAGE_ACCOUNT_NAME
 
-echo "Creating storage account at RG ${RESOURCEGROUPNAME} and location ${LOCATION}"
+echo "Creating storage account at RG ${RESOURCE_GROUP_NAME} and location ${LOCATION}"
 az storage account create \
---name $STORAGEACCOUNTNAME \
---resource-group $RESOURCEGROUPNAME \
+--name $STORAGE_ACCOUNT_NAME \
+--resource-group $RESOURCE_GROUP_NAME \
 --location $LOCATION \
 --sku $SKU \
 --kind $KIND
