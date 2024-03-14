@@ -32,7 +32,7 @@ jobs:
         run: |
           cd ./src/test/resources/scripts/
           chmod +x create-secrets.bash
-          .create-secrets.bash --storage-account-key "$INTEGRATION_STORAGE_ACCOUNT_KEY"
+          ./create-secrets.bash --storage-account-key "$INTEGRATION_STORAGE_ACCOUNT_KEY"
           cd -
         shell: bash
 
