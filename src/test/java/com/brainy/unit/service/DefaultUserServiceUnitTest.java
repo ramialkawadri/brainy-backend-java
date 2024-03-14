@@ -32,14 +32,17 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldGetUserByUsername() {
 		// Arrange
+
 		User mockUser = TestUtils.generateRandomUser();
 
 		Mockito.when(userDao.findUserByUsername("user")).thenReturn(mockUser);
 
 		// Act
+
 		User user = userService.findUserByUsername("user");
 
 		// Assert
+
 		Mockito.verify(userDao).findUserByUsername("user");
 		Assertions.assertEquals(mockUser, user);
 	}
@@ -47,12 +50,15 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldRegisterUser() throws BadRequestException {
 		// Arrange
+
 		UserRegistrationRequest request = createMockUserRegistrationRequest();
 
 		// Act
+
 		userService.registerUserFromRequest(request);
 
 		// Assert
+
 		Mockito.verify(userDao).registerUser(argThat(user -> user.getUsername().equals("test")));
 	}
 
@@ -66,26 +72,32 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldUpdateUsernameToLowerCaseWhenRegistering() throws BadRequestException {
 		// Arrange
+
 		UserRegistrationRequest request =
 				new UserRegistrationRequest("TeSt", "testPass1", "test@test.com", "test", "test");
 
 		// Act
+
 		userService.registerUserFromRequest(request);
 
 		// Assert
+
 		Mockito.verify(userDao).registerUser(argThat(user -> user.getUsername().equals("test")));
 	}
 
 	@Test
 	public void shouldUpdateEmailToLowerCaseWhenRegistering() throws BadRequestException {
 		// Arrange
+
 		UserRegistrationRequest request =
 				new UserRegistrationRequest("test", "testPass1", "TEST@test.com", "test", "test");
 
 		// Act
+
 		userService.registerUserFromRequest(request);
 
 		// Assert
+
 		Mockito.verify(userDao)
 				.registerUser(argThat(user -> user.getEmail().equals("test@test.com")));
 	}
@@ -93,6 +105,7 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldReturnTrueOnValidToken() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		Instant tokenIssueDate = Instant.now();
 
@@ -100,18 +113,21 @@ public class DefaultUserServiceUnitTest {
 		Mockito.when(userDao.findUserByUsername(user.getUsername())).thenReturn(user);
 
 		// Act
+
 		user.setLogoutDate(changeTimestamp);
 		user.setPasswordChangeDate(changeTimestamp);
 
 		boolean actual = userService.isTokenStillValidForUser(tokenIssueDate, user.getUsername());
 
 		// Assert
+
 		Assertions.assertTrue(actual);
 	}
 
 	@Test
 	public void shouldReturnFalseOnOutdatedToken() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		Instant tokenIssueDate = Instant.now();
 
@@ -119,37 +135,45 @@ public class DefaultUserServiceUnitTest {
 		Mockito.when(userDao.findUserByUsername(user.getUsername())).thenReturn(user);
 
 		// Act
+
 		user.setLogoutDate(changeTimestamp);
 		user.setPasswordChangeDate(changeTimestamp);
 
 		boolean actual = userService.isTokenStillValidForUser(tokenIssueDate, user.getUsername());
 
 		// Assert
+
 		Assertions.assertFalse(actual);
 	}
 
 	@Test
 	public void shouldReturnFalseOnTokenFOrNonExistingUser() {
 		// Arrange
+
 		String username = TestUtils.generateRandomUsername();
 		Mockito.when(userDao.findUserByUsername(username)).thenReturn(null);
 
 		// Act
+
 		boolean actual = userService.isTokenStillValidForUser(Instant.now(), username);
 
 		// Assert
+
 		Assertions.assertFalse(actual);
 	}
 
 	@Test
 	public void shouldLogoutUser() {
 		// Arrange
+
 		User user = Mockito.mock();
 
 		// Act
+
 		userService.logoutUser(user);
 
 		// Assert
+
 		Mockito.verify(user).setLogoutDate(argThat(logoutDate -> {
 			Instant now = Instant.now();
 
@@ -162,15 +186,18 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldUpdateUserPassword() throws BadRequestException {
 		// Arrange
+
 		User user = Mockito.mock();
 
 		Mockito.when(user.getPassword()).thenReturn("user password");
 		Mockito.when(passwordEncoder.encode(user.getPassword())).thenReturn("encoded");
 
 		// Act
+
 		userService.updateUserPassword(user, "newStrongPassword");
 
 		// Assert
+
 		Mockito.verify(user).setPasswordChangeDate(argThat(logoutDate -> {
 			Instant now = Instant.now();
 
@@ -183,6 +210,7 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldNotSaveChangesWhenAnotherUserWithSameEmailExists() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		User anotherUser = TestUtils.generateRandomUser();
 		anotherUser.setEmail(user.getEmail());
@@ -190,6 +218,7 @@ public class DefaultUserServiceUnitTest {
 		Mockito.when(userDao.findUserByEmail(user.getEmail())).thenReturn(anotherUser);
 
 		// Act & Assert
+
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			userService.saveUserChanges(user);
 		});
@@ -198,12 +227,15 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void shouldUpdateEmailToLowerCaseWhenSavingUserChanges() throws BadRequestException {
 		// Arrange
+
 		User user = new User("test", "testPass1", "TEST@test.com", "test", "test");
 
 		// Act
+
 		userService.saveUserChanges(user);
 
 		// Assert
+
 		Mockito.verify(userDao).saveUserChanges(
 				argThat(savedUser -> savedUser.getEmail().equals("test@test.com")));
 	}

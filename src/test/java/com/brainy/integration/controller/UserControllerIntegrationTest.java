@@ -17,10 +17,12 @@ public class UserControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldGetUserInformation() {
 		// Arrange & Act
+
 		ResponseEntity<ResponseUser> response = getUserInformation();
 		ResponseUser body = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		Assertions.assertNotNull(body);
@@ -33,10 +35,12 @@ public class UserControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldUpdateUser() {
 		// Arrange
+
 		HttpEntity<UpdateUserRequest> updaterUserRequestBody =
 				new HttpEntity<>(new UpdateUserRequest("new", null, null));
 
 		// Act
+
 		getAuthenticatedRequest().patchForObject("/api/user", updaterUserRequestBody,
 				ResponseString.class);
 
@@ -45,6 +49,7 @@ public class UserControllerIntegrationTest extends IntegrationTest {
 		ResponseUser body = userInformationResponse.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, userInformationResponse.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(body.getData().getFirstName(), "new");

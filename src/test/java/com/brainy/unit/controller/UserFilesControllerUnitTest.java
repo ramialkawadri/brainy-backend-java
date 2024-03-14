@@ -28,6 +28,7 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldReturnUserFiles() throws FileDoesNotExistException {
 		// Arrange
+
 		List<String> userFiles = new ArrayList<>();
 		userFiles.add(TestUtils.generateRandomFilename());
 		userFiles.add(TestUtils.generateRandomFilename());
@@ -36,9 +37,11 @@ public class UserFilesControllerUnitTest {
 		Mockito.when(userFilesService.getUserFiles(user.getUsername())).thenReturn(userFiles);
 
 		// Act
+
 		Response<List<String>> returnValue = userFilesController.getUserFiles(user);
 
 		// Assert
+
 		Mockito.verify(userFilesService).getUserFiles(user.getUsername());
 		Assertions.assertEquals(userFiles, returnValue.getData());
 	}
@@ -46,6 +49,7 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldReturnFileContent() throws FileDoesNotExistException {
 		// Arrange
+
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
 		User user = TestUtils.generateRandomUser();
@@ -54,9 +58,11 @@ public class UserFilesControllerUnitTest {
 				.thenReturn(fileContent);
 
 		// Act
+
 		Response<String> returnValue = userFilesController.getFileContent(user, filename);
 
 		// Assert
+
 		Mockito.verify(userFilesService).getFileContent(user.getUsername(), filename);
 		Assertions.assertEquals(fileContent, returnValue.getData());
 	}
@@ -64,6 +70,7 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldCreateFile() throws BadRequestException {
 		// Arrange
+
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
 		User user = TestUtils.generateRandomUser();
@@ -72,9 +79,11 @@ public class UserFilesControllerUnitTest {
 				fileContent.length())).thenReturn(true);
 
 		// Act
+
 		userFilesController.createJsonFile(user, filename, fileContent);
 
 		// Assert
+
 		Mockito.verify(userFilesService).createOrUpdateJsonFile(user.getUsername(), filename,
 				fileContent);
 	}
@@ -82,9 +91,11 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldNotCreateFileWhenFilenameIsEmpty() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 
 		// Act & Assert
+
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			userFilesController.createJsonFile(user, "", "");
 		});
@@ -93,6 +104,7 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldNotCreateFileBecauseOfNoRemainingSpace() {
 		// Arrange
+
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
 		User user = TestUtils.generateRandomUser();
@@ -101,6 +113,7 @@ public class UserFilesControllerUnitTest {
 				fileContent.length())).thenReturn(false);
 
 		// Act & Assert
+
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			userFilesController.createJsonFile(user, filename, fileContent);
 		});
@@ -109,6 +122,7 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldUpdateFile() throws BadRequestException {
 		// Arrange
+
 		String fileContent = TestUtils.generateRandomFileContent();
 		String filename = TestUtils.generateRandomFilename();
 		User user = TestUtils.generateRandomUser();
@@ -117,9 +131,11 @@ public class UserFilesControllerUnitTest {
 				fileContent.length())).thenReturn(true);
 
 		// Act
+
 		userFilesController.updateJsonFile(user, filename, fileContent);
 
 		// Assert
+
 		Mockito.verify(userFilesService).createOrUpdateJsonFile(user.getUsername(), filename,
 				fileContent);
 	}
@@ -127,19 +143,23 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldDeleteFile() throws FileDoesNotExistException {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
 
 		// Act
+
 		userFilesController.deleteFile(user, filename);
 
 		// Assert
+
 		Mockito.verify(userFilesService).deleteFile(user.getUsername(), filename);
 	}
 
 	@Test
 	public void shouldGetUserUsedStorage() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		long usedStorage = 100000L;
 
@@ -147,9 +167,11 @@ public class UserFilesControllerUnitTest {
 				.thenReturn(usedStorage);
 
 		// Act
+
 		long returnValue = userFilesController.getUserUsedStorage(user).getData();
 
 		// Assert
+
 		Mockito.verify(userFilesService).getUserUsedStorage(user.getUsername());
 		Assertions.assertEquals(returnValue, usedStorage);
 	}
@@ -157,22 +179,27 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldCreateFolder() throws BadRequestException {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		String foldername = TestUtils.generateRandomFilename();
 
 		// Act
+
 		userFilesController.createFolder(user, foldername);
 
 		// Assert
+
 		Mockito.verify(userFilesService).createFolder(user.getUsername(), foldername);
 	}
 
 	@Test
 	public void shouldNotCreateFolderWhenFolderNameIsEmpty() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 
 		// Act & Assert
+
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			userFilesController.createFolder(user, "");
 		});
@@ -181,22 +208,27 @@ public class UserFilesControllerUnitTest {
 	@Test
 	public void shouldDeleteFolder() throws BadRequestException, FileDoesNotExistException {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		String foldername = TestUtils.generateRandomFilename();
 
 		// Act
+
 		userFilesController.deleteFolder(user, foldername);
 
 		// Assert
+
 		Mockito.verify(userFilesService).deleteFolder(user.getUsername(), foldername);
 	}
 
 	@Test
 	public void shouldNotDeleteFolderWhenFolderNameIsEmpty() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 
 		// Act & Assert
+
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			userFilesController.deleteFolder(user, "");
 		});

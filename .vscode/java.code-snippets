@@ -18,12 +18,12 @@
 		"body": [
 			"@Test",
 			"public void ${1:testName}() {",
-				"\t// Arrange"
+				"\t// Arrange\n",
 				"\t${2:// TODO}",
 				"",
-				"\t// Act",
+				"\t// Act\n",
 				"",
-				"\t// Assert"
+				"\t// Assert\n",
 			"}"
 		],
 		"description": "Creates a test with the arrange-act-assert order"

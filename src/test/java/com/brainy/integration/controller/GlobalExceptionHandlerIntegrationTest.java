@@ -19,16 +19,19 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 	@SuppressWarnings("null")
 	public void shouldHandleRequestException() {
 		// Arrange
+
 		UserRegistrationRequest userRegistrationRequest =
 				UserRegistrationRequest.fromUser(testUser);
 		HttpEntity<UserRegistrationRequest> request = new HttpEntity<>(userRegistrationRequest);
 
 		// Act
+
 		ResponseEntity<ResponseString> response =
 				restTemplate.postForEntity("/register", request, ResponseString.class);
 		ResponseString body = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(ResponseStatus.BAD_REQUEST, body.getStatus());
@@ -38,12 +41,14 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 
 	@Test
 	public void shouldHandleEndpointNotFoundException() {
-		// Act
+		// Arrange & Act
+
 		ResponseEntity<ResponseString> response =
 				getAuthenticatedRequest().getForEntity("/someRandomString", ResponseString.class);
 		ResponseString body = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(ResponseStatus.NOT_FOUND, body.getStatus());
@@ -51,7 +56,8 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 
 	@Test
 	public void shouldHandleMissingBody() {
-		// Act
+		// Arrange & Act
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -63,6 +69,7 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 		ResponseString body = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(ResponseStatus.BAD_REQUEST, body.getStatus());
@@ -71,16 +78,19 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldHandleNonValidMethodArguments() {
 		// Arrange
+
 		UserRegistrationRequest registrationRequest =
 				new UserRegistrationRequest("a", "Test12345678", "test@email.com", "name", "name");
 
 		// Act
+
 		// POST /register contains a validation of the arguments
 		ResponseEntity<ResponseString> response =
 				restTemplate.postForEntity("/register", registrationRequest, ResponseString.class);
 		ResponseString body = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(ResponseStatus.BAD_REQUEST, body.getStatus());
@@ -89,9 +99,11 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldHandleMissingParameter() {
 		// Arrange
+
 		String expectedBodyData = "the query string 'filename' is missing!";
 
 		// Act
+
 		HttpEntity<String> httpEntity = new HttpEntity<>("Body");
 
 		// POST /api/files requires a parameter
@@ -100,6 +112,7 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 		ResponseString body = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(ResponseStatus.BAD_REQUEST, body.getStatus());
@@ -117,6 +130,7 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 
 		// Act
 
+
 		// POST /api/user is used because it requires a body
 		ResponseEntity<ResponseString> response = getAuthenticatedRequest().exchange("/api/user",
 				HttpMethod.POST, new HttpEntity<>(headers), ResponseString.class);
@@ -124,6 +138,7 @@ public class GlobalExceptionHandlerIntegrationTest extends IntegrationTest {
 		ResponseString body = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 		Assertions.assertNotNull(body);
 		Assertions.assertEquals(ResponseStatus.ERROR, body.getStatus());

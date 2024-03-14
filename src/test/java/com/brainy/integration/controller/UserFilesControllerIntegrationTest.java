@@ -21,15 +21,18 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldCreateAndReadFile() {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		String fileContent = TestUtils.generateRandomFileContent();
 		String expected = JsonUtil.compressJson(fileContent);
 
 		// Act
+
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
 		String actual = IntegrationTestUtils.getFileContent(getAuthenticatedRequest(), filename);
 
 		// Assert
+
 		Assertions.assertEquals(expected, actual);
 	}
 
@@ -37,12 +40,14 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldUpdateFileContent() {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		String fileContent = TestUtils.generateRandomFileContent();
 		String newFileContent = TestUtils.generateRandomFileContent();
 		String expected = JsonUtil.compressJson(newFileContent);
 
 		// Act
+
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
 
 		ResponseEntity<Void> response =
@@ -51,6 +56,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		String actual = IntegrationTestUtils.getFileContent(getAuthenticatedRequest(), filename);
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertEquals(expected, actual);
 	}
@@ -58,6 +64,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldGetUserFiles() throws JsonMappingException, JsonProcessingException {
 		// Arrange
+
 		String[] filenames =
 				{TestUtils.generateRandomFilename(), TestUtils.generateRandomFilename()};
 
@@ -65,11 +72,13 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 			IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, "{}");
 
 		// Act
+
 		ResponseEntity<ResponseStringList> response =
 				getAuthenticatedRequest().getForEntity("/api/files", ResponseStringList.class);
 		ResponseStringList responseBody = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());
@@ -91,12 +100,14 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldDeleteFile() {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		String fileContent = "{}";
 
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
 
 		// Act
+
 		getAuthenticatedRequest().delete("/api/file?filename=" + filename);
 
 		ResponseEntity<ResponseStringList> response =
@@ -104,6 +115,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		ResponseStringList responseBody = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());
@@ -113,6 +125,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldGetUserUsedStorage() {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		String fileContent = TestUtils.generateRandomFileContent();
 		String compressedFileContent = JsonUtil.compressJson(fileContent);
@@ -120,11 +133,13 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, fileContent);
 
 		// Act
+
 		ResponseEntity<ResponseInteger> response =
 				getAuthenticatedRequest().getForEntity("/api/used-storage", ResponseInteger.class);
 		ResponseInteger responseBody = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());
@@ -134,9 +149,11 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldCreateFolder() {
 		// Arrange
+
 		String foldername = TestUtils.generateRandomFilename();
 
 		// Act
+
 		ResponseEntity<ResponseString> response = getAuthenticatedRequest()
 				.postForEntity("/api/folder?foldername=" + foldername, null, ResponseString.class);
 
@@ -145,6 +162,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		ResponseStringList userFilesResponseBody = userFilesResponse.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertEquals(HttpStatus.OK, userFilesResponse.getStatusCode());
 		Assertions.assertNotNull(userFilesResponseBody);
@@ -156,12 +174,14 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldDeleteFolder() {
 		// Arrange
+
 		String foldername = TestUtils.generateRandomFilename();
 
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), foldername + "/file1", "{}");
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), foldername + "/file2", "{}");
 
 		// Act
+
 		getAuthenticatedRequest().delete("/api/folder?foldername=" + foldername);
 
 		ResponseEntity<ResponseStringList> userFilesResponse =
@@ -169,6 +189,7 @@ public class UserFilesControllerIntegrationTest extends IntegrationTest {
 		ResponseStringList userFilesResponseBody = userFilesResponse.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, userFilesResponse.getStatusCode());
 		Assertions.assertNotNull(userFilesResponseBody);
 		Assertions.assertNotNull(userFilesResponseBody.getData());

@@ -28,15 +28,18 @@ public class FileSharingControllerUnitTest {
 	@Test
 	public void shouldUpdateSharedFileAccess() throws BadRequestException {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
 		String sharedWithUsername = TestUtils.generateRandomUsername();
 		UpdateSharedFileAccessRequest request = new UpdateSharedFileAccessRequest(true);
 
 		// Act
+
 		fileSharingController.updateSharedFileAccess(user, filename, sharedWithUsername, request);
 
 		// Assert
+
 		Mockito.verify(userFilesService).updateSharedFileAccess(user, filename, sharedWithUsername,
 				request);
 	}
@@ -44,15 +47,18 @@ public class FileSharingControllerUnitTest {
 	@Test
 	public void shouldGetFilesSharedWithUser() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		List<SharedFile> list = new ArrayList<>();
 
 		Mockito.when(userFilesService.getFilesSharedWithUser(user)).thenReturn(list);
 
 		// Act
+
 		Response<List<SharedFile>> response = fileSharingController.getFilesSharedWithUser(user);
 
 		// Assert
+
 		Mockito.verify(userFilesService).getFilesSharedWithUser(user);
 		Assertions.assertEquals(list, response.getData());
 	}
@@ -60,6 +66,7 @@ public class FileSharingControllerUnitTest {
 	@Test
 	public void shouldGetFileShares() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		List<SharedFile> list = new ArrayList<>();
 		String filename = TestUtils.generateRandomFilename();
@@ -67,9 +74,11 @@ public class FileSharingControllerUnitTest {
 		Mockito.when(userFilesService.getFileShares(user, filename)).thenReturn(list);
 
 		// Act
+
 		Response<List<SharedFile>> response = fileSharingController.getFileShares(user, filename);
 
 		// Assert
+
 		Mockito.verify(userFilesService).getFileShares(user, filename);
 		Assertions.assertEquals(list, response.getData());
 	}
@@ -77,34 +86,41 @@ public class FileSharingControllerUnitTest {
 	@Test
 	public void shouldShareFile() throws BadRequestException {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
 		String sharedWithUsername = TestUtils.generateRandomUsername();
 
 		// Act
+
 		fileSharingController.shareFileWith(user, filename, sharedWithUsername, false);
 
 		// Assert
+
 		Mockito.verify(userFilesService).shareFileWith(user, filename, sharedWithUsername, false);
 	}
 
 	@Test
 	public void shouldDeleteFileShare() throws BadRequestException {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
 		String sharedWithUsername = TestUtils.generateRandomUsername();
 
 		// Act
+
 		fileSharingController.deleteShare(user, filename, sharedWithUsername);
 
 		// Assert
+
 		Mockito.verify(userFilesService).deleteShare(user, filename, sharedWithUsername);
 	}
 
 	@Test
 	public void shouldGetSharedFileContent() throws BadRequestException {
 		// Arrange
+
 		User sharedWithUser = TestUtils.generateRandomUser();
 		String filename = TestUtils.generateRandomFilename();
 		String fileOwnerUsername = TestUtils.generateRandomUsername();
@@ -114,10 +130,12 @@ public class FileSharingControllerUnitTest {
 				sharedWithUser.getUsername())).thenReturn(fileContent);
 
 		// Act
+
 		Response<String> actual = fileSharingController.getSharedFileContent(sharedWithUser,
 				filename, fileOwnerUsername);
 
 		// Assert
+
 		Assertions.assertEquals(ResponseStatus.SUCCESS, actual.getStatus());
 		Assertions.assertEquals(fileContent, actual.getData());
 	}

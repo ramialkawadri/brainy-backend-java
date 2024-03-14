@@ -21,6 +21,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldShareAndGetFileShares() {
 		// Arrange
+
 		User sharedWithUser = TestUtils.generateRandomUser();
 		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
 
@@ -28,6 +29,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		IntegrationTestUtils.uploadFile(getAuthenticatedRequest(), filename, "{}");
 
 		// Act
+
 		IntegrationTestUtils.shareFile(getAuthenticatedRequest(), filename,
 				sharedWithUser.getUsername(), true);
 
@@ -37,6 +39,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		ResponseListSharedFile sharedFiles = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(sharedFiles);
 		Assertions.assertNotNull(sharedFiles.getData());
@@ -52,6 +55,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldDeleteShare() {
 		// Arrange
+
 		User sharedWithUser = TestUtils.generateRandomUser();
 		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
 
@@ -64,6 +68,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 				sharedWithUser.getUsername());
 
 		// Act
+
 		getAuthenticatedRequest().delete(deleteShareUrl);
 
 		ResponseEntity<ResponseListSharedFile> response = getAuthenticatedRequest().getForEntity(
@@ -71,6 +76,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		ResponseListSharedFile sharedFiles = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(sharedFiles);
 		Assertions.assertNotNull(sharedFiles.getData());
@@ -80,6 +86,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldGetFilesSharedWithMe() {
 		// Arrange
+
 		User sharedWithUser = TestUtils.generateRandomUser();
 		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
 		TestRestTemplate authenticatedRestTemplateForSharedWithUser = IntegrationTestUtils
@@ -89,6 +96,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		IntegrationTestUtils.uploadFile(authenticatedRestTemplateForSharedWithUser, filename, "{}");
 
 		// Act
+
 		IntegrationTestUtils.shareFile(authenticatedRestTemplateForSharedWithUser, filename,
 				testUser.getUsername(), true);
 
@@ -97,6 +105,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		ResponseListSharedFile sharedFiles = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(sharedFiles);
 		Assertions.assertNotNull(sharedFiles.getData());
@@ -106,6 +115,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldUpdateSharedFileAccess() {
 		// Arrange
+
 		User sharedWithUser = TestUtils.generateRandomUser();
 		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
 
@@ -121,6 +131,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 				sharedWithUser.getUsername());
 
 		// Act
+
 		getAuthenticatedRequest().patchForObject(updateShareUrl, requestBody, ResponseString.class);
 
 		ResponseEntity<ResponseListSharedFile> response = getAuthenticatedRequest().getForEntity(
@@ -129,6 +140,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		ResponseListSharedFile sharedFiles = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(sharedFiles);
 		Assertions.assertNotNull(sharedFiles.getData());
@@ -142,6 +154,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 	@Test
 	public void shouldGetSharedFileContent() {
 		// Arrange
+
 		User sharedWithUser = TestUtils.generateRandomUser();
 		IntegrationTestUtils.registerUser(restTemplate, sharedWithUser);
 
@@ -157,6 +170,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		String expected = JsonUtil.compressJson(fileContent);
 
 		// Act
+
 		ResponseEntity<ResponseString> response = IntegrationTestUtils
 				.getAuthenticatedRestTemplateForUser(restTemplate, sharedWithUser)
 				.getForEntity(url, ResponseString.class);
@@ -164,6 +178,7 @@ public class FileSharingControllerIntegrationTest extends IntegrationTest {
 		ResponseString responseBody = response.getBody();
 
 		// Assert
+
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 		Assertions.assertNotNull(responseBody);
 		Assertions.assertNotNull(responseBody.getData());

@@ -21,12 +21,15 @@ public class UpdatePasswordRequestUnitTest {
 	@Test
 	public void shouldNotUpdatePassword() {
 		// Arrange
+
 		UpdatePasswordRequest request = new UpdatePasswordRequest("week");
 
 		// Act
+
 		Set<ConstraintViolation<UpdatePasswordRequest>> violations = validator.validate(request);
 
 		// Assert
+
 		Assertions.assertEquals(2, violations.size());
 	}
 }

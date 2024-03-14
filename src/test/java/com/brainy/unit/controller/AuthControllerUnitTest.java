@@ -32,15 +32,18 @@ public class AuthControllerUnitTest {
 	@Test
 	public void shouldGetTokenAndAddItToCookies() {
 		// Arrange
+
 		HttpServletResponse servletResponse = Mockito.mock();
 		User user = TestUtils.generateRandomUser();
 
 		Mockito.when(tokenService.generateToken(user)).thenReturn("token_value");
 
 		// Act
+
 		Response<String> tokenResponse = authController.getToken(user, servletResponse);
 
 		// Assert
+
 		Assertions.assertEquals(ResponseStatus.SUCCESS, tokenResponse.getStatus());
 		Assertions.assertEquals("token_value", tokenResponse.getData());
 		Mockito.verify(servletResponse).addCookie(Mockito.argThat(cookie -> {
@@ -54,38 +57,47 @@ public class AuthControllerUnitTest {
 	@Test
 	public void shouldRegisterUser() throws Exception {
 		// Arrange
+
 		UserRegistrationRequest request = new UserRegistrationRequest("test", "StrongPass1",
 				"test@test.com", "firstName", "lastName");
 
 		// Act
+
 		authController.registerUser(request);
 
 		// Assert
+
 		Mockito.verify(userService).registerUserFromRequest(request);
 	}
 
 	@Test
 	public void shouldLogout() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 
 		// Act
+
 		authController.logout(user);
 
 		// Assert
+
 		Mockito.verify(userService).logoutUser(user);
 	}
 
 	@Test
 	public void shouldChangePassword() throws BadRequestException {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 		UpdatePasswordRequest request = new UpdatePasswordRequest("StrongPass1");
 
 		// Act
+
 		authController.changeUserPassword(user, request);
 
 		// Assert
+
 		Mockito.verify(userService).updateUserPassword(user, "StrongPass1");
 	}
 }

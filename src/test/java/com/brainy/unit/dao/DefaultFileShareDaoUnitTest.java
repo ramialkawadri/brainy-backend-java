@@ -39,6 +39,7 @@ public class DefaultFileShareDaoUnitTest {
 	@Test
 	public void shouldGetFilesSharedWithUser() throws BadRequestException {
 		// Arrange
+
 		int numberOfSharedFiles = 3; // A random number
 		int numberOfUnsharedFiles = 2; // A random number
 
@@ -54,15 +55,18 @@ public class DefaultFileShareDaoUnitTest {
 		}
 
 		// Act
+
 		List<SharedFile> actual = fileShareDao.getFilesSharedWithUser(sharedWithUser);
 
 		// Assert
+
 		Assertions.assertEquals(numberOfSharedFiles, actual.size());
 	}
 
 	@Test
 	public void shouldGetFileShares() throws BadRequestException {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFileContent();
 
 		User[] users = new User[4];
@@ -73,9 +77,11 @@ public class DefaultFileShareDaoUnitTest {
 		}
 
 		// Act
+
 		List<SharedFile> actual = fileShareDao.getFileShares(fileOwner, filename);
 
 		// Assert
+
 		Assertions.assertEquals(users.length, actual.size());
 
 		for (SharedFile sharedFile : actual) {
@@ -99,50 +105,61 @@ public class DefaultFileShareDaoUnitTest {
 	@Test
 	public void shouldReturnTrueOnIsFileSharedWith() throws BadRequestException {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		shareFile(filename);
 
 		// Act
+
 		boolean returnValue = fileShareDao.isFileSharedWith(fileOwner.getUsername(), filename,
 				sharedWithUser.getUsername());
 
 		// Assert
+
 		Assertions.assertTrue(returnValue);
 	}
 
 	@Test
 	public void shouldReturnFalseOnIsFileSharedWith() {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 
 		// Act
+
 		boolean returnValue = fileShareDao.isFileSharedWith(fileOwner.getUsername(), filename,
 				sharedWithUser.getUsername());
 
 		// Assert
+
 		Assertions.assertFalse(returnValue);
 	}
 
 	@Test
 	public void shouldShareFile() throws BadRequestException {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 
 		// Act
+
 		shareFile(filename);
 		List<SharedFile> actual = fileShareDao.getFilesSharedWithUser(sharedWithUser);
 
 		// Assert
+
 		Assertions.assertEquals(1, actual.size());
 	}
 
 	@Test
 	public void shouldNotShareFileBecauseSharedWithUserDoesNotExist() {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		User newUser = TestUtils.generateRandomUser();
 
 		// Act & Assert
+
 		Assertions.assertThrowsExactly(BadRequestException.class, () -> {
 			shareFile(filename, newUser);
 		});
@@ -151,10 +168,12 @@ public class DefaultFileShareDaoUnitTest {
 	@Test
 	public void shouldDeleteFileShare() throws BadRequestException {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		shareFile(filename);
 
 		// Act
+
 		fileShareDao.deleteFileShare(fileOwner.getUsername(), filename,
 				sharedWithUser.getUsername());
 
@@ -162,23 +181,27 @@ public class DefaultFileShareDaoUnitTest {
 				sharedWithUser.getUsername());
 
 		// Assert
+
 		Assertions.assertFalse(isShared);
 	}
 
 	@Test
 	public void shouldUpdateSharedFileAccess() throws BadRequestException {
 		// Arrange
+
 		String filename = TestUtils.generateRandomFilename();
 		shareFile(filename, sharedWithUser, false);
 		UpdateSharedFileAccessRequest request = new UpdateSharedFileAccessRequest(true);
 
 		// Act
+
 		fileShareDao.updateSharedFileAccess(fileOwner.getUsername(), filename,
 				sharedWithUser.getUsername(), request);
 
 		List<SharedFile> actual = fileShareDao.getFileShares(fileOwner, filename);
 
 		// Assert
+
 		Assertions.assertEquals(1, actual.size());
 		Assertions.assertTrue(actual.get(0).canEdit());
 	}

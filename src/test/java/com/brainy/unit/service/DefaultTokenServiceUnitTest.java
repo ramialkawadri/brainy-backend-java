@@ -32,6 +32,7 @@ public class DefaultTokenServiceUnitTest {
 	@Test
 	public void shouldGenerateToken() {
 		// Arrange
+
 		User user = TestUtils.generateRandomUser();
 
 		Jwt jwt = Mockito.mock();
@@ -41,9 +42,11 @@ public class DefaultTokenServiceUnitTest {
 		Mockito.when(jwt.getTokenValue()).thenReturn("token_value");
 
 		// Act
+
 		String token = tokenService.generateToken(user);
 
 		// Assert
+
 		Mockito.verify(jwtEncoder)
 				.encode(argThat((ArgumentMatcher<JwtEncoderParameters>) encoderParameter -> {
 					JwtClaimsSet claims = encoderParameter.getClaims();
@@ -62,14 +65,17 @@ public class DefaultTokenServiceUnitTest {
 	@Test
 	public void shouldDecodeToken() {
 		// Arrange
+
 		Jwt mockJwt = Mockito.mock();
 
 		Mockito.when(jwtDecoder.decode("token_value")).thenReturn(mockJwt);
 
 		// Act
+
 		Jwt jwt = tokenService.decodeToken("token_value");
 
 		// Assert
+
 		Mockito.verify(jwtDecoder).decode("token_value");
 		Assertions.assertEquals(mockJwt, jwt);
 	}
@@ -77,28 +83,34 @@ public class DefaultTokenServiceUnitTest {
 	@Test
 	public void shouldReturnTokenIsExpired() {
 		// Arrange
+
 		Jwt mockJwt = Mockito.mock();
 
 		Mockito.when(mockJwt.getExpiresAt()).thenReturn(Instant.now().minus(1, ChronoUnit.MINUTES));
 
 		// Act
+
 		boolean isExpired = tokenService.isTokenExpired(mockJwt);
 
 		// Assert
+
 		Assertions.assertTrue(isExpired);
 	}
 
 	@Test
 	public void shouldReturnTokenIsNotExpired() {
 		// Arrange
+
 		Jwt mockJwt = Mockito.mock();
 
 		Mockito.when(mockJwt.getExpiresAt()).thenReturn(Instant.now().plus(1, ChronoUnit.MINUTES));
 
 		// Act
+
 		boolean isExpired = tokenService.isTokenExpired(mockJwt);
 
 		// Assert
+
 		Assertions.assertFalse(isExpired);
 	}
 }
