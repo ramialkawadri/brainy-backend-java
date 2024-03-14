@@ -46,7 +46,9 @@ git repo. Those are necessary to make the application work.
 ### Setting up secrets on Github Actions
 
 On the github repo, click on **settings**, then on **Secrets and variables**, then from the
-dropdown select **Actions**.
+dropdown select **Actions**. The following secrets must be available for the actions to work:
+
+- IntegrationStorageAccountKey: the key to the integration test storage account.
 
 ### Getting storage account keys
 
